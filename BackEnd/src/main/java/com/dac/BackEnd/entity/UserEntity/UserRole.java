@@ -1,6 +1,6 @@
 package com.dac.BackEnd.entity.UserEntity;
 
 public enum UserRole {
-    ADMIN,
-    REVIEWER
+    ROLE_ADMIN,
+    ROLE_REVIEWER
 }
