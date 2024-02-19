@@ -15,5 +15,7 @@ public interface BlogService {
     ResponsePage getPageInfoByStatus(int page, BlogStatus status);
 
     List<Blog> getAllBlogsByStatus(int page, BlogStatus status);
+
+    Blog getBlogById(Long blogId);
     
 }
