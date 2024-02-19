@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dac.BackEnd.convertor.UserConvertor;
 import com.dac.BackEnd.model.User;
 import com.dac.BackEnd.model.response.ResponsePage;
-import com.dac.BackEnd.model.response.Responses;
+import com.dac.BackEnd.model.response.ResponsesBody;
 import com.dac.BackEnd.service.UserService;
 
 @RestController
@@ -24,9 +24,9 @@ public class ReviewerAdminController {
 
 
     @GetMapping()
-    public Responses getAllReiviewer(@RequestParam(required = false, defaultValue = "1") int page) {
+    public ResponsesBody getAllReiviewer(@RequestParam(required = false, defaultValue = "1") int page) {
         List<User> users = userService.getAllUser(page);
-        Responses responses = new Responses();
+        ResponsesBody responses = new ResponsesBody();
         // ResponsePage rp = new ResponsePage();
         // rp.setPage(page);
         // rp.setPer_page(6);

@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Responses {
+public class ResponsesBody {
     private Integer code;
     private List<Object> message;
     // private ResponsePage pageInfo;
