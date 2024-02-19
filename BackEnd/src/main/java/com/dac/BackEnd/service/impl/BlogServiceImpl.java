@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
+import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
 import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.response.ResponsePage;
 import com.dac.BackEnd.repository.BlogRepository;
@@ -28,6 +29,7 @@ public class BlogServiceImpl implements BlogService{
         if (page < 1 || page > totalPages) {
             throw new IllegalArgumentException("Invalid page number");
         }
+
         ResponsePage responsePage = new ResponsePage();
         responsePage.setPage(page);
         responsePage.setPer_page(10);
@@ -39,6 +41,29 @@ public class BlogServiceImpl implements BlogService{
     @Override
     public List<Blog> getAllBlogs(int page) {
         return blogRepository.findAllBlogsPerPage((page - 1)  * 10).stream().map(BlogConvertor::toModel).toList();
+    }
+
+    @Override
+    public ResponsePage getPageInfoByStatus(int page, BlogStatus status) {
+        int totalBlogs = blogRepository.countAllBlogsByStatus(status);
+        int totalPages = (int) Math.ceil((double) totalBlogs / 10);
+
+        if (page < 1 || page > totalPages) {
+            throw new IllegalArgumentException("Invalid page number");
+        }
+        ResponsePage responsePage = new ResponsePage();
+        responsePage.setPage(page);
+        responsePage.setPer_page(10);
+        responsePage.setTotal(totalBlogs);
+        responsePage.setTotal_pages(totalPages);
+
+        return responsePage;
+    }
+
+    @Override
+    public List<Blog> getAllBlogsByStatus(int page, BlogStatus status) {
+        return blogRepository.findAllByStatus(status, page).stream().map(BlogConvertor::toModel).toList();
+       
     }
 
 }

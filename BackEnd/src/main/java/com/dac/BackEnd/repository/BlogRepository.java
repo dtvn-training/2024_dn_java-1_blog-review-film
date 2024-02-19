@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
+import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
 
 import java.util.List;
 
@@ -17,4 +18,10 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long>{
 
     @Query(value = "SELECT * FROM blogs ORDER BY insert_date_time DESC LIMIT 10 OFFSET :pageNumber", nativeQuery = true)
     List<BlogEntity> findAllBlogsPerPage(@Param("pageNumber") int pageNumber);
+
+    @Query(value = "SELECT COUNT(*) FROM blogs WHERE status = :status", nativeQuery = true)
+    int countAllBlogsByStatus(@Param("status") BlogStatus status);
+
+    @Query(value = "SELECT * FROM blogs WHERE status = :status ORDER BY insert_date_time DESC LIMIT 10 OFFSET :pageNumber", nativeQuery = true)
+    List<BlogEntity> findAllByStatus(@Param("status") BlogStatus status, @Param("pageNumber") int pageNumber);
 }
