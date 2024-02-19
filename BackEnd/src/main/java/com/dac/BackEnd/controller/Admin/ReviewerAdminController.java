@@ -27,15 +27,6 @@ public class ReviewerAdminController {
     public ResponsesBody getAllReiviewer(@RequestParam(required = false, defaultValue = "1") int page) {
         List<User> users = userService.getAllUser(page);
         ResponsesBody responses = new ResponsesBody();
-        // ResponsePage rp = new ResponsePage();
-        // rp.setPage(page);
-        // rp.setPer_page(6);
-        // rp.setTotal(12);
-        // rp.setTotal_pages(2);
-        responses.setPage(page);
-        responses.setPer_page(6);
-        responses.setTotal(12);
-        responses.setTotal_pages(2);
         responses.setCode(200);
         responses.setMessage(new ArrayList<>()); // Khởi tạo một danh sách trống cho message
         responses.getMessage().add("Successful"); // Thêm thô ng điệp thành công vào danh sách message

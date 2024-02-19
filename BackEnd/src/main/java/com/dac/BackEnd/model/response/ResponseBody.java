@@ -10,6 +10,5 @@ import lombok.Setter;
 public class ResponseBody {
     private Integer code;
     private List<Object> message;
-    private ResponsePage pageInfo;
     private Object data;
 }

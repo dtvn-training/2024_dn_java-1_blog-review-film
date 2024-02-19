@@ -63,7 +63,11 @@ public class BlogServiceImpl implements BlogService{
     @Override
     public List<Blog> getAllBlogsByStatus(int page, BlogStatus status) {
         return blogRepository.findAllByStatus(status, page).stream().map(BlogConvertor::toModel).toList();
-       
+    }
+
+    @Override
+    public Blog getBlogById(Long blogId) {
+        return BlogConvertor.toModel(blogRepository.findById(blogId).orElseThrow(() -> new RuntimeException("Blog not found with ID: " + blogId)));
     }
 
 }
