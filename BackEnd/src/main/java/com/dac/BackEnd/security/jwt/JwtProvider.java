@@ -24,8 +24,8 @@ public class JwtProvider {
     private String jwtSecret = "TrongNguyenDT";
     private int jwtExpiration = 86400;
 
-    public String createToken(UserDetails userDetails){
-        UserPrinciple userPrinciple = (UserPrinciple) userDetails;
+    public String createToken(Authentication authentication){
+        UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
         return Jwts.builder().setSubject(userPrinciple.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime()+jwtExpiration*1000))
