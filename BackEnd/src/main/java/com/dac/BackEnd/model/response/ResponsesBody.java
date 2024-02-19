@@ -10,10 +10,6 @@ import lombok.Setter;
 public class ResponsesBody {
     private Integer code;
     private List<Object> message;
-    // private ResponsePage pageInfo;
-    private int page;
-    private int per_page;
-    private int total;
-    private int total_pages;
+    private ResponsePage pageInfo;
     private List<Object> data; 
 }

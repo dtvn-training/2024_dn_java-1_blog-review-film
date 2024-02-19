@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.response.ResponseBody;
 import com.dac.BackEnd.model.response.ResponsePage;
+import com.dac.BackEnd.model.response.ResponsesBody;
 import com.dac.BackEnd.service.BlogService;
 import com.dac.BackEnd.validation.BlogStatusValidation;
 
@@ -30,17 +32,17 @@ public class BlogsAdminController {
     private BlogService blogService;
     
     @GetMapping()
-    public ResponseEntity<ResponseBody> getAllBlogs(@RequestParam(required = false, defaultValue = "1") int page) {
+    public ResponseEntity<ResponsesBody> getAllBlogs(@RequestParam(required = false, defaultValue = "1") int page) {
         try {
             ResponsePage responsePage = blogService.getPageInfo(page);
-            ResponseBody body = new ResponseBody();
+            ResponsesBody body = new ResponsesBody();
             body.setCode(200);
-            body.setData(blogService.getAllBlogs(page));
+            body.setData(Arrays.asList(blogService.getAllBlogs(page)));
             body.setPageInfo(responsePage);
             body.setMessage(Arrays.asList("Success"));
             return ResponseEntity.ok().body(body);
         } catch (Exception e) {
-            ResponseBody body = new ResponseBody();
+            ResponsesBody body = new ResponsesBody();
             body.setCode(404);
             body.setMessage(Arrays.asList(new MessageException(e.getMessage(), 404)));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
@@ -48,16 +50,34 @@ public class BlogsAdminController {
     }
 
     @GetMapping("filter")
-    public ResponseEntity<ResponseBody> getAllBlogsByBlogStatus(@RequestParam(required = false, defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "WAITING") String status) {
+    public ResponseEntity<ResponsesBody> getAllBlogsByBlogStatus(@RequestParam(required = false, defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "WAITING") String status) {
         try {
             BlogStatus blogStatus = BlogStatusValidation.checkValidStatus(status);
             ResponsePage responsePage = blogService.getPageInfoByStatus(page, blogStatus);
-            ResponseBody body = new ResponseBody();
+            ResponsesBody body = new ResponsesBody();
 
             body.setCode(200);
-            body.setData(blogService.getAllBlogsByStatus(page, blogStatus));
+            body.setData(Arrays.asList(blogService.getAllBlogsByStatus(page, blogStatus)));
             body.setMessage(Arrays.asList("Success"));
             body.setPageInfo(responsePage);
+
+            return ResponseEntity.ok().body(body);
+        } catch (Exception e) {
+            ResponsesBody body = new ResponsesBody();
+            body.setCode(404);
+            body.setMessage(Arrays.asList(new MessageException(e.getMessage(), 404)));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+        }
+    }
+
+    @GetMapping("{blogId}")
+    public ResponseEntity<ResponseBody> getBlogsById(@PathVariable Long blogId) {
+        try {
+            Blog blog = blogService.getBlogById(blogId);
+            ResponseBody body = new ResponseBody();
+            body.setCode(200);
+            body.setData(blog);
+            body.setMessage(Arrays.asList("Success"));
 
             return ResponseEntity.ok().body(body);
         } catch (Exception e) {
