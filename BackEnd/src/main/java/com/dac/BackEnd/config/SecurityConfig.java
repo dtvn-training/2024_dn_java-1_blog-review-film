@@ -50,7 +50,7 @@ public class SecurityConfig{
                 )
                 .formLogin(formLogin -> formLogin.disable()) // Vô hiệu hóa form login
                 .logout(logout -> logout
-                        .logoutUrl("/logout") // Cấu hình URL logout
+                        .logoutUrl("api/auth/logout") // Cấu hình URL logout
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
