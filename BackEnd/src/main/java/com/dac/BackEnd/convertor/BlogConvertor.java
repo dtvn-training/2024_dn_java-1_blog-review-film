@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.dac.BackEnd.entity.ContentEntity;
 import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.model.Blog;
+import com.dac.BackEnd.model.User;
 
 public class BlogConvertor {
     
@@ -25,5 +26,13 @@ public class BlogConvertor {
         blog.setDeleteFlag(entity.getDeleteFlag());
         blog.setContentId(entity.getContents().stream().map(ContentEntity::getId).toList());
         return blog;
+    }
+
+    public static List<Object> convertToObjects(List<Blog> blogs) {
+        List<Object> objects = new ArrayList<>();
+        for (Blog blog : blogs) {
+            objects.add(blog);
+        }
+        return objects;
     }
 }
