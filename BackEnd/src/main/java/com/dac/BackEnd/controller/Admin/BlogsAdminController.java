@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
 
+import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Blog;
@@ -37,7 +38,7 @@ public class BlogsAdminController {
             ResponsePage responsePage = blogService.getPageInfo(page);
             ResponsesBody body = new ResponsesBody();
             body.setCode(200);
-            body.setData(Arrays.asList(blogService.getAllBlogs(page)));
+            body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogs(page)));
             body.setPageInfo(responsePage);
             body.setMessage(Arrays.asList("Success"));
             return ResponseEntity.ok().body(body);
@@ -57,7 +58,7 @@ public class BlogsAdminController {
             ResponsesBody body = new ResponsesBody();
 
             body.setCode(200);
-            body.setData(Arrays.asList(blogService.getAllBlogsByStatus(page, blogStatus)));
+            body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogsByStatus(page, blogStatus)));
             body.setMessage(Arrays.asList("Success"));
             body.setPageInfo(responsePage);
 

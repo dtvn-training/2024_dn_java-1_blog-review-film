@@ -1,10 +1,8 @@
 package com.dac.BackEnd.config;
 
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,7 +13,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.dac.BackEnd.security.jwt.JwtEntryPoint;
 import com.dac.BackEnd.security.jwt.JwtTokenFilter;
-import com.dac.BackEnd.security.userprincal.CustomUserDetailService;
 
 @Configuration
 @EnableWebSecurity
@@ -49,7 +46,7 @@ public class SecurityConfig{
                     exceptionHandling.authenticationEntryPoint(jwtEntryPoint)
                 )
                 .formLogin(formLogin -> formLogin.disable()) // Vô hiệu hóa form login
-                .logout(logout -> logout
+                .logout(logout -> logout 
                         .logoutUrl("api/auth/logout") // Cấu hình URL logout
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
