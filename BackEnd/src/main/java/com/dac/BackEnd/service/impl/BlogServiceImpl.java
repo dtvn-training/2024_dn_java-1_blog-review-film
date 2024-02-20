@@ -3,8 +3,6 @@ package com.dac.BackEnd.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.dac.BackEnd.convertor.BlogConvertor;
@@ -14,6 +12,8 @@ import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.response.ResponsePage;
 import com.dac.BackEnd.repository.BlogRepository;
 import com.dac.BackEnd.service.BlogService;
+import com.dac.BackEnd.validation.BlogStatusValidation;
+
 
 @Service
 public class BlogServiceImpl implements BlogService{
@@ -68,6 +68,14 @@ public class BlogServiceImpl implements BlogService{
     @Override
     public Blog getBlogById(Long blogId) {
         return BlogConvertor.toModel(blogRepository.findById(blogId).orElseThrow(() -> new RuntimeException("Blog not found with ID: " + blogId)));
+    }
+
+    @Override
+    public void updateStatusBlog(Long blogId, String status) {
+        BlogStatus blogStatus = BlogStatusValidation.checkValidStatus(status);
+        BlogEntity blogEntity = blogRepository.findById(blogId).orElseThrow(() -> new RuntimeException("Blog not found with ID: " + blogId));
+        blogEntity.setStatus(blogStatus);
+        blogRepository.save(blogEntity);
     }
 
 }

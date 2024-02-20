@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +19,16 @@ import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Blog;
+import com.dac.BackEnd.model.request.BlogStatusRequest;
+import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
 import com.dac.BackEnd.model.response.ResponsePage;
 import com.dac.BackEnd.model.response.ResponsesBody;
 import com.dac.BackEnd.service.BlogService;
 import com.dac.BackEnd.validation.BlogStatusValidation;
+
+import jakarta.transaction.Transactional;
+
 
 
 @RestController
@@ -33,7 +39,7 @@ public class BlogsAdminController {
     private BlogService blogService;
     
     @GetMapping()
-    public ResponseEntity<ResponsesBody> getAllBlogs(@RequestParam(required = false, defaultValue = "1") int page) {
+    public ResponseEntity<?> getAllBlogs(@RequestParam(required = false, defaultValue = "1") int page) {
         try {
             ResponsePage responsePage = blogService.getPageInfo(page);
             ResponsesBody body = new ResponsesBody();
@@ -43,28 +49,7 @@ public class BlogsAdminController {
             body.setMessage(Arrays.asList("Success"));
             return ResponseEntity.ok().body(body);
         } catch (Exception e) {
-            ResponsesBody body = new ResponsesBody();
-            body.setCode(404);
-            body.setMessage(Arrays.asList(new MessageException(e.getMessage(), 404)));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
-        }
-    }
-
-    @GetMapping("filter")
-    public ResponseEntity<ResponsesBody> getAllBlogsByBlogStatus(@RequestParam(required = false, defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "WAITING") String status) {
-        try {
-            BlogStatus blogStatus = BlogStatusValidation.checkValidStatus(status);
-            ResponsePage responsePage = blogService.getPageInfoByStatus(page, blogStatus);
-            ResponsesBody body = new ResponsesBody();
-
-            body.setCode(200);
-            body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogsByStatus(page, blogStatus)));
-            body.setMessage(Arrays.asList("Success"));
-            body.setPageInfo(responsePage);
-
-            return ResponseEntity.ok().body(body);
-        } catch (Exception e) {
-            ResponsesBody body = new ResponsesBody();
+            Response body = new Response();
             body.setCode(404);
             body.setMessage(Arrays.asList(new MessageException(e.getMessage(), 404)));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
@@ -72,20 +57,37 @@ public class BlogsAdminController {
     }
 
     @GetMapping("{blogId}")
-    public ResponseEntity<ResponseBody> getBlogsById(@PathVariable Long blogId) {
+    public ResponseEntity<?> getBlogsById(@PathVariable Long blogId) {
         try {
             Blog blog = blogService.getBlogById(blogId);
             ResponseBody body = new ResponseBody();
             body.setCode(200);
             body.setData(blog);
             body.setMessage(Arrays.asList("Success"));
-
             return ResponseEntity.ok().body(body);
         } catch (Exception e) {
-            ResponseBody body = new ResponseBody();
+            Response body = new Response();
             body.setCode(404);
             body.setMessage(Arrays.asList(new MessageException(e.getMessage(), 404)));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
         }
     }
+
+    @Transactional
+    @PatchMapping("{blogId}")
+    public ResponseEntity<?> updateBlogStatus(@PathVariable Long blogId, @RequestBody BlogStatusRequest blogStatus) {
+        try {
+            Response response = new Response();
+            blogService.updateStatusBlog(blogId, blogStatus.getStatus());
+            response.setCode(200);
+            response.setMessage(Arrays.asList("Success", 200));
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            Response response = new Response();
+            response.setCode(404);
+            response.setMessage(Arrays.asList(new MessageException(e.getMessage(), 404)));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
 }

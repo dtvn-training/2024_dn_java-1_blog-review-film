@@ -17,5 +17,7 @@ public interface BlogService {
     List<Blog> getAllBlogsByStatus(int page, BlogStatus status);
 
     Blog getBlogById(Long blogId);
+
+    void updateStatusBlog(Long blogId, String status);
     
 }

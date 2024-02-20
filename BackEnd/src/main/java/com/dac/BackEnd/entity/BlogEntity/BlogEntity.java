@@ -56,7 +56,7 @@ public class BlogEntity {
     @NotNull
     private LocalDateTime postTime;
 
-    @NotBlank
+    @NotNull
     private BlogStatus status;
 
     @NotNull
