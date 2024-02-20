@@ -1,8 +1,11 @@
 package com.dac.BackEnd.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.dac.BackEnd.convertor.BlogConvertor;
@@ -22,17 +25,39 @@ public class BlogServiceImpl implements BlogService{
     private BlogRepository blogRepository;
 
     @Override
-    public ResponsePage getPageInfo(int page) {
-        int totalBlogs = blogRepository.countAllBlogs();
-        int totalPages = (int) Math.ceil((double) totalBlogs / 10);
-        
+    public ResponsePage getPageInfo(int page, String by, String status, String searchText, LocalDateTime startTime, LocalDateTime endTime) {
+        int totalBlogs = 0;
+        int totalPages = 0;
+        int perPage = 10;
+        switch (by) {
+            case "status":
+                if (status != null) {
+                    totalBlogs = blogRepository.countAllBlogsByStatus(BlogStatusValidation.checkValidStatus(status));
+                }
+                break;
+            case "searchText":
+                if (searchText != null) {
+                    totalBlogs = blogRepository.countAllBlogsByText(searchText);
+                }
+                break;
+            case "postTime":
+                if (startTime != null && endTime != null) {
+                    totalBlogs = blogRepository.countAllBlogsByPostTime(startTime, endTime);
+                }
+                break;
+            default:
+                totalBlogs = blogRepository.countAllBlogs();
+                break;
+        }
+        totalPages = (int) Math.ceil((double) totalBlogs / perPage);
+
         if (page < 1 || page > totalPages) {
             throw new IllegalArgumentException("Invalid page number");
         }
 
         ResponsePage responsePage = new ResponsePage();
         responsePage.setPage(page);
-        responsePage.setPer_page(10);
+        responsePage.setPer_page(perPage);
         responsePage.setTotal(totalBlogs);
         responsePage.setTotal_pages(totalPages);
         return responsePage;
@@ -40,29 +65,27 @@ public class BlogServiceImpl implements BlogService{
 
     @Override
     public List<Blog> getAllBlogs(int page) {
-        return blogRepository.findAllBlogsPerPage((page - 1)  * 10).stream().map(BlogConvertor::toModel).toList();
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        return blogRepository.findAllByOrderByInsertDateTimeDesc(pageable).stream().map(BlogConvertor::toModel).toList();
     }
 
     @Override
-    public ResponsePage getPageInfoByStatus(int page, BlogStatus status) {
-        int totalBlogs = blogRepository.countAllBlogsByStatus(status);
-        int totalPages = (int) Math.ceil((double) totalBlogs / 10);
-
-        if (page < 1 || page > totalPages) {
-            throw new IllegalArgumentException("Invalid page number");
-        }
-        ResponsePage responsePage = new ResponsePage();
-        responsePage.setPage(page);
-        responsePage.setPer_page(10);
-        responsePage.setTotal(totalBlogs);
-        responsePage.setTotal_pages(totalPages);
-
-        return responsePage;
+    public List<Blog> getAllBlogsByStatus(String status, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        BlogStatus blogStatus = BlogStatusValidation.checkValidStatus(status);
+        return blogRepository.findAllByStatusOrderByInsertDateTimeDesc(blogStatus, pageable).stream().map(BlogConvertor::toModel).toList();
     }
 
     @Override
-    public List<Blog> getAllBlogsByStatus(int page, BlogStatus status) {
-        return blogRepository.findAllByStatus(status, page).stream().map(BlogConvertor::toModel).toList();
+    public List<Blog> getAllBlogByText(String searchText, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        return blogRepository.findAllBySearchText(searchText, pageable).stream().map(BlogConvertor::toModel).toList();
+    }
+
+    @Override
+    public List<Blog> getAllBlogByPostTime(LocalDateTime startTime, LocalDateTime endTime, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        return blogRepository.findAllByPostTimeBetween(startTime, endTime, pageable).stream().map(BlogConvertor::toModel).toList();
     }
 
     @Override
@@ -77,5 +100,13 @@ public class BlogServiceImpl implements BlogService{
         blogEntity.setStatus(blogStatus);
         blogRepository.save(blogEntity);
     }
+
+    
+
+    
+
+    
+
+    
 
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import com.dac.BackEnd.convertor.BlogConvertor;
@@ -39,13 +40,32 @@ public class BlogsAdminController {
     private BlogService blogService;
     
     @GetMapping()
-    public ResponseEntity<?> getAllBlogs(@RequestParam(required = false, defaultValue = "1") int page) {
+    public ResponseEntity<?> getAllBlogs(@RequestParam(required = false, defaultValue = "1") int page,
+                                        @RequestParam(required = false) String status,
+                                        @RequestParam(required = false) String searchText,
+                                        @RequestParam(required = false) LocalDateTime startTime,
+                                        @RequestParam(required = false) LocalDateTime endTime) {
         try {
-            ResponsePage responsePage = blogService.getPageInfo(page);
             ResponsesBody body = new ResponsesBody();
+            if (status != null) {
+                // Nếu có status, gọi hàm getAllBlogByStatus
+                body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogsByStatus(status, page)));
+                body.setPageInfo(blogService.getPageInfo(page, "status", status, searchText, startTime, endTime));
+            } else if (searchText != null) {
+                // Nếu có searchText, gọi hàm getAllBlogByText
+                body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogByText(searchText, page)));
+                body.setPageInfo(blogService.getPageInfo(page, "searchText", status, searchText, startTime, endTime));
+            } else if (startTime != null && endTime != null) {
+                // Nếu có startTime và endTime, gọi hàm getAllBlogByPostTime
+                body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogByPostTime(startTime, endTime, page)));
+                body.setPageInfo(blogService.getPageInfo(page, "postTime", status, searchText, startTime, endTime));
+            } else {
+                // Mặc định, gọi hàm getAllBlog
+                body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogs(page)));
+                body.setPageInfo(blogService.getPageInfo(page, "all", status, searchText, startTime, endTime));
+            }
+            
             body.setCode(200);
-            body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogs(page)));
-            body.setPageInfo(responsePage);
             body.setMessage(Arrays.asList("Success"));
             return ResponseEntity.ok().body(body);
         } catch (Exception e) {

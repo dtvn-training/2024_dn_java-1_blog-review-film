@@ -1,5 +1,6 @@
 package com.dac.BackEnd.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
@@ -8,16 +9,24 @@ import com.dac.BackEnd.model.response.ResponsePage;
 
 public interface BlogService {
 
-    ResponsePage getPageInfo(int page);
+    ResponsePage getPageInfo(int page, String by, String status, String searchText, LocalDateTime startTime, LocalDateTime endTime);
 
     List<Blog> getAllBlogs(int page);
 
-    ResponsePage getPageInfoByStatus(int page, BlogStatus status);
+    List<Blog> getAllBlogsByStatus(String status, int page);
 
-    List<Blog> getAllBlogsByStatus(int page, BlogStatus status);
+    List<Blog> getAllBlogByText(String searchText, int page);
 
     Blog getBlogById(Long blogId);
 
     void updateStatusBlog(Long blogId, String status);
+
+    List<Blog> getAllBlogByPostTime(LocalDateTime startTime, LocalDateTime endTime, int page);
+
+    
+
+   
+
+    
     
 }
