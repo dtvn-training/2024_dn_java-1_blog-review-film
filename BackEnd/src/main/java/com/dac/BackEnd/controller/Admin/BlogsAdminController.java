@@ -85,9 +85,9 @@ public class BlogsAdminController {
         try {
             Blog blog = blogService.getBlogById(blogId);
             ResponseBody body = new ResponseBody();
-            body.setCode(200);
+            body.setCode(SuccessConstants.OK_CODE);
             body.setData(blog);
-            body.setMessage(Arrays.asList("Success"));
+            body.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
             return ResponseEntity.ok().body(body);
         } catch (MessageException e) {
             Response body = new Response();
@@ -103,8 +103,8 @@ public class BlogsAdminController {
         try {
             Response response = new Response();
             blogService.updateStatusBlog(blogId, blogStatus.getStatus());
-            response.setCode(200);
-            response.setMessage(Arrays.asList("Success", 200));
+            response.setCode(SuccessConstants.OK_CODE);
+            response.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
             return ResponseEntity.ok().body(response);
         } catch (MessageException e) {
             Response body = new Response();

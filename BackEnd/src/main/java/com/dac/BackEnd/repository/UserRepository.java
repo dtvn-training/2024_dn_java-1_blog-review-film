@@ -19,4 +19,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
     // List<UserEntity> findByRoleAndDeletedIsFalse(UserRole role);
     List<UserEntity> findAllByDeleteFlagFalse();
     // Optional<UserEntity> findUserByDeletedFalseAndId(Long id);
+
+    long countByRole(UserRole role);
 }
