@@ -1,6 +1,8 @@
 package com.dac.BackEnd.validation;
 
+import com.dac.BackEnd.constant.ErrorConstants;
 import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
+import com.dac.BackEnd.exception.MessageException;
 
 public class BlogStatusValidation {
 
@@ -12,6 +14,6 @@ public class BlogStatusValidation {
             }
         }
         // Ném ra ngoại lệ IllegalArgumentException nếu status không hợp lệ
-        throw new IllegalArgumentException("Invalid status: " + status);
+        throw new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE);
     }
 }

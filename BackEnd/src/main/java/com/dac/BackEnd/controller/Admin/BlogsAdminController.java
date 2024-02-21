@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import com.dac.BackEnd.constant.ErrorConstants;
+import com.dac.BackEnd.constant.SuccessConstants;
 import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
 import com.dac.BackEnd.exception.MessageException;
@@ -29,6 +31,8 @@ import com.dac.BackEnd.service.BlogService;
 import com.dac.BackEnd.validation.BlogStatusValidation;
 
 import jakarta.transaction.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
+
 
 
 
@@ -65,13 +69,13 @@ public class BlogsAdminController {
                 body.setPageInfo(blogService.getPageInfo(page, "all", status, searchText, startTime, endTime));
             }
             
-            body.setCode(200);
-            body.setMessage(Arrays.asList("Success"));
+            body.setCode(SuccessConstants.OK_CODE);
+            body.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE));
             return ResponseEntity.ok().body(body);
-        } catch (Exception e) {
+        } catch (MessageException e) {
             Response body = new Response();
-            body.setCode(404);
-            body.setMessage(Arrays.asList(new MessageException(e.getMessage(), 404)));
+            body.setCode(e.getErrorCode());
+            body.setMessage(Arrays.asList(e));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
         }
     }
@@ -85,10 +89,10 @@ public class BlogsAdminController {
             body.setData(blog);
             body.setMessage(Arrays.asList("Success"));
             return ResponseEntity.ok().body(body);
-        } catch (Exception e) {
+        } catch (MessageException e) {
             Response body = new Response();
-            body.setCode(404);
-            body.setMessage(Arrays.asList(new MessageException(e.getMessage(), 404)));
+            body.setCode(e.getErrorCode());
+            body.setMessage(Arrays.asList(e));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
         }
     }
@@ -102,12 +106,11 @@ public class BlogsAdminController {
             response.setCode(200);
             response.setMessage(Arrays.asList("Success", 200));
             return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            Response response = new Response();
-            response.setCode(404);
-            response.setMessage(Arrays.asList(new MessageException(e.getMessage(), 404)));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (MessageException e) {
+            Response body = new Response();
+            body.setCode(e.getErrorCode());
+            body.setMessage(Arrays.asList(e));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
         }
     }
-
 }
