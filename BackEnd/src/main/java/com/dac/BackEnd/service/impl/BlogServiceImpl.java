@@ -50,6 +50,11 @@ public class BlogServiceImpl implements BlogService{
                 totalBlogs = blogRepository.countAllBlogs();
                 break;
         }
+
+        if (totalBlogs == 0) {
+            throw new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE);
+        }
+
         totalPages = (int) Math.ceil((double) totalBlogs / perPage);
 
         if (page < 1 || page > totalPages) {

@@ -48,6 +48,10 @@ public class BlogEntity {
     @Size(max = 255)
     private String title;
 
+    @NotBlank
+    @Size(max = 700)
+    private String summary;
+
     private String image;
 
     @NotNull

@@ -1,8 +1,5 @@
 package com.dac.BackEnd.constant;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class SuccessConstants {
 
     public static final int OK_CODE = 200;

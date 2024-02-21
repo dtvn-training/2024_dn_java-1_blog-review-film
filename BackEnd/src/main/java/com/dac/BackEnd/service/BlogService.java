@@ -3,7 +3,6 @@ package com.dac.BackEnd.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
 import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.response.ResponsePage;
 

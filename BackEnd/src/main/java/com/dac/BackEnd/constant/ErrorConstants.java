@@ -1,8 +1,5 @@
 package com.dac.BackEnd.constant;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class ErrorConstants {
 
     public static final int INVALID_CREDENTIALS_CODE = 401;

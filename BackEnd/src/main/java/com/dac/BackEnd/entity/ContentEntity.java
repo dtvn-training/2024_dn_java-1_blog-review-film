@@ -37,7 +37,7 @@ public class ContentEntity {
     @JoinColumn(name = "blog_id")
     private BlogEntity blog;
 
-     private String imageUrl;
+    private String imageUrl;
 
     @NotBlank
     @Size(min = 1)
