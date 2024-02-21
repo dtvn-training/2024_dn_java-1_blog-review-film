@@ -44,9 +44,12 @@ public class UserEntity {
     @Email
     private String email;
 
-    @JsonIgnore
     @NotBlank
-    @Size(min = 6, max = 100)
+    @Pattern(regexp = "(?=.*[0-9]).+", message = "Password must contain at least one digit.")
+    @Pattern(regexp = "(?=.*[a-z]).+", message = "Password must contain at least one lowercase letter.")
+    @Pattern(regexp = "(?=.*[A-Z]).+", message = "Password must contain at least one uppercase letter.")
+    @Pattern(regexp = "(?=.*[@#$%^&+=]).+", message = "Password must contain at least one special character.")
+    @Size(min = 6, max = 50, message = "Password length must be between 6 and 50 characters.")
     private String password;
 
     @NotNull

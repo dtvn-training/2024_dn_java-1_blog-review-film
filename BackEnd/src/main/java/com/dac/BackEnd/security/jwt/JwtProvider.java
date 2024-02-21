@@ -1,12 +1,11 @@
 package com.dac.BackEnd.security.jwt;
 
-import java.security.SignatureException;
 import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.dac.BackEnd.security.userprincal.UserPrinciple;
@@ -19,10 +18,14 @@ import io.jsonwebtoken.UnsupportedJwtException;
 
 @Service
 public class JwtProvider {
+
+    @Value("${jwtSecret}")
+    private String jwtSecret;
+
+    @Value("${jwtExpiration}")
+    private int jwtExpiration;
     
     private static final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
-    private String jwtSecret = "TrongNguyenDT";
-    private int jwtExpiration = 86400;
 
     public String createToken(Authentication authentication){
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();

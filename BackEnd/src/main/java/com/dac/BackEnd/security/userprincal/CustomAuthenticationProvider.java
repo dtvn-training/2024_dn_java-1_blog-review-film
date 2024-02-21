@@ -9,6 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.dac.BackEnd.constant.ErrorConstants;
+import com.dac.BackEnd.exception.MessageException;
+
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider{
     
@@ -31,7 +34,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
         if (passwordEncoder.matches(password, userDetails.getPassword())) {
             return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
         } else {
-            throw new BadCredentialsException("Incorrect email or password");
+            throw new MessageException(ErrorConstants.INVALID_CREDENTIALS_MESSAGE, ErrorConstants.INVALID_CREDENTIALS_CODE);
         }
     }
 

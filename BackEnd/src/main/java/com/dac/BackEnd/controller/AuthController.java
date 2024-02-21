@@ -1,6 +1,10 @@
 package com.dac.BackEnd.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,15 +13,22 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dac.BackEnd.constant.ErrorConstants;
+import com.dac.BackEnd.constant.SuccessConstants;
 import com.dac.BackEnd.convertor.UserConvertor;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.request.LoginInput;
 import com.dac.BackEnd.model.response.LoginResponse;
+import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
 import com.dac.BackEnd.security.jwt.JwtProvider;
 import com.dac.BackEnd.security.userprincal.CustomAuthenticationProvider;
@@ -41,21 +52,22 @@ public class AuthController {
     @PostMapping("login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginInput loginInput) {
         try {
+            System.out.println(loginInput.getPassword());
             Authentication authentication = customAuthenticationProvider.authenticate( new UsernamePasswordAuthenticationToken(loginInput.getEmail(), loginInput.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtProvider.createToken(authentication);
             UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
             LoginResponse loginResponse = new LoginResponse();
-            loginResponse.setCode(200);
-            loginResponse.setMessage(Arrays.asList("Login successful"));
+            loginResponse.setCode(SuccessConstants.OK_CODE);
+            loginResponse.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE));
             loginResponse.setToken(token);
             loginResponse.setData(UserConvertor.userPrincipleToModel(userPrinciple));
             return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (MessageException e) {
             LoginResponse loginResponse = new LoginResponse();
-            loginResponse.setCode(400);
-            loginResponse.setMessage(Arrays.asList(new MessageException(e.getMessage(), 400)));
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(loginResponse);
+            loginResponse.setCode(e.getErrorCode());
+            loginResponse.setMessage(Arrays.asList(e));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponse);
         }
     }
 
@@ -69,9 +81,23 @@ public class AuthController {
             SecurityContextHolder.clearContext();
         }
         ResponseBody response = new ResponseBody(); 
-        response.setCode(200);
-        response.setMessage(Arrays.asList("Logout successful for user: " + authentication.getName()));
+        response.setCode(SuccessConstants.OK_CODE);
+        response.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE));
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Response handleValidationExceptions(MethodArgumentNotValidException ex){
+        Response response = new Response();
+        response.setCode(ErrorConstants.INVALID_CREDENTIALS_CODE);
+        List<Object> messages = new ArrayList<>();
+        ex.getBindingResult().getAllErrors().forEach((error)->{
+            String fieldName = ((FieldError) error).getField();
+            messages.add(new MessageException(fieldName + ": " + error.getDefaultMessage(), response.getCode()));
+        });
+        response.setMessage(messages);
+        return response;
     }
     
 }
