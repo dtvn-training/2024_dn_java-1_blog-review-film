@@ -1,5 +1,5 @@
 import React from 'react';
-import AdminBlog from './function/AdminBlog.jsx';
+import AdminBlog from './adminblog/AdminBlog.jsx';
 
 function AdminDashboard() {
   return (

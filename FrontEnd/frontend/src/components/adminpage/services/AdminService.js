@@ -1,15 +1,4 @@
-// UserService.js
 import axios from "./customize-axios";
-
-// const fetchAllBlog = (selectedPage, accessToken) => {
-//     const token = accessToken; //  your actual JWT token
-//     return axios.get(`/api/admin/blogs?page=${selectedPage}`, {
-//         headers: {
-//             'Authorization': `Bearer ${token}`
-//         }
-//     });
-// }
-
 const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, endTime) => {
     
     var query = `/api/admin/blogs?page=${selectedPage}`;
@@ -46,4 +35,17 @@ const updateUser = (userId, name, job) => {
     return axios.put(`/api/users/${userId}`, { name, job });
 }
 
-export { fetchAllUser, postCreateUser, updateUser, fetchAllBlog };
+const deleteBlog = async (blogId, jwtToken) => {
+    try {
+      const response = await axios.delete(`/api/blogs/${blogId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+export { fetchAllUser, postCreateUser, updateUser, fetchAllBlog, deleteBlog };
