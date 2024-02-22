@@ -8,6 +8,8 @@ import AdminBlog from"./components/adminpage/adminblog/AdminBlog";
 import BlogDetail from "./components/adminpage/blogdetail/BlogDetail";
 import CreateBlog from "./components/adminpage/createblog/CreateBlog";
 import AdminDashBoard from "./components/adminpage/admindashboard/AdminDashBoard";
+import AdminFilm from "./components/adminpage/adminfilm/AdminFilm";
+import AdminAccount from "./components/adminpage/adminaccount/AdminAccount";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
@@ -18,6 +20,8 @@ root.render(
         <Route path="/admin/blog" element={<AdminBlog />} />
         <Route path="/admin/edit" element={<BlogDetail />} />
         <Route path="/admin/dashboard" element={<AdminDashBoard />} />
+        <Route path="/admin/film" element={<AdminFilm />} />
+        <Route path="/admin/account" element={<AdminAccount />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

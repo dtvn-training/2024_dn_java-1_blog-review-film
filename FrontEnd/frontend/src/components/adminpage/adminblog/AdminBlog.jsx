@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './AdminBlog.css';
 import TableBlog from './TableBlog';
-
+import { Link } from 'react-router-dom';
 function AdminBlog() {
   useEffect(() => {
     const body = document.querySelector("body");
@@ -58,30 +58,32 @@ function AdminBlog() {
         </div>
         <div className="menu-items">
           <ul className="nav-links">
-            <li>
-              <a href="#">
-                <i className="uil uil-tachometer-fast-alt"></i>
-                <span className="link-name">Dashboard</span>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <i className="uil uil-user"></i>
-                <span className="link-name">Account</span>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <i className="uil uil-blogger-alt"></i>
-                <span className="link-name">Blog</span>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <i className="uil uil-film"></i>
-                <span className="link-name">Film</span>
-              </a>
-            </li>
+          <div>
+              <li>
+                <Link to="/admin/dashboard">
+                  <i className="uil uil-tachometer-fast-alt"></i>
+                  <span className="link-name">Dashboard</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/account">
+                  <i className="uil uil-user"></i>
+                  <span className="link-name">Reviewer</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/blog">
+                  <i className="uil uil-blogger-alt"></i>
+                  <span className="link-name">Blog</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/film">
+                  <i className="uil uil-film"></i>
+                  <span className="link-name">Film</span>
+                </Link>
+              </li>
+            </div>
           </ul>
           <ul className="logout-mode">
             <li>
@@ -115,7 +117,7 @@ function AdminBlog() {
           <div className="activity">
             <div className="title">
               <i className="uil uil-clock-three"></i>
-              <span className="text">Recent Activity</span>
+              <span className="text">Blog List</span>
             </div>
             <div className="activity-data">
             <TableBlog />
