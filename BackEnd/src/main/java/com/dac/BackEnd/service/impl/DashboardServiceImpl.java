@@ -8,10 +8,10 @@ import com.dac.BackEnd.model.response.SummaryResponse;
 import com.dac.BackEnd.repository.BlogRepository;
 import com.dac.BackEnd.repository.FilmRepository;
 import com.dac.BackEnd.repository.UserRepository;
-import com.dac.BackEnd.service.DrashboardService;
+import com.dac.BackEnd.service.DashboardService;
 
 @Service
-public class DrashboardServiceImpl implements DrashboardService{
+public class DashboardServiceImpl implements DashboardService{
     
     @Autowired
     private BlogRepository blogRepository;

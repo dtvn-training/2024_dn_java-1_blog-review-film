@@ -13,4 +13,12 @@ public class ErrorConstants {
 
     public static final int INTERNAL_SERVER_ERROR_CODE = 500;
     public static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal server error. Please try again later.";
+
+    public static final int UNAUTHORIZED_CODE = 403;
+    public static final String UNAUTHORIZED_MESSAGE = "Unauthorized access. Please login to proceed.";
+
+    public static final int FORBIDDEN_CODE = 403;
+    public static final String FORBIDDEN_MESSAGE = "Access forbidden. You don't have sufficient permissions to perform this action.";
+
+
 }

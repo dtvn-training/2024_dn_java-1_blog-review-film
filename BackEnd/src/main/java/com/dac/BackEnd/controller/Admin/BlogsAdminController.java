@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Arrays;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -22,6 +23,7 @@ import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Blog;
+import com.dac.BackEnd.model.request.BlogInput;
 import com.dac.BackEnd.model.request.BlogStatusRequest;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
@@ -112,5 +114,5 @@ public class BlogsAdminController {
             body.setMessage(Arrays.asList(e));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
         }
-    }
+    } 
 }

@@ -52,7 +52,6 @@ public class AuthController {
     @PostMapping("login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginInput loginInput) {
         try {
-            System.out.println(loginInput.getPassword());
             Authentication authentication = customAuthenticationProvider.authenticate( new UsernamePasswordAuthenticationToken(loginInput.getEmail(), loginInput.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtProvider.createToken(authentication);

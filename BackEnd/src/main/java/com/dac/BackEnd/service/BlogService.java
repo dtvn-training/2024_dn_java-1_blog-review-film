@@ -3,7 +3,9 @@ package com.dac.BackEnd.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.model.Blog;
+import com.dac.BackEnd.model.request.BlogInput;
 import com.dac.BackEnd.model.response.ResponsePage;
 
 public interface BlogService {
@@ -21,6 +23,8 @@ public interface BlogService {
     void updateStatusBlog(Long blogId, String status);
 
     List<Blog> getAllBlogByPostTime(LocalDateTime startTime, LocalDateTime endTime, int page);
+
+    Blog createNewBlog(BlogInput blogInput);
 
     
 
