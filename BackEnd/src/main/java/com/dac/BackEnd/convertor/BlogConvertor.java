@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.dac.BackEnd.entity.ContentEntity;
 import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.model.Blog;
-import com.dac.BackEnd.model.User;
 
 public class BlogConvertor {
     

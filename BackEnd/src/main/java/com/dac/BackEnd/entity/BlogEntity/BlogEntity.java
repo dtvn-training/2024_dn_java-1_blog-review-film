@@ -57,7 +57,6 @@ public class BlogEntity {
     @NotNull
     private double point;
 
-    @NotNull
     private LocalDateTime postTime;
 
     @NotNull

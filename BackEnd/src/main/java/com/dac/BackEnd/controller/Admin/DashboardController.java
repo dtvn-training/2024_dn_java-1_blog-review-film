@@ -7,7 +7,7 @@ import com.dac.BackEnd.constant.SuccessConstants;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
-import com.dac.BackEnd.service.DrashboardService;
+import com.dac.BackEnd.service.DashboardService;
 
 import java.util.Arrays;
 
@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
-@RequestMapping("api/admin/drashboard")
-public class DrashboardController {
+@RequestMapping("api/admin/dashboard")
+public class DashboardController {
 
     @Autowired
-    private DrashboardService drashboardService;
+    private DashboardService dashboardService;
     
 
     @GetMapping()
@@ -30,7 +30,7 @@ public class DrashboardController {
         try {
             ResponseBody body = new ResponseBody();
             body.setCode(SuccessConstants.OK_CODE);
-            body.setData(drashboardService.getInfoSummary());
+            body.setData(dashboardService.getInfoSummary());
             body.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
             return ResponseEntity.ok().body(body);
         } catch (MessageException e) {
