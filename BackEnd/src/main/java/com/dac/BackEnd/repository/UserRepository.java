@@ -3,22 +3,36 @@ package com.dac.BackEnd.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.dac.BackEnd.entity.UserEntity.UserEntity;
 import com.dac.BackEnd.entity.UserEntity.UserRole;
+import com.dac.BackEnd.entity.UserEntity.UserStatus;
+
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long>{
-    // Tim kiem user co ton tai trong db k
+
     Optional<UserEntity> findUserByDeleteFlagFalseAndEmail(String username);
-    // Email da co trong db chua
+
     Boolean existsByEmailAndDeleteFlagIsFalse(String username);
 
-    // List<UserEntity> findByRoleAndDeletedIsFalse(UserRole role);
     List<UserEntity> findAllByDeleteFlagFalse();
-    // Optional<UserEntity> findUserByDeletedFalseAndId(Long id);
 
     long countByRole(UserRole role);
+
+    long countByStatus(UserStatus status);
+
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.name LIKE %:searchText%")
+    int countByTextInName(@Param("searchText") String searchText);
+
+    @Query("SELECT u FROM UserEntity u WHERE LOWER(u.name) LIKE %:searchText%")
+    Page<UserEntity> findByTextInName(String searchText, Pageable pageable);
+
+    List<UserEntity> findAllByStatus(UserStatus status, Pageable pageable);
 }

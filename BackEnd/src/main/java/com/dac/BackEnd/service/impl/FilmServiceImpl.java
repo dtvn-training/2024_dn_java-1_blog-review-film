@@ -16,7 +16,6 @@ import com.dac.BackEnd.model.response.ResponsePage;
 import com.dac.BackEnd.repository.CategoryRepository;
 import com.dac.BackEnd.repository.FilmRepository;
 import com.dac.BackEnd.service.FilmService;
-import com.dac.BackEnd.validation.BlogStatusValidation;
 
 @Service
 public class FilmServiceImpl implements FilmService{
