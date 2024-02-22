@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import ReactPaginate from 'react-paginate';
-import { fetchAllBlog, fetchAllUser, fetchBlogByStatus, deleteBlog } from '../services/AdminService';
+import { fetchAllBlog, fetchAllUser, fetchBlogByStatus, deleteBlog } from '../../services/AdminService';
 import Button from 'react-bootstrap/Button';
 
 
