@@ -1,32 +1,8 @@
-import React, { useEffect, useState } from "react";
-import "./AdminDashBoard.css";
-import DashBoard from "./DashBoard";
-import { fetchSummaryData } from "../services/AdminService";
-import { Link } from "react-router-dom";
-const useSummaryData = () => {
-  const [summaryData, setSummaryData] = useState({});
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetchSummaryData(localStorage.getItem("jwtToken"));
-        setSummaryData(res.data);
-        if (res && res.data) {
-          const { data } = res.data;
-          setSummaryData(data);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-  console.log(summaryData);
-  return summaryData;
-};
-
-const AdminDashBoard = () => {
+import React, { useEffect } from 'react';
+import './AdminAccount.css';
+import TableAccount from './TableAccount';
+import { Link } from 'react-router-dom';
+function AdminAccount() {
   useEffect(() => {
     const body = document.querySelector("body");
     const sidebar = document.querySelector("nav");
@@ -70,22 +46,19 @@ const AdminDashBoard = () => {
       sidebarToggle.removeEventListener("click", handleSidebarToggle);
     };
   }, []);
-  const summaryData = useSummaryData();
 
   return (
     <div>
-      <link
-        rel="stylesheet"
-        href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
-      ></link>
+      <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"></link>
       <nav>
         <div className="logo-name">
-          <div className="logo-image"></div>
+          <div className="logo-image">
+          </div>
           <span className="logo_name">Admin Page</span>
         </div>
         <div className="menu-items">
           <ul className="nav-links">
-            <div>
+          <div>
               <li>
                 <Link to="/admin/dashboard">
                   <i className="uil uil-tachometer-fast-alt"></i>
@@ -140,46 +113,21 @@ const AdminDashBoard = () => {
           </div>
           <img src="images/3.jpg" alt="" />
         </div>
-
-        <div class="dash-content">
-          <div class="overview">
-            <div class="title">
-              <i class="uil uil-chart-line"></i>
-              <span class="text">Summary</span>
-            </div>
-
-            <div class="boxes">
-              <div class="box box1">
-                <i class="uil uil-document-layout-left"></i>
-                <span class="text">Total Blog</span>
-                <span class="number">{summaryData.totalBlog}</span>
-              </div>
-              <div class="box box2">
-                <i class="uil uil-clapper-board"></i>
-                <span class="text">Total Film</span>
-                <span class="number">{summaryData.totalFilm}</span>
-              </div>
-              <div class="box box3">
-                <i class="uil uil-user-square"></i>
-                <span class="text">Total Reviewer</span>
-                <span class="number">{summaryData.totalReviewer}</span>
-              </div>
-            </div>
-          </div>
-
+        <div className="dash-content">
           <div className="activity">
-            <div class="title">
-              <i class="uil uil-clock-three"></i>
-              <span class="text">Recent Activity</span>
+            <div className="title">
+              <i className="uil uil-clock-three"></i>
+              <span className="text">Blog List</span>
             </div>
             <div className="activity-data">
-              <DashBoard />
+            <TableAccount />
             </div>
           </div>
         </div>
       </section>
     </div>
   );
-};
+}
 
-export default AdminDashBoard;
+
+export default AdminAccount;

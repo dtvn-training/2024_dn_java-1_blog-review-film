@@ -24,8 +24,22 @@ const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, 
     
 }
 
-const fetchAllUser = (selectedPage) => {
-    return axios.get(`/api/admin/blogs?page=${selectedPage}`);
+const fetchAccount = (selectedPage, accessToken, status, searchText) => {
+    
+  let query = `api/admin/reviewers?page=${selectedPage}`;
+  if (status) {
+      query += `&status=${status}`;
+  }
+  if (searchText) {
+      query += `&searchText=${searchText}`;
+  }
+  console.log(query);
+  return axios.get(query, {
+      headers: {
+          'Authorization': `Bearer ${accessToken}`
+      }
+  });
+  
 }
 
 const fetchDashBoard = (selectedPage, accessToken, status) => {
@@ -48,6 +62,34 @@ const fetchSummaryData = (accessToken) => {
     });
    
   };
+
+  const fetchAllFilm = (selectedPage, accessToken, category, searchText) => {
+    
+    let query = `/api/admin/film?page=${selectedPage}`;
+    if (category) {
+        query += `&category=${category}`;
+    }
+    if (searchText) {
+        query += `&searchText=${searchText}`;
+    }
+    console.log(query);
+    return axios.get(query, {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+    
+}
+
+const fetchCategories = (accessToken) => {
+  const query = `/api/categories`; // Đường dẫn API để lấy danh sách các categories
+  console.log(query);
+  return axios.get(query, {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+};
 
 
 const postCreateUser = (name, job) => {
@@ -84,4 +126,4 @@ const deleteBlog = async (blogId, jwtToken) => {
     }
   };
 
-export { fetchSummaryData, fetchAllUser, fetchDashBoard, postCreateUser, updateUser, fetchAllBlog, deleteBlog, updateStatusBlog };
+export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, fetchAllBlog, deleteBlog, updateStatusBlog };
