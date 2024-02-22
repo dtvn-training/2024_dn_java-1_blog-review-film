@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./AdminDashBoard.css";
 import DashBoard from "./DashBoard";
-import { fetchSummaryData } from "../services/AdminService";
+import { fetchSummaryData } from "../../services/AdminService";
 import { Link } from "react-router-dom";
 const useSummaryData = () => {
   const [summaryData, setSummaryData] = useState({});

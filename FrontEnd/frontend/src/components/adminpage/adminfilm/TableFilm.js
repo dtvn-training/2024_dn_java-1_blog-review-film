@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import ReactPaginate from 'react-paginate';
-import { fetchAllFilm, fetchCategories, deleteBlog } from '../services/AdminService';
+import { fetchAllFilm, fetchCategories, deleteBlog } from '../../services/AdminService';
 import Form from 'react-bootstrap/Form';
 
 

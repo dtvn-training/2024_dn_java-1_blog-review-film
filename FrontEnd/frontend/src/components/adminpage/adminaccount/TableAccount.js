@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import ReactPaginate from 'react-paginate';
-import { fetchAccount, fetchAllUser, fetchBlogByStatus, deleteBlog } from '../services/AdminService';
+import { fetchAccount, fetchAllUser, fetchBlogByStatus, deleteBlog } from '../../services/AdminService';
 import Button from 'react-bootstrap/Button';
 
 
@@ -116,6 +116,7 @@ const TableAccount = () => {
     <div>
       <div>
         <Button variant="success" onClick={() => handleFilter('ACTIVE')}>Active</Button>{' '}
+        <Button variant="secondary" onClick={() => handleFilter('SUSPENDED')}>Suspended</Button>{' '}
         <Button variant="warning" onClick={() => handleFilter('INACTIVE')}>In Active</Button>{' '}
       </div>
       <UserTable listUsers={listUsers} handleEditUser={handleEditUser} handleDeleteBlog={handleDeleteBlog} />

@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import './AdminAccount.css';
 import TableAccount from './TableAccount';
 import { Link } from 'react-router-dom';
+import FormModalButton from './CreateAccount';
+
 function AdminAccount() {
   useEffect(() => {
     const body = document.querySelector("body");
@@ -14,7 +16,7 @@ function AdminAccount() {
       body.classList.toggle("dark");
     }
 
-    let getStatus = localStorage.getItem("status");
+    let getStatus = localStorage.getItem("status"); 
     if (getStatus && getStatus === "close") {
       sidebar.classList.toggle("close");
     }
@@ -117,8 +119,9 @@ function AdminAccount() {
           <div className="activity">
             <div className="title">
               <i className="uil uil-clock-three"></i>
-              <span className="text">Blog List</span>
+              <span className="text">Account</span>
             </div>
+            <FormModalButton />
             <div className="activity-data">
             <TableAccount />
             </div>
