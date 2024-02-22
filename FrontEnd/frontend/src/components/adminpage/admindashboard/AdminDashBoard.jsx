@@ -1,13 +1,41 @@
-import React, { useEffect } from 'react';
-import './AdminBlog.css';
-import TableBlog from './TableBlog';
+import React, { useEffect, useState } from 'react';
+import './AdminDashBoard.css';
+import DashBoard from './DashBoard';
+import { fetchSummaryData } from '../services/AdminService';
 
-function AdminBlog() {
+  const useSummaryData = () => {
+    const [summaryData, setSummaryData] = useState({
+    });
+
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const res = await fetchSummaryData(localStorage.getItem("jwtToken"));
+          setSummaryData(res.data); 
+          if (res && res.data) {
+            const { data,  } = res.data;
+            setSummaryData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    
+  
+      fetchData();
+    }, []);
+    console.log(summaryData);
+    return summaryData;
+  };
+
+const AdminDashBoard = () => {
   useEffect(() => {
     const body = document.querySelector("body");
     const sidebar = document.querySelector("nav");
     const modeToggle = body.querySelector(".mode-toggle");
     const sidebarToggle = body.querySelector(".sidebar-toggle");
+  
+
 
     let getMode = localStorage.getItem("mode");
     if (getMode && getMode === "dark") {
@@ -46,6 +74,7 @@ function AdminBlog() {
       sidebarToggle.removeEventListener("click", handleSidebarToggle);
     };
   }, []);
+  const summaryData = useSummaryData();
 
   return (
     <div>
@@ -111,14 +140,40 @@ function AdminBlog() {
           </div>
           <img src="images/3.jpg" alt="" />
         </div>
-        <div className="dash-content">
-          <div className="activity">
-            <div className="title">
-              <i className="uil uil-clock-three"></i>
-              <span className="text">Recent Activity</span>
+
+        <div class="dash-content">
+            <div class="overview">
+                <div class="title">
+                    <i class="uil uil-chart-line"></i>
+                    <span class="text">Summary</span>
+                </div>
+
+                <div class="boxes">
+                    <div class="box box1">
+                        <i class="uil uil-document-layout-left"></i>
+                        <span class="text">Total Blog</span>
+                        <span class="number">{summaryData.totalBlog}</span>
+                    </div>
+                    <div class="box box2">
+                        <i class="uil uil-clapper-board"></i>
+                        <span class="text">Total Film</span>
+                        <span class="number">{summaryData.totalFilm}</span>
+                    </div>
+                    <div class="box box3">
+                        <i class="uil uil-user-square"></i>
+                        <span class="text">Total Reviewer</span>
+                        <span class="number">{summaryData.totalReviewer}</span>
+                    </div>
+                </div>
             </div>
+
+            <div className="activity">
+                <div class="title">
+                    <i class="uil uil-clock-three"></i>
+                    <span class="text">Recent Activity</span>
+                </div>
             <div className="activity-data">
-            <TableBlog />
+            <DashBoard />
             </div>
           </div>
         </div>
@@ -128,4 +183,4 @@ function AdminBlog() {
 }
 
 
-export default AdminBlog;
+export default AdminDashBoard;

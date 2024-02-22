@@ -39,7 +39,7 @@ function Login() {
         localStorage.setItem("jwtToken", token);
         localStorage.setItem("authenticated", true);
         
-        navigate("/dashboard");
+        navigate("/admin/dashboard");
 
       } else {
         setError('Invalid email or password.');
@@ -47,7 +47,7 @@ function Login() {
     } catch (error) {
       console.error('Error logging in:', error);
       setError('An error occurred. Please try again later.');
-      toast.error('Check your email and password and try again.');
+      alert('Check your email and password and try again.');
     } finally {
       setIsLoading(false);
     }

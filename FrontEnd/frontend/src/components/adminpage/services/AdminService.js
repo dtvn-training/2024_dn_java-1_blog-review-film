@@ -1,7 +1,7 @@
 import axios from "./customize-axios";
 const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, endTime) => {
     
-    var query = `/api/admin/blogs?page=${selectedPage}`;
+    let query = `/api/admin/blogs?page=${selectedPage}`;
     if (status) {
         query += `&status=${status}`;
     }
@@ -14,7 +14,22 @@ const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, 
     if (endTime) {
         query += `&endTime=${endTime}`;
     }
+    
     console.log(query);
+    return axios.get(query, {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+    
+}
+
+const fetchAllUser = (selectedPage) => {
+    return axios.get(`/api/admin/blogs?page=${selectedPage}`);
+}
+
+const fetchDashBoard = (selectedPage, accessToken, status) => {
+    const query = `/api/admin/blogs?page=${selectedPage}` + `&status=${status}`;
     return axios.get(query, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -22,9 +37,17 @@ const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, 
     });
 }
 
-const fetchAllUser = (selectedPage) => {
-    return axios.get(`/api/admin/blogs?page=${selectedPage}`);
-}
+
+const fetchSummaryData = (accessToken) => {
+    const query = `/api/admin/dashboard`;
+    console.log(query);
+    return axios.get(query, {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+   
+  };
 
 
 const postCreateUser = (name, job) => {
@@ -48,4 +71,17 @@ const deleteBlog = async (blogId, jwtToken) => {
     }
   };
 
-export { fetchAllUser, postCreateUser, updateUser, fetchAllBlog, deleteBlog };
+  const updateStatusBlog = async (id, jwtToken, status) => {
+    try {
+      const response = await axios.patch(`/api/admin/blogs/${id}`, { status: status }, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+export { fetchSummaryData, fetchAllUser, fetchDashBoard, postCreateUser, updateUser, fetchAllBlog, deleteBlog, updateStatusBlog };

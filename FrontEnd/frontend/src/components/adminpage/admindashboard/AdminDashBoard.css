@@ -7,6 +7,11 @@
     font-family: 'Poppins', sans-serif;
 }
 
+ol,
+ul {
+  padding-left: 0 !important; /* Ghi đè lên quy tắc hiện có */
+}
+
 :root{
     /* ===== Colors ===== */
     --primary-color: #0E4BF1;
