@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import {login} from '../services/AuthService';
-
+import { ToastContainer } from 'react-toastify';
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -28,11 +28,11 @@ function Login() {
     e.preventDefault();
 
     if (!validateEmail(email) && !validatePassword(password)) {
-      alert('Invalid email and password');
+      toast.error('Invalid email and password');
     } else if (!validateEmail(email)) {
-      alert('Invalid email');
+      toast.error('Invalid email');
     } else if (!validatePassword(password)) {
-      alert('Invalid password');
+      toast.error('Invalid password');
     }
     
     if (validateEmail(email) && validatePassword(password)) {
@@ -52,7 +52,7 @@ function Login() {
         if (userRole === 'ROLE_ADMIN') {
           navigate("/admin/dashboard");
         } else if (userRole === 'ROLE_REVIEWER') {
-          navigate("/reviewer");
+          navigate("/reviewer/dashboard");
         } else {
           // Xử lý chuyển hướng cho các vai trò khác (nếu cần)
         }
@@ -76,41 +76,44 @@ function Login() {
   };
 
   return (
-    <div className={styles.login_container}>
-      <div className={styles.general}>
-        <div className={styles.wrapper}>
-          <form onSubmit={handleLogin} >
-            <h1>Login</h1>
-            <div className={styles.input_box}>
-              <input
-                type="text"
-                placeholder="Email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <i className='bx bxs-user'></i>
-            </div>
-            <div className={styles.input_box}>
-              <input
-                type="password"
-                placeholder="Password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <i className='bx bxs-lock-alt'></i>
-            </div>
-            <button type="submit" className={styles.btn} disabled={isLoading}>
-              {isLoading ? 'Loading...' : 'Login'}
-            </button>
-            <div className={styles.register_link}>
-              <p>Dont have an account? <a href="#">Register</a></p>
-            </div>
-          </form>
+    <>
+      <ToastContainer />
+      <div className={styles.login_container}>
+        <div className={styles.general}>
+          <div className={styles.wrapper}>
+            <form onSubmit={handleLogin} >
+              <h1>Login</h1>
+              <div className={styles.input_box}>
+                <input
+                  type="text"
+                  placeholder="Email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <i className='bx bxs-user'></i>
+              </div>
+              <div className={styles.input_box}>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <i className='bx bxs-lock-alt'></i>
+              </div>
+              <button type="submit" className={styles.btn} disabled={isLoading}>
+                {isLoading ? 'Loading...' : 'Login'}
+              </button>
+              <div className={styles.register_link}>
+                <p>Dont have an account? <a href="#">Register</a></p>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

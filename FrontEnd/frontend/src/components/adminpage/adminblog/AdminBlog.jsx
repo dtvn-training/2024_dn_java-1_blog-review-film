@@ -1,8 +1,24 @@
 import React, { useEffect } from 'react';
-import './AdminBlog.css';
+import '../css/AdminPage.css';
 import TableBlog from './TableBlog';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../../services/AuthService';
+
 function AdminBlog() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuthentication = () => {
+      const isAuthenticated = localStorage.getItem("authenticated");
+      if (!isAuthenticated || isAuthenticated !== "true") {
+        navigate("/login");
+      }
+    };
+    checkAuthentication();
+  }, [navigate]);
+
   useEffect(() => {
     const body = document.querySelector("body");
     const sidebar = document.querySelector("nav");
@@ -47,6 +63,18 @@ function AdminBlog() {
     };
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      localStorage.removeItem("authenticated");
+      localStorage.removeItem("jwtToken");
+      navigate("/login");
+    } catch (error) {
+      console.error('Error logging out:', error);
+      // Xử lý lỗi nếu có
+    }
+  };
+
   return (
     <div>
       <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"></link>
@@ -87,8 +115,8 @@ function AdminBlog() {
           </ul>
           <ul className="logout-mode">
             <li>
-              <a href="#">
-                <i className="uil uil-signout"></i>
+              <a href="#" onClick={handleLogout}>
+                <i className="uil uil-signout" ></i>
                 <span className="link-name">Logout</span>
               </a>
             </li>
@@ -98,7 +126,7 @@ function AdminBlog() {
                 <span className="link-name">Dark Mode</span>
               </a>
               <div className="mode-toggle">
-                <span className="switch"></span>
+                {/* <span className="switch"></span> */}
               </div>
             </li>
           </ul>

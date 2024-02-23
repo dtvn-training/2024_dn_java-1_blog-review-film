@@ -9,4 +9,14 @@ const login = async (email, password) => {
   }
 };
 
-export {login} ;
+
+const logout = async () => {
+  try {
+    const response = await axios.post('/api/auth/logout');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { login, logout };

@@ -7,32 +7,37 @@ import Button from 'react-bootstrap/Button';
 
 function UserTable({ listUsers, handleEditUser, handleRefuseBlog , handleApproveBlog}) {
   const renderTableRow = (item, index) => (
-    <tr key={index}>
+    <tr key={index} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
       <td>{item.id}</td>
-      <td>{item.title}</td>
+      <td  style={{ minWidth: '200px' }}>{item.title}</td>
       <td>{item.filmId}</td>
-      <td>{item.postTime}</td>
-      <td>{item.updateDateTime}</td>
-      <td>{item.updateByReviewerId}</td>
+      <td  style={{ minWidth: '200px' }}>{item.postTime}</td>
+      <td  style={{ minWidth: '200px' }}>{item.updateDateTime}</td>
+      <td  style={{ minWidth: '150px' }}>{item.updateByReviewerId}</td>
       <td>{item.status}</td>
       <td>
-        <button type="button" className="btn btn-danger mx-2" onClick={() => handleRefuseBlog(item.id)}>
-          Refuse
-        </button>
-        <button type="button" className="btn btn-primary" onClick={() => handleApproveBlog(item.id)}>Approve</button>
+        <div className="d-flex flex-column flex-md-row align-items-md-center">
+          <button type="button" className="btn btn-danger mb-2 mb-md-0 me-md-2" onClick={() => handleRefuseBlog(item.id)}>
+            Refuse
+          </button>
+          <button type="button" className="btn btn-primary" onClick={() => handleApproveBlog(item)}>
+            Approve
+          </button>
+        </div>
       </td>
     </tr>
   );
 
   return (
+    <div className="table-responsive" style={{ maxWidth: '1600px', minWidth: '1600px' }}>
     <Table striped bordered hover>
       <thead>
-        <tr>
+        <tr style={{ textAlign: 'center', verticalAlign: 'middle' }}>
           <th>id</th>
           <th>Title</th>
           <th>Film</th>
           <th>Post Time</th>
-          <th>UpdateDateTime</th>
+          <th>Update DateTime</th>
           <th>Update by reviewer</th>
           <th>Status</th>
           <th>Action</th>
@@ -42,6 +47,7 @@ function UserTable({ listUsers, handleEditUser, handleRefuseBlog , handleApprove
         {listUsers && listUsers.length > 0 && listUsers.map(renderTableRow)}
       </tbody>
     </Table>
+  </div>
   );
 }
 
@@ -125,7 +131,7 @@ const DashBoard = () => {
   
 
   return (
-    <div>
+    <div style={{overflowX: 'auto'}}>
       {/* <div>
         <Button variant="primary" onClick={() => handleFilter('REFUSE')}>Refuse</Button>{' '}
         <Button variant="success" onClick={() => handleFilter('APPROVE')}>Approve</Button>{' '}
@@ -133,26 +139,27 @@ const DashBoard = () => {
       </div> */}
       <UserTable listUsers={listUsers} handleApproveBlog={handleApproveBlog} handleRefuseBlog={handleRefuseBlog}  />
 
-      <ReactPaginate
-        
-        breakLabel="..."
-        nextLabel="Next"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={5}
-        pageCount={pageCount}
-        previousLabel="Previous"
-        renderOnZeroPageCount={null}
-        containerClassName="pagination"
-        pageClassName="page-item"
-        pageLinkClassName="page-link"
-        activeClassName="active"
-        previousClassName="page-item"
-        nextClassName="page-item"
-        breakClassName="page-item"
-        breakLinkClassName="page-link"
-        previousLinkClassName="page-link"
-        nextLinkClassName="page-link"
-      />
+      <div style={{ marginTop: '15px' }}>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="Next"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          pageCount={pageCount}
+          previousLabel="Previous"
+          renderOnZeroPageCount={null}
+          containerClassName="pagination"
+          pageClassName="page-item"
+          pageLinkClassName="page-link"
+          activeClassName="active"
+          previousClassName="page-item"
+          nextClassName="page-item"
+          breakClassName="page-item"
+          breakLinkClassName="page-link"
+          previousLinkClassName="page-link"
+          nextLinkClassName="page-link"
+        />
+      </div>
     </div>
   );
 };
