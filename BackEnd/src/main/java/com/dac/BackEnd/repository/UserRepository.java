@@ -20,7 +20,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
 
     Optional<UserEntity> findUserByDeleteFlagFalseAndEmail(String username);
 
-    Boolean existsByEmailAndDeleteFlagIsFalse(String username);
+    Boolean existsByEmail(String email);
 
     List<UserEntity> findAllByDeleteFlagFalse();
 

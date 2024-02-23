@@ -27,12 +27,14 @@ import com.dac.BackEnd.constant.SuccessConstants;
 import com.dac.BackEnd.convertor.UserConvertor;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.request.LoginInput;
+import com.dac.BackEnd.model.request.ReviewerInput;
 import com.dac.BackEnd.model.response.LoginResponse;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
 import com.dac.BackEnd.security.jwt.JwtProvider;
 import com.dac.BackEnd.security.userprincal.CustomAuthenticationProvider;
 import com.dac.BackEnd.security.userprincal.UserPrinciple;
+import com.dac.BackEnd.service.UserService;
 
 import jakarta.validation.Valid;
 
@@ -48,6 +50,9 @@ public class AuthController {
 
     @Autowired
     JwtProvider jwtProvider;
+
+    @Autowired
+    private UserService userService;
 
     @PostMapping("login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginInput loginInput) {
@@ -85,6 +90,23 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PostMapping("register")
+    public ResponseEntity<?> registerReviewer(@Valid @RequestBody ReviewerInput input) {
+        try {
+            ResponseBody response = new ResponseBody();
+            response.setCode(SuccessConstants.CREATED_CODE);
+            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.CREATED_MESSAGE), SuccessConstants.CREATED_CODE));
+            response.setData(userService.createNewReviewer(input));
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (MessageException e) {
+            Response response = new Response();
+            response.setCode(e.getErrorCode());
+            response.setMessage(Arrays.asList(e));
+            return ResponseEntity.status(e.getErrorCode()).body(response);
+        }
+    }
+    
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Response handleValidationExceptions(MethodArgumentNotValidException ex){
@@ -98,5 +120,7 @@ public class AuthController {
         response.setMessage(messages);
         return response;
     }
+
+
     
 }
