@@ -20,5 +20,8 @@ public class ErrorConstants {
     public static final int FORBIDDEN_CODE = 403;
     public static final String FORBIDDEN_MESSAGE = "Access forbidden. You don't have sufficient permissions to perform this action.";
 
+    public static final int EMAIL_ALREADY_EXISTS_CODE = 409;
+    public static final String EMAIL_ALREADY_EXISTS_MESSAGE = "Email already exists in the system";
+
 
 }

@@ -94,7 +94,7 @@ public class BlogServiceImpl implements BlogService{
 
     @Override
     public List<Blog> getAllBlogs(int page) {
-        return blogRepository.findAllByOrderByInsertDateTimeDesc(PageRequest.of(page - 1, 10))
+        return blogRepository.findAllByOrderByInsertDateTimeDesc(PageRequest.of(page - 1, 3))
             .stream()
             .map(BlogConvertor::toModel)
             .toList();
