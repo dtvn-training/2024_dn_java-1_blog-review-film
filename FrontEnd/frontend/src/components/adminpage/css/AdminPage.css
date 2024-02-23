@@ -406,9 +406,9 @@ nav.close ~ .dashboard .top{
         left: 250px;
         width: calc(100% - 250px);
     }
-    .activity .activity-data{
+    /* .activity .activity-data{
         overflow-X: scroll;
-    }
+    } */
 }
 
 @media (max-width: 780px) {

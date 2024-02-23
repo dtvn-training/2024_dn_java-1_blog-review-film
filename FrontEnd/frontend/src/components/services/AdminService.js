@@ -15,7 +15,7 @@ const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, 
         query += `&endTime=${endTime}`;
     }
     
-    console.log(query);
+    // console.log(query);
     return axios.get(query, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -33,7 +33,7 @@ const fetchAccount = (selectedPage, accessToken, status, searchText) => {
   if (searchText) {
       query += `&searchText=${searchText}`;
   }
-  console.log(query);
+  // console.log(query);
   return axios.get(query, {
       headers: {
           'Authorization': `Bearer ${accessToken}`
@@ -72,7 +72,7 @@ const fetchSummaryData = (accessToken) => {
     if (searchText) {
         query += `&searchText=${searchText}`;
     }
-    console.log(query);
+    console.log(accessToken);
     return axios.get(query, {
         headers: {
             'Authorization': `Bearer ${accessToken}`

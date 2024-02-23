@@ -7,41 +7,47 @@ import Button from 'react-bootstrap/Button';
 
 function UserTable({ listUsers, handleEditUser, handleDeleteBlog }) {
   const renderTableRow = (item, index) => (
-    <tr key={index}>
-      <td>{item.id}</td>
-      <td>{item.title}</td>
-      <td>{item.filmId}</td>
-      <td>{item.postTime}</td>
-      <td>{item.updateDateTime}</td>
-      <td>{item.updateByReviewerId}</td>
-      <td>{item.status}</td>
+    <tr key={index} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+      <td  >{item.id}</td>
+      <td style={{ minWidth: '200px' }}>{item.title }</td>
+      <td >{item.filmId}</td>
+      <td >{item.postTime}</td>
+      <td >{item.updateDateTime}</td>
+      <td >{item.updateByReviewerId}</td>
+      <td >{item.status}</td>
       <td>
-        <button type="button" className="btn btn-danger mx-2" onClick={() => handleDeleteBlog(item.id)}>
-          Delete
-        </button>
-        <button type="button" className="btn btn-primary" onClick={() => handleEditUser(item)}>Edit</button>
+        <div className="d-flex flex-column flex-md-row align-items-md-center">
+          <button type="button" className="btn btn-danger mb-2 mb-md-0 me-md-2" onClick={() => handleDeleteBlog(item.id)}>
+            Delete
+          </button>
+          <button type="button" className="btn btn-primary" onClick={() => handleEditUser(item)}>
+            Edit
+          </button>
+        </div>
       </td>
     </tr>
   );
 
   return (
-    <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>id</th>
-          <th>Title</th>
-          <th>Film</th>
-          <th>Post Time</th>
-          <th>UpdateDateTime</th>
-          <th>Update by reviewer</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {listUsers && listUsers.length > 0 && listUsers.map(renderTableRow)}
-      </tbody>
-    </Table>
+  <div className="table-responsive" style={{ maxWidth: '1600px', minWidth: '1600px' }}>
+  <Table striped bordered hover>
+    <thead>
+      <tr style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+        <th>id</th>
+        <th>Title</th>
+        <th>Film</th>
+        <th>Post Time</th>
+        <th>UpdateDateTime</th>
+        <th>Update by reviewer</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {listUsers && listUsers.length > 0 && listUsers.map(renderTableRow)}
+    </tbody>
+  </Table>
+</div>
   );
 }
 
@@ -113,34 +119,35 @@ const TableBlogs = () => {
   
 
   return (
-    <div>
-      <div>
+    <div style={{overflowX: 'auto'}}>
+      <div style={{ marginBottom: '15px' }}>
         <Button variant="primary" onClick={() => handleFilter('REFUSE')}>Refuse</Button>{' '}
         <Button variant="success" onClick={() => handleFilter('APPROVE')}>Approve</Button>{' '}
         <Button variant="warning" onClick={() => handleFilter('WAITING')}>Waiting</Button>{' '}
       </div>
       <UserTable listUsers={listUsers} handleEditUser={handleEditUser} handleDeleteBlog={handleDeleteBlog} />
+      <div style={{ marginTop: '15px' }}>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="Next"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          pageCount={pageCount}
+          previousLabel="Previous"
+          renderOnZeroPageCount={null}
+          containerClassName="pagination"
+          pageClassName="page-item"
+          pageLinkClassName="page-link"
+          activeClassName="active"
+          previousClassName="page-item"
+          nextClassName="page-item"
+          breakClassName="page-item"
+          breakLinkClassName="page-link"
+          previousLinkClassName="page-link"
+          nextLinkClassName="page-link"
+        />
+      </div>
 
-      <ReactPaginate
-        
-        breakLabel="..."
-        nextLabel="Next"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={5}
-        pageCount={pageCount}
-        previousLabel="Previous"
-        renderOnZeroPageCount={null}
-        containerClassName="pagination"
-        pageClassName="page-item"
-        pageLinkClassName="page-link"
-        activeClassName="active"
-        previousClassName="page-item"
-        nextClassName="page-item"
-        breakClassName="page-item"
-        breakLinkClassName="page-link"
-        previousLinkClassName="page-link"
-        nextLinkClassName="page-link"
-      />
     </div>
   );
 };

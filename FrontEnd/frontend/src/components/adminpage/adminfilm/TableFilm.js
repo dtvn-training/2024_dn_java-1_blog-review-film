@@ -8,41 +8,45 @@ import Form from 'react-bootstrap/Form';
 
 function UserTable({ listUsers, handleEditUser, handleDeleteBlog }) {
   const renderTableRow = (item, index) => (
-    <tr key={index}>
+    <tr key={index} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
       <td>{item.id}</td>
       <td>{item.nameFilm}</td>
-      <td>{item.director}</td>
+      <td >{item.director}</td>
       <td>{item.country}</td>
-      <td>{item.description}</td>
-      <td>{item.startDate}</td>
-      <td>{item.updateDateTime}</td>
-      <td>
-        <button type="button" className="btn btn-danger mx-2" onClick={() => handleDeleteBlog(item.id)}>
-          Delete
-        </button>
-        <button type="button" className="btn btn-primary" onClick={() => handleEditUser(item)}>Edit</button>
-      </td>
+      <td style={{ minWidth: '200px' }}>{item.description}</td>
+      <td style={{ minWidth: '150px' }}>{item.startDate}</td>
+      <td style={{ minWidth: '200px' }}>{item.updateDateTime}</td>
+      <div className="d-flex flex-column flex-md-row align-items-md-center">
+          <button type="button" className="btn btn-danger mb-2 mb-md-0 me-md-2" onClick={() => handleDeleteBlog(item.id)}>
+            Delete
+          </button>
+          <button type="button" className="btn btn-primary" onClick={() => handleEditUser(item)}>
+            Edit
+          </button>
+        </div>
     </tr>
   );
 
   return (
-    <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>id</th>
-          <th>Name</th>
-          <th>Director</th>
-          <th>Country</th>
-          <th>Description</th>
-          <th>Start Date</th>
-          <th>Status</th>
-          <th>Update Date TIme</th>
-        </tr>
-      </thead>
-      <tbody>
-        {listUsers && listUsers.length > 0 && listUsers.map(renderTableRow)}
-      </tbody>
-    </Table>
+<div className="table-responsive" style={{ maxWidth: '1600px', minWidth: '1600px' }}>
+<Table striped bordered hover >
+  <thead>
+    <tr style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+      <th>id</th>
+      <th>Name</th>
+      <th>Director</th>
+      <th>Country</th>
+      <th>Description</th>
+      <th>Start Date</th>
+      <th>Update Date TIme</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {listUsers && listUsers.length > 0 && listUsers.map(renderTableRow)}
+  </tbody>
+</Table>
+</div>
   );
 }
 
@@ -153,38 +157,38 @@ const TableFilm = () => {
   
 
   return (
-    <div>
+    <div style={{overflowX: 'auto'}}>
+      <div style={{  marginBottom: '15px'  }}>
         <Form.Select aria-label="Select category" onChange={handleCategoryChange}>
             <option>All</option>
             {categories && Array.isArray(categories) && categories.map((category, index) => (
                 <option key={index} value={category.id}>{category.nameCategory}</option>
             ))}
         </Form.Select>
-
-    
-
+        </div>
       <UserTable listUsers={listUsers} handleEditUser={handleEditUser} handleDeleteBlog={handleDeleteBlog} />
+      <div style={{ marginTop: '15px' }}>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="Next"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          pageCount={pageCount}
+          previousLabel="Previous"
+          renderOnZeroPageCount={null}
+          containerClassName="pagination"
+          pageClassName="page-item"
+          pageLinkClassName="page-link"
+          activeClassName="active"
+          previousClassName="page-item"
+          nextClassName="page-item"
+          breakClassName="page-item"
+          breakLinkClassName="page-link"
+          previousLinkClassName="page-link"
+          nextLinkClassName="page-link"
+        />
+      </div>
 
-      <ReactPaginate
-        
-        breakLabel="..."
-        nextLabel="Next"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={5}
-        pageCount={pageCount}
-        previousLabel="Previous"
-        renderOnZeroPageCount={null}
-        containerClassName="pagination"
-        pageClassName="page-item"
-        pageLinkClassName="page-link"
-        activeClassName="active"
-        previousClassName="page-item"
-        nextClassName="page-item"
-        breakClassName="page-item"
-        breakLinkClassName="page-link"
-        previousLinkClassName="page-link"
-        nextLinkClassName="page-link"
-      />
     </div>
   );
 };
