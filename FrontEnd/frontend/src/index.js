@@ -10,6 +10,8 @@ import CreateBlog from "./components/adminpage/createblog/CreateBlog";
 import AdminDashBoard from "./components/adminpage/admindashboard/AdminDashBoard";
 import AdminFilm from "./components/adminpage/adminfilm/AdminFilm";
 import AdminAccount from "./components/adminpage/adminaccount/AdminAccount";
+
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
