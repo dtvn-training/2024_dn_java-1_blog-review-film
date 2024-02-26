@@ -3,6 +3,8 @@ package com.dac.BackEnd.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.request.BlogInput;
@@ -24,7 +26,7 @@ public interface BlogService {
 
     List<Blog> getAllBlogByPostTime(LocalDateTime startTime, LocalDateTime endTime, int page);
 
-    Blog createNewBlog(BlogInput blogInput);
+    Blog createNewBlog(BlogInput blogInput,  MultipartFile file);
 
     
 

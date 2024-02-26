@@ -1,17 +1,26 @@
 package com.dac.BackEnd.service.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.dac.BackEnd.constant.ErrorConstants;
 import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.entity.ContentEntity;
@@ -28,9 +37,8 @@ import com.dac.BackEnd.repository.ContentRepository;
 import com.dac.BackEnd.repository.FilmRepository;
 import com.dac.BackEnd.repository.UserRepository;
 import com.dac.BackEnd.service.BlogService;
+import com.dac.BackEnd.service.ImageService;
 import com.dac.BackEnd.validation.BlogStatusValidation;
-
-import jakarta.transaction.Transactional;
 
 
 @Service
@@ -47,6 +55,9 @@ public class BlogServiceImpl implements BlogService{
 
     @Autowired
     private ContentRepository contentRepository;
+
+    @Autowired
+    private ImageService imageService;
 
     @Override
     public ResponsePage getPageInfo(int page, String by, String status, String searchText, LocalDateTime startTime, LocalDateTime endTime) {
@@ -94,7 +105,7 @@ public class BlogServiceImpl implements BlogService{
 
     @Override
     public List<Blog> getAllBlogs(int page) {
-        return blogRepository.findAllByOrderByInsertDateTimeDesc(PageRequest.of(page - 1, 3))
+        return blogRepository.findAllByOrderByInsertDateTimeDesc(PageRequest.of(page - 1, 10))
             .stream()
             .map(BlogConvertor::toModel)
             .toList();
@@ -142,18 +153,17 @@ public class BlogServiceImpl implements BlogService{
     }
 
     @Override
-    public Blog createNewBlog(BlogInput blogInput) {
-        BlogEntity blogEntity = saveBlogEntity(blogInput);
+    public Blog createNewBlog(BlogInput blogInput,  MultipartFile file) {
+        BlogEntity blogEntity = saveBlogEntity(blogInput, file);
         List<ContentEntity> contentEntities = new ArrayList<>();
         for (ContentInput contentInput : blogInput.getContents()) {
             contentEntities.add(saveContentEntity(blogEntity, contentInput));
         }
         blogEntity.setContents(contentEntities);
-        // return BlogConvertor.toModel(blogRepository.findById(blogEntity.getId()).orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE)));
         return BlogConvertor.toModel(blogEntity);
     }
 
-    public BlogEntity saveBlogEntity(BlogInput blogInput) {
+    public BlogEntity saveBlogEntity(BlogInput blogInput,  MultipartFile file) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
@@ -167,6 +177,7 @@ public class BlogServiceImpl implements BlogService{
         entity.setTitle(blogInput.getTitle());
         entity.setSummary(blogInput.getSummary());
         entity.setPoint(blogInput.getPoint());
+        entity.setImage(imageService.upload(file, "BlogImage"));
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         if (roles.contains("ROLE_ADMIN")) {
             entity.setPostTime(now);

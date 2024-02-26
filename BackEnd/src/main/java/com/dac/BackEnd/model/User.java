@@ -41,11 +41,11 @@ public class User {
 
     private LocalDateTime insertDateTime;
 
-    private Long insertByUserId;
+    private Long insertBy;
 
     private LocalDateTime updateDateTime;
 
-    private Long updateByUserId;
+    private Long updateBy;
 
     private Boolean deleteFlag;
 }
