@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import '../css/AdminPage.css';
 import TableBlog from './TableBlog';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../services/AuthService';
+import '../css/AdminPage.css';
 
-function AdminBlog() {
+const AdminBlog = () => {
 
   const navigate = useNavigate();
 
@@ -99,7 +99,7 @@ function AdminBlog() {
                   <span className="link-name">Reviewer</span>
                 </Link>
               </li>
-              <li>
+              <li style={{ backgroundColor: "lightblue", color: "black" }}>
                 <Link to="/admin/blog">
                   <i className="uil uil-blogger-alt"></i>
                   <span className="link-name">Blog</span>

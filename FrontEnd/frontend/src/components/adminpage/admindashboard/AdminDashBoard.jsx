@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from "react";
-import '../css/AdminPage.css';
 import DashBoard from "./DashBoard";
 import { fetchSummaryData } from "../../services/AdminService";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../services/AuthService";
-
-
+import "../css/AdminPage.css";
 const useSummaryData = () => {
   const [summaryData, setSummaryData] = useState({});
-
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetchSummaryData(localStorage.getItem("jwtToken"));
-        setSummaryData(res.data);
+
         if (res && res.data) {
-          const { data } = res.data;
-          setSummaryData(data);
+          setSummaryData(res.data.data);
+      
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -27,12 +24,13 @@ const useSummaryData = () => {
 
     fetchData();
   }, []);
-  console.log(summaryData);
+
   return summaryData;
 };
 
 const AdminDashBoard = () => {
   const navigate = useNavigate();
+  const summaryData = useSummaryData();
 
   useEffect(() => {
     const checkAuthentication = () => {
@@ -44,52 +42,6 @@ const AdminDashBoard = () => {
     checkAuthentication();
   }, [navigate]);
 
-
-  useEffect(() => {
-    const body = document.querySelector("body");
-    const sidebar = document.querySelector("nav");
-    const modeToggle = body.querySelector(".mode-toggle");
-    const sidebarToggle = body.querySelector(".sidebar-toggle");
-
-    let getMode = localStorage.getItem("mode");
-    if (getMode && getMode === "dark") {
-      body.classList.toggle("dark");
-    }
-
-    let getStatus = localStorage.getItem("status");
-    if (getStatus && getStatus === "close") {
-      sidebar.classList.toggle("close");
-    }
-
-    const handleModeToggle = () => {
-      body.classList.toggle("dark");
-      if (body.classList.contains("dark")) {
-        localStorage.setItem("mode", "dark");
-      } else {
-        localStorage.setItem("mode", "light");
-      }
-    };
-
-    const handleSidebarToggle = () => {
-      sidebar.classList.toggle("close");
-      if (sidebar.classList.contains("close")) {
-        localStorage.setItem("status", "close");
-      } else {
-        localStorage.setItem("status", "open");
-      }
-    };
-
-    modeToggle.addEventListener("click", handleModeToggle);
-    sidebarToggle.addEventListener("click", handleSidebarToggle);
-
-    // Clean-up function to remove event listeners
-    return () => {
-      modeToggle.removeEventListener("click", handleModeToggle);
-      sidebarToggle.removeEventListener("click", handleSidebarToggle);
-    };
-  }, []);
-  const summaryData = useSummaryData();
-
   const handleLogout = async () => {
     try {
       await logout();
@@ -97,8 +49,8 @@ const AdminDashBoard = () => {
       localStorage.removeItem("jwtToken");
       navigate("/login");
     } catch (error) {
-      console.error('Error logging out:', error);
-      // Xử lý lỗi nếu có
+      console.error("Error logging out:", error);
+      // Handle error
     }
   };
 
@@ -116,12 +68,13 @@ const AdminDashBoard = () => {
         <div className="menu-items">
           <ul className="nav-links">
             <div>
-              <li>
+              <li style={{ backgroundColor: "lightblue", color: "black" }}>
                 <Link to="/admin/dashboard">
                   <i className="uil uil-tachometer-fast-alt"></i>
                   <span className="link-name">Dashboard</span>
                 </Link>
               </li>
+
               <li>
                 <Link to="/admin/account">
                   <i className="uil uil-user"></i>

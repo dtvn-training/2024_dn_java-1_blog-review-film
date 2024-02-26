@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import '../css/AdminPage.css';
 import TableFilm from './TableFilm';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../services/AuthService';
+import '../css/AdminPage.css';
 
-function AdminFilm() {
+const AdminFilm = () => {
 
   const navigate = useNavigate();
 
@@ -18,50 +18,6 @@ function AdminFilm() {
     };
     checkAuthentication();
   }, [navigate]);
-
-  useEffect(() => {
-    const body = document.querySelector("body");
-    const sidebar = document.querySelector("nav");
-    const modeToggle = body.querySelector(".mode-toggle");
-    const sidebarToggle = body.querySelector(".sidebar-toggle");
-
-    let getMode = localStorage.getItem("mode");
-    if (getMode && getMode === "dark") {
-      body.classList.toggle("dark");
-    }
-
-    let getStatus = localStorage.getItem("status");
-    if (getStatus && getStatus === "close") {
-      sidebar.classList.toggle("close");
-    }
-
-    const handleModeToggle = () => {
-      body.classList.toggle("dark");
-      if (body.classList.contains("dark")) {
-        localStorage.setItem("mode", "dark");
-      } else {
-        localStorage.setItem("mode", "light");
-      }
-    };
-
-    const handleSidebarToggle = () => {
-      sidebar.classList.toggle("close");
-      if (sidebar.classList.contains("close")) {
-        localStorage.setItem("status", "close");
-      } else {
-        localStorage.setItem("status", "open");
-      }
-    };
-
-    modeToggle.addEventListener("click", handleModeToggle);
-    sidebarToggle.addEventListener("click", handleSidebarToggle);
-
-    // Clean-up function to remove event listeners
-    return () => {
-      modeToggle.removeEventListener("click", handleModeToggle);
-      sidebarToggle.removeEventListener("click", handleSidebarToggle);
-    };
-  }, []);
 
   const handleLogout = async () => {
     try {
@@ -105,7 +61,7 @@ function AdminFilm() {
                   <span className="link-name">Blog</span>
                 </Link>
               </li>
-              <li>
+              <li style={{ backgroundColor: "lightblue", color: "black" }}>
                 <Link to="/admin/film">
                   <i className="uil uil-film"></i>
                   <span className="link-name">Film</span>

@@ -108,9 +108,7 @@ const TableBlogs = () => {
   
       if (isConfirmed) { // Nếu người dùng chọn xác nhận
         const res = await deleteBlog(id, localStorage.getItem("jwtToken")); // Gọi API xóa blog
-        if (res && res.data.success) {
-          updateUserList(); // Cập nhật danh sách blog sau khi xóa thành công
-        }
+        res && res.data.success && updateUserList();
       }
     } catch (error) {
       console.error("Error deleting blog:", error);

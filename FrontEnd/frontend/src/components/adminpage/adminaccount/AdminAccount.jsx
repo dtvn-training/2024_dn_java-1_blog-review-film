@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import '../css/AdminPage.css';
 import TableAccount from './TableAccount';
 import { Link } from 'react-router-dom';
 import FormModalButton from './CreateAccount';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../services/AuthService';
+import '../css/AdminPage.css';
 
-function AdminAccount() {
+const AdminAccount = () => {
 
   const navigate = useNavigate();
 
@@ -20,50 +20,6 @@ function AdminAccount() {
     checkAuthentication();
   }, [navigate]);
 
-  useEffect(() => {
-    const body = document.querySelector("body");
-    const sidebar = document.querySelector("nav");
-    const modeToggle = body.querySelector(".mode-toggle");
-    const sidebarToggle = body.querySelector(".sidebar-toggle");
-
-    let getMode = localStorage.getItem("mode");
-    if (getMode && getMode === "dark") {
-      body.classList.toggle("dark");
-    }
-
-    let getStatus = localStorage.getItem("status"); 
-    if (getStatus && getStatus === "close") {
-      sidebar.classList.toggle("close");
-    }
-
-    const handleModeToggle = () => {
-      body.classList.toggle("dark");
-      if (body.classList.contains("dark")) {
-        localStorage.setItem("mode", "dark");
-      } else {
-        localStorage.setItem("mode", "light");
-      }
-    };
-
-    const handleSidebarToggle = () => {
-      sidebar.classList.toggle("close");
-      if (sidebar.classList.contains("close")) {
-        localStorage.setItem("status", "close");
-      } else {
-        localStorage.setItem("status", "open");
-      }
-    };
-
-    modeToggle.addEventListener("click", handleModeToggle);
-    sidebarToggle.addEventListener("click", handleSidebarToggle);
-
-    // Clean-up function to remove event listeners
-    return () => {
-      modeToggle.removeEventListener("click", handleModeToggle);
-      sidebarToggle.removeEventListener("click", handleSidebarToggle);
-    };
-  }, []);
-
   const handleLogout = async () => {
     try {
       await logout();
@@ -71,7 +27,7 @@ function AdminAccount() {
       localStorage.removeItem("jwtToken");
       navigate("/login");
     } catch (error) {
-      console.error('Error logging out:', error);
+      // console.error('Error logging out:', error);
       // Xử lý lỗi nếu có
     }
   };
@@ -95,7 +51,7 @@ function AdminAccount() {
                   <span className="link-name">Dashboard</span>
                 </Link>
               </li>
-              <li>
+              <li style={{ backgroundColor: "lightblue", color: "black" }}>
                 <Link to="/admin/account">
                   <i className="uil uil-user"></i>
                   <span className="link-name">Reviewer</span>

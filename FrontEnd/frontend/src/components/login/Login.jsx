@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import styles from './Login.module.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import {login} from '../services/AuthService';
 import { ToastContainer } from 'react-toastify';
-function Login() {
+import styles from './Login.module.css';
+const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,7 +39,7 @@ function Login() {
       setIsLoading(true);
       try {
         const response = await login(email, password); // Sử dụng service đăng nhập
-        console.log('Logged in successfully!', response);
+        // console.log('Logged in successfully!', response);
         toast.success('Logged in successfully!');
         localStorage.setItem("authenticated", true);
         const token = response.token;
@@ -58,7 +58,7 @@ function Login() {
         }
     
       } catch (error) {
-        console.error('Error logging in:', error);
+        // console.error('Error logging in:', error);
         if (error.response && error.response.status === 401) {
           setError('Invalid username or password. Please try again.'); // Set thông báo lỗi cho người dùng
           for (let i = 0; i < error.response.data.message.length; i++) {
