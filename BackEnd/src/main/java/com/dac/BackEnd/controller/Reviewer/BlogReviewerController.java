@@ -11,8 +11,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dac.BackEnd.constant.ErrorConstants;
 import com.dac.BackEnd.constant.SuccessConstants;
@@ -40,12 +42,13 @@ public class BlogReviewerController {
     private BlogService blogService;
 
     @PostMapping()
-    public ResponseEntity<?> createNewBlog(@Valid @RequestBody BlogInput blogInput) {
+    public ResponseEntity<?> createNewBlog(@Valid BlogInput blogInput, 
+                                            @RequestPart(value = "file") MultipartFile file) {
         try {
             ResponseBody response = new ResponseBody();
             response.setCode(SuccessConstants.CREATED_CODE);
             response.setMessage(Arrays.asList(new MessageException(SuccessConstants.CREATED_MESSAGE), SuccessConstants.CREATED_CODE));
-            response.setData(blogService.createNewBlog(blogInput));
+            response.setData(blogService.createNewBlog(blogInput, file));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (MessageException e) {
             Response response = new Response();

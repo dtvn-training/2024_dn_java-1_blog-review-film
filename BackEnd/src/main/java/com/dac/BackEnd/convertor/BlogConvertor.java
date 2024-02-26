@@ -12,18 +12,18 @@ public class BlogConvertor {
     public static Blog toModel(BlogEntity entity) {
         Blog blog = new Blog();
         blog.setId(entity.getId());
-        blog.setFilmId(entity.getFilm().getId());
+        blog.setFilm(FilmConvertor.toModel(entity.getFilm()));
         blog.setTitle(entity.getTitle());
         blog.setImage(entity.getImage());
         blog.setPoint(entity.getPoint());
         blog.setPostTime(entity.getPostTime());
         blog.setStatus(entity.getStatus());
         blog.setInsertDateTime(entity.getInsertDateTime());
-        blog.setInsertByReviewerId(entity.getInsertBy().getId());
+        blog.setInsertBy(UserConvertor.toModel(entity.getInsertBy()));
         blog.setUpdateDateTime(entity.getUpdateDateTime());
-        blog.setUpdateByReviewerId(entity.getUpdateBy().getId());
+        blog.setUpdateBy(UserConvertor.toModel(entity.getUpdateBy()));
         blog.setDeleteFlag(entity.getDeleteFlag());
-        blog.setContentId(entity.getContents().stream().map(ContentEntity::getId).toList());
+        blog.setContents(entity.getContents().stream().map(ContentConvertor::toModel).toList());
         return blog;
     }
 

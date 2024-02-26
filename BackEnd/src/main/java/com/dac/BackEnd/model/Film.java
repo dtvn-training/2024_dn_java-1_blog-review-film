@@ -19,7 +19,7 @@ public class Film {
     private Long id;
 
     @NotNull
-    private Long categoryId;
+    private Category category;
 
     @NotBlank
     @Size(max = 255)
@@ -43,13 +43,13 @@ public class Film {
     private LocalDateTime insertDateTime;
 
     @NotNull
-    private Long insertByReviewerId;
+    private User insertBy;
 
     @NotNull
     private LocalDateTime updateDateTime;
 
     @NotNull
-    private long updateByReviewerId;
+    private User updateBy;
 
     @NotNull
     private Boolean deleteFlag;

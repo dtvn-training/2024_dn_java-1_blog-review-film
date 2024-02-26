@@ -21,7 +21,7 @@ public class Blog {
     private Long id;
 
     @NotNull
-    private Long filmId;
+    private Film film;
 
     @NotBlank
     @Size(max = 255)
@@ -42,17 +42,17 @@ public class Blog {
     private LocalDateTime insertDateTime;
 
     @NotNull
-    private Long insertByReviewerId;
+    private User insertBy;
 
     @NotNull
     private LocalDateTime updateDateTime;
 
     @NotNull
-    private Long updateByReviewerId;
+    private User updateBy;
 
     @NotNull
     private Boolean deleteFlag;
 
     @NotNull
-    private List<Long> contentId;
+    private List<Content> contents;
 }
