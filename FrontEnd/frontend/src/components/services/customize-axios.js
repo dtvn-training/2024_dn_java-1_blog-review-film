@@ -1,7 +1,7 @@
 import axios from "axios";
-
+import appURL from "./config";
 const instance = axios.create({
-  baseURL: 'http://192.168.1.120:8080',
+  baseURL: appURL,
 });
 
 // Add a request interceptor
