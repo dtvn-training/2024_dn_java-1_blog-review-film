@@ -158,14 +158,14 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public User deleteUser(Long reviewerId) {
+    public void deleteUser(Long reviewerId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
         }
         UserEntity entity = userRepository.findById(reviewerId).orElseThrow(() ->  new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
         entity.setDeleteFlag(true);
-        return UserConvertor.toModel(userRepository.save(entity));
+        userRepository.save(entity);
 
     }
 }

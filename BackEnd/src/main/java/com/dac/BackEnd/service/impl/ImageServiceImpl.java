@@ -43,7 +43,6 @@ public class ImageServiceImpl implements ImageService{
             if (file.isEmpty()) {
                 throw new IOException("Cannot upload empty file");
             }
-            File file1 = convertMultiPartToFile(file);
             switch (type) {
                 case "BlogImage":
                     imageFor = "BlogImage";
@@ -67,14 +66,6 @@ public class ImageServiceImpl implements ImageService{
          } catch (Exception e) {
             throw new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE);
          }
-    }
-
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
-        return convFile;
     }
 
     private String generateFileName(MultipartFile multiPart) {

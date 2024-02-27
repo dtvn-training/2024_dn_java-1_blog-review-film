@@ -20,6 +20,6 @@ public interface UserService {
 
     User updateReivewer(ReviewerInput input, Long reviewerId);
 
-    User deleteUser(Long reiviewerId);
+    void deleteUser(Long reiviewerId);
     
 }

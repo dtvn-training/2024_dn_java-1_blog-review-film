@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dac.BackEnd.entity.FilmEntity;
-import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.Film;
 
 public class FilmConvertor {
@@ -14,6 +13,7 @@ public class FilmConvertor {
         film.setId(entity.getId());
         film.setCategory(CategoryConvertor.toModel(entity.getCategory()));
         film.setNameFilm(entity.getNameFilm());
+        film.setImage(entity.getImage());
         film.setDirector(entity.getDirector());
         film.setCountry(entity.getCountry());
         film.setStartDate(entity.getStartDate());
