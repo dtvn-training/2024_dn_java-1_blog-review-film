@@ -1,9 +1,13 @@
 package com.dac.BackEnd.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
@@ -126,5 +130,42 @@ public class UserServiceImpl implements UserService{
         entity.setUpdateDateTime(now);
         entity.setDeleteFlag(false);
         return UserConvertor.toModel(userRepository.save(entity));
+    }
+
+
+    @Override
+    public User updateReivewer(ReviewerInput input, Long reviewerId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
+        }
+        UserEntity entity = userRepository.findById(reviewerId).orElseThrow(() ->  new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+        UserEntity existingEntity = updateUser(entity, input, authentication.getName());
+
+        return UserConvertor.toModel(existingEntity);
+    }
+
+
+    private UserEntity updateUser(UserEntity entity, ReviewerInput input, String authenName) {
+        entity.setEmail(input.getEmail());
+        entity.setName(input.getName());
+        entity.setPhone(input.getPhone());
+        UserEntity user = userRepository.findUserByDeleteFlagFalseAndEmail(authenName).orElseThrow(() ->  new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+        entity.setUpdateByUserId(user.getId());
+        entity.setUpdateDateTime(LocalDateTime.now());
+        return userRepository.save(entity);
+    }
+
+
+    @Override
+    public User deleteUser(Long reviewerId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
+        }
+        UserEntity entity = userRepository.findById(reviewerId).orElseThrow(() ->  new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+        entity.setDeleteFlag(true);
+        return UserConvertor.toModel(userRepository.save(entity));
+
     }
 }

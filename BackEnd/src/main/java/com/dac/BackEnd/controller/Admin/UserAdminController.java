@@ -25,11 +25,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -75,6 +78,38 @@ public class UserAdminController {
             response.setCode(SuccessConstants.CREATED_CODE);
             response.setMessage(Arrays.asList(new MessageException(SuccessConstants.CREATED_MESSAGE), SuccessConstants.CREATED_CODE));
             response.setData(userService.createNewReviewer(input));
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (MessageException e) {
+            Response response = new Response();
+            response.setCode(e.getErrorCode());
+            response.setMessage(Arrays.asList(e));
+            return ResponseEntity.status(e.getErrorCode()).body(response);
+        }
+    }
+
+    @PutMapping("{reviewerId}")
+    public ResponseEntity<?> updateReviewer(@Valid @RequestBody ReviewerInput input, @PathVariable Long reviewerId) {
+        try {
+            ResponseBody response = new ResponseBody();
+            response.setCode(SuccessConstants.OK_CODE);
+            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
+            response.setData(userService.updateReivewer(input, reviewerId));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (MessageException e) {
+            Response response = new Response();
+            response.setCode(e.getErrorCode());
+            response.setMessage(Arrays.asList(e));
+            return ResponseEntity.status(e.getErrorCode()).body(response);
+        }
+    }
+
+    @DeleteMapping("{reviewerId}")
+    public ResponseEntity<?> deleteReviewer(@PathVariable Long reiviewerId) {
+        try {
+            ResponseBody response = new ResponseBody();
+            response.setCode(SuccessConstants.OK_CODE);
+            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
+            response.setData(userService.deleteUser(reiviewerId));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (MessageException e) {
             Response response = new Response();
