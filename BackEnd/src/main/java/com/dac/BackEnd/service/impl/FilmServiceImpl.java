@@ -6,16 +6,27 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dac.BackEnd.constant.ErrorConstants;
 import com.dac.BackEnd.convertor.FilmConvertor;
+import com.dac.BackEnd.entity.FilmEntity;
+import com.dac.BackEnd.entity.UserEntity.UserEntity;
+import com.dac.BackEnd.entity.UserEntity.UserRole;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Film;
+import com.dac.BackEnd.model.request.FilmInput;
+import com.dac.BackEnd.model.request.ReviewerInput;
 import com.dac.BackEnd.model.response.ResponsePage;
 import com.dac.BackEnd.repository.CategoryRepository;
 import com.dac.BackEnd.repository.FilmRepository;
+import com.dac.BackEnd.repository.UserRepository;
 import com.dac.BackEnd.service.FilmService;
+import com.dac.BackEnd.service.ImageService;
+
 
 @Service
 public class FilmServiceImpl implements FilmService{
@@ -25,6 +36,12 @@ public class FilmServiceImpl implements FilmService{
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ImageService imageService;
 
     @Override
     public ResponsePage getPageInfo(int page, String by, Long category, String searchText, LocalDate startTime, LocalDate endTime) {
@@ -106,5 +123,80 @@ public class FilmServiceImpl implements FilmService{
     @Override
     public List<Film> getAllFilmDeleteFalse() {
         return filmRepository.findAllReleasedFilms(LocalDate.now()).stream().map(FilmConvertor::toModel).toList();
+    }
+
+    @Override
+    public Film createNewFilm(FilmInput filmInput, MultipartFile file) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
+        }
+        return FilmConvertor.toModel(saveFilm(filmInput, authentication.getName(), file));
+    }
+
+    private FilmEntity saveFilm(FilmInput filmInput, String user, MultipartFile file) {
+        UserEntity userEntity = userRepository.findByEmailAndRole(user, UserRole.ROLE_ADMIN)
+                                                .orElseThrow(() -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE));
+        LocalDateTime now = LocalDateTime.now();
+        FilmEntity entity = new FilmEntity();
+        entity.setCategory(categoryRepository.findById(filmInput.getCategoryId())
+                            .orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE)));
+        entity.setNameFilm(filmInput.getNameFilm());
+        entity.setImage(imageService.upload(file, "FilmImage"));
+        entity.setDirector(filmInput.getDirector());
+        entity.setCountry(filmInput.getCountry());
+        entity.setStartDate(filmInput.getStartDate());
+        entity.setDescription(filmInput.getDescription());
+        entity.setInsertDateTime(now);
+        entity.setUpdateDateTime(now);
+        entity.setInsertBy(userEntity);
+        entity.setUpdateBy(userEntity);
+        entity.setDeleteFlag(false);
+        return filmRepository.save(entity);
+    }
+
+    @Override
+    public Film updateFilm(FilmInput filmInput, Long filmId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
+        }
+        FilmEntity entity = filmRepository.findById(filmId).orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+        entity.setCategory(categoryRepository.findById(filmInput.getCategoryId())
+                            .orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE)));
+        entity.setNameFilm(filmInput.getNameFilm());
+        entity.setDirector(filmInput.getDirector());
+        entity.setCountry(filmInput.getCountry());
+        entity.setStartDate(filmInput.getStartDate());
+        entity.setDescription(filmInput.getDescription());
+        entity.setUpdateDateTime(LocalDateTime.now());
+        entity.setUpdateBy(userRepository.findByEmailAndRole(authentication.getName(), UserRole.ROLE_ADMIN)
+                                            .orElseThrow(() -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE)));
+        return FilmConvertor.toModel(filmRepository.save(entity));
+    }
+
+    @Override
+    public Film updateImageFilm(MultipartFile file, Long filmId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
+        }
+        FilmEntity entity = filmRepository.findById(filmId).orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+        entity.setImage(imageService.upload(file, "FilmImage"));
+        entity.setUpdateDateTime(LocalDateTime.now());
+        entity.setUpdateBy(userRepository.findByEmailAndRole(authentication.getName(), UserRole.ROLE_ADMIN)
+                                            .orElseThrow(() -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE)));
+        return FilmConvertor.toModel(filmRepository.save(entity));
+    }
+
+    @Override
+    public void deleteFilm(Long filmId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
+        }
+        FilmEntity entity = filmRepository.findById(filmId).orElseThrow(() ->  new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+        entity.setDeleteFlag(true);
+        filmRepository.save(entity);
     }
 }

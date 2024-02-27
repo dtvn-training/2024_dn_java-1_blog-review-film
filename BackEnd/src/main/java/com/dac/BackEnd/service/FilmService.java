@@ -3,8 +3,13 @@ package com.dac.BackEnd.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dac.BackEnd.model.Film;
+import com.dac.BackEnd.model.request.FilmInput;
+import com.dac.BackEnd.model.request.ReviewerInput;
 import com.dac.BackEnd.model.response.ResponsePage;
+
 
 
 public interface FilmService {
@@ -20,5 +25,13 @@ public interface FilmService {
     List<Film> getAllFilmByStartDate(LocalDate startTime, LocalDate endTime, int page);
 
     List<Film> getAllFilmDeleteFalse();
+
+    Film createNewFilm(FilmInput filmInput, MultipartFile file);
+
+    Film updateFilm(FilmInput input, Long filmId);
+
+    Film updateImageFilm(MultipartFile file, Long filmId);
+
+    void deleteFilm(Long filmId);
     
 }

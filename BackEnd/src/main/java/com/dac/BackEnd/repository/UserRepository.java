@@ -35,4 +35,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
     Page<UserEntity> findByTextInName(String searchText, Pageable pageable);
 
     List<UserEntity> findAllByStatus(UserStatus status, Pageable pageable);
+
+    Optional<UserEntity> findByEmailAndRole(String email, UserRole role);
 }

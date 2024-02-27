@@ -106,11 +106,11 @@ public class UserAdminController {
     @DeleteMapping("{reviewerId}")
     public ResponseEntity<?> deleteReviewer(@PathVariable Long reiviewerId) {
         try {
-            ResponseBody response = new ResponseBody();
+            Response response = new Response();
             response.setCode(SuccessConstants.OK_CODE);
             response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            response.setData(userService.deleteUser(reiviewerId));
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            userService.deleteUser(reiviewerId);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (MessageException e) {
             Response response = new Response();
             response.setCode(e.getErrorCode());

@@ -25,6 +25,8 @@ public class Film {
     @Size(max = 255)
     private String nameFilm;
 
+    private String image;
+
     @NotBlank
     @Size(max = 255)
     private String director;
