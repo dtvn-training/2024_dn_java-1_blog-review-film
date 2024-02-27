@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import ReactPaginate from 'react-paginate';
-import { fetchAccount, deleteBlog } from '../../services/AdminService';
+import { fetchAccount, deleteAccount } from '../../services/AdminService';
 import Button from 'react-bootstrap/Button';
+import CreateAccount from './CreateAccount';
+import Modal from 'react-bootstrap/Modal';
 
-const MergedTable = () => {
+const TableAccount = () => {
   const [listUsers, setListUsers] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0); 
   const [statusFilter, setStatusFilter] = useState({ filter: false, status: "" });
-  const [activeFilter, setActiveFilter] = useState(null); 
+  const [activeFilter, setActiveFilter] = useState(null);
+  const [show, setShow] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
   useEffect(() => {
     getAccount(currentPage);
@@ -31,6 +35,17 @@ const MergedTable = () => {
     }
   }
 
+  const handleShow = (itemId) => {
+    setSelectedItemId(itemId); // Update selectedItemId when clicking the button
+    setShow(true);
+  };
+
+  
+  const handleClose = () => {
+    setSelectedItemId(null); // Reset selectedItemId when closing modal
+    setShow(false);
+  };
+
   const handlePageClick = (selectedPage) => {
     setCurrentPage(selectedPage.selected);
   }
@@ -40,35 +55,21 @@ const MergedTable = () => {
   }
 
   const handleFilter = (status) => {
-    setStatusFilter({ filter: true, status: status });
+    setActiveFilter(status);
     setCurrentPage(0);
-  };
-
-  const handleMouseLeave = () => {
-    if (!activeFilter) return;
-    
-  };
-
-  const handleOutsideClick = () => {
-    setActiveFilter(null);
+    setStatusFilter({ filter: true, status: status });
   };
 
   const handleEditUser = (user) => {
     console.log('Edit user:', user);
   };
-
-  const handleDeleteBlog = async (id) => {
+  const handleDeleteAccount = async (id) => {
     try {
-      const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa blog này không?");
-  
-      if (isConfirmed) {
-        const res = await deleteBlog(id, localStorage.getItem("jwtToken"));
-        if (res && res.data.success) {
-          updateUserList();
-        }
-      }
+      const res = await deleteAccount(id, localStorage.getItem("jwtToken"));
+      if (res?.code === 200) updateUserList();
+      setShow(false);
     } catch (error) {
-      console.error("Error deleting blog:", error);
+      console.error("Error Delete blog:", error);
     }
   };
 
@@ -83,9 +84,27 @@ const MergedTable = () => {
       <td>{item.status}</td>
       <td>
         <div className="d-flex flex-column flex-md-row align-items-md-center">
-          <button type="button" className="btn btn-danger mb-2 mb-md-0 me-md-2" onClick={() => handleDeleteBlog(item.id)}>
+        <button
+            type="button"
+            className="btn btn-danger mb-2 mb-md-0 me-md-2"
+            onClick={() => handleShow(item.id)}
+          >
             Delete
           </button>
+          <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Confirm Refusal</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure you want to delete this blog?</Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => handleDeleteAccount(selectedItemId)}>
+                Confirm
+              </Button>
+            </Modal.Footer>
+          </Modal>
           <button type="button" className="btn btn-primary" onClick={() => handleEditUser(item)}>
             Edit
           </button>
@@ -96,29 +115,26 @@ const MergedTable = () => {
 
   return (
     <div style={{overflowX: 'auto'}}>
-    <div style={{ marginBottom: '15px' }} onClick={handleOutsideClick}>
-      <Button
-        variant={activeFilter === 'ACTIVE' ? 'success' : 'outline-success'}
-        onClick={() => handleFilter('ACTIVE')}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        Active
-      </Button>{' '}
-      <Button
-        variant={activeFilter === 'SUSPENDED' ? 'secondary' : 'outline-secondary'}
-        onClick={() => handleFilter('SUSPENDED')}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        Suspended
-      </Button>{' '}
-      <Button
-        variant={activeFilter === 'INACTIVE' ? 'warning' : 'outline-warning'}
-        onClick={() => handleFilter('INACTIVE')}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        In Active
-      </Button>{' '}
-    </div>
+      <div style={{ marginBottom: '15px' }}>
+        <Button
+          variant={activeFilter === 'ACTIVE' ? 'success' : 'outline-success'}
+          onClick={() => handleFilter('ACTIVE')}
+        >
+          Active
+        </Button>{' '}
+        <Button
+          variant={activeFilter === 'SUSPENDED' ? 'secondary' : 'outline-secondary'}
+          onClick={() => handleFilter('SUSPENDED')}
+        >
+          Suspended
+        </Button>{' '}
+        <Button
+          variant={activeFilter === 'INACTIVE' ? 'warning' : 'outline-warning'}
+          onClick={() => handleFilter('INACTIVE')}
+        >
+          In Active
+        </Button>{' '}
+      </div>
       <div className="table-responsive" style={{ maxWidth: '1600px', minWidth: '1600px' }}>
         <Table striped bordered hover>
           <thead>
@@ -163,4 +179,4 @@ const MergedTable = () => {
   );
 };
 
-export default MergedTable;
+export default TableAccount;

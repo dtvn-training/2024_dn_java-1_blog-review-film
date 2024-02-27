@@ -143,7 +143,7 @@ const AdminBlog = () => {
         </div>
         <div className="dash-content">
           <div className="activity">
-            <div className="title">
+            <div className="title" style={{ backgroundColor: '#f0f0f0', padding: '10px', borderRadius: '5px' }}>
               <i className="uil uil-clock-three"></i>
               <span className="text">Blog List</span>
             </div>

@@ -126,7 +126,7 @@ const AdminDashBoard = () => {
 
         <div class="dash-content">
           <div class="overview">
-            <div class="title">
+            <div class="title" style={{ backgroundColor: '#f0f0f0', padding: '10px', borderRadius: '5px' }}>
               <i class="uil uil-chart-line"></i>
               <span class="text">Summary</span>
             </div>
@@ -151,7 +151,7 @@ const AdminDashBoard = () => {
           </div>
 
           <div className="activity">
-            <div class="title">
+            <div class="title" style={{ backgroundColor: '#f0f0f0', padding: '10px', borderRadius: '5px' }}>
               <i class="uil uil-clock-three"></i>
               <span class="text">Recent Activity</span>
             </div>

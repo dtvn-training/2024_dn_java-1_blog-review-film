@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
-import TableAccount from './TableAccount';
-import { Link } from 'react-router-dom';
-import FormModalButton from './CreateAccount';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../../services/AuthService';
-import '../css/AdminPage.css';
-
+import React, { useEffect } from "react";
+import TableAccount from "./TableAccount";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../services/AuthService";
+import "../css/AdminPage.css";
+import CreateAccount from "./CreateAccount";
 const AdminAccount = () => {
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,19 +30,20 @@ const AdminAccount = () => {
     }
   };
 
-
   return (
     <div>
-      <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"></link>
+      <link
+        rel="stylesheet"
+        href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
+      ></link>
       <nav>
         <div className="logo-name">
-          <div className="logo-image">
-          </div>
+          <div className="logo-image"></div>
           <span className="logo_name">Admin Page</span>
         </div>
         <div className="menu-items">
           <ul className="nav-links">
-          <div>
+            <div>
               <li>
                 <Link to="/admin/dashboard">
                   <i className="uil uil-tachometer-fast-alt"></i>
@@ -101,20 +100,29 @@ const AdminAccount = () => {
         </div>
         <div className="dash-content">
           <div className="activity">
-            <div className="title">
+            <div
+              className="title"
+              style={{
+                backgroundColor: "#f0f0f0",
+                padding: "10px",
+                borderRadius: "5px",
+              }}
+            >
               <i className="uil uil-clock-three"></i>
               <span className="text">Account</span>
+              <div style ={{overflowX: 'auto'}}>
+                <CreateAccount />
+              </div>
             </div>
-            {/* <FormModalButton /> */}
+
             <div className="activity-data">
-            <TableAccount />
+              <TableAccount />
             </div>
           </div>
         </div>
       </section>
     </div>
   );
-}
-
+};
 
 export default AdminAccount;
