@@ -17,5 +17,9 @@ public interface UserService {
     List<User> getAllUserByText(String searchText, int page);
 
     User createNewReviewer(ReviewerInput input);
+
+    User updateReivewer(ReviewerInput input, Long reviewerId);
+
+    User deleteUser(Long reiviewerId);
     
 }
