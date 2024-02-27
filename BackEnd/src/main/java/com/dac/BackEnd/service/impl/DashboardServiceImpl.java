@@ -27,7 +27,7 @@ public class DashboardServiceImpl implements DashboardService{
         SummaryResponse response = new SummaryResponse();
         response.setTotalBlog(Long.valueOf(blogRepository.countAllBlogs()));
         response.setTotalFilm(Long.valueOf(filmRepository.countAllFilm()));
-        response.setTotalReviewer(Long.valueOf(userRepository.countByRole(UserRole.ROLE_REVIEWER)));
+        response.setTotalReviewer(Long.valueOf(userRepository.countAllReviewer()));
         return response;
 
 

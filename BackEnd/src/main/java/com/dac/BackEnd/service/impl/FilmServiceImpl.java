@@ -97,7 +97,7 @@ public class FilmServiceImpl implements FilmService{
 
     @Override
     public List<Film> getAllBlogsByCategory(Long category, int page) {
-        return filmRepository.findByCategory(categoryRepository.findById(category)
+        return filmRepository.findByCategoryAndDeleteFlagFalse(categoryRepository.findById(category)
             .orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE)), PageRequest.of(page - 1, 10))
             .stream()
             .map(FilmConvertor::toModel)

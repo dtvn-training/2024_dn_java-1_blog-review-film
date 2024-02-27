@@ -105,7 +105,7 @@ public class BlogServiceImpl implements BlogService{
 
     @Override
     public List<Blog> getAllBlogs(int page) {
-        return blogRepository.findAllByOrderByInsertDateTimeDesc(PageRequest.of(page - 1, 10))
+        return blogRepository.findAllByDeleteFlagFalseOrderByInsertDateTimeDesc(PageRequest.of(page - 1, 10))
             .stream()
             .map(BlogConvertor::toModel)
             .toList();
@@ -113,7 +113,7 @@ public class BlogServiceImpl implements BlogService{
 
     @Override
     public List<Blog> getAllBlogsByStatus(String status, int page) {
-        return blogRepository.findAllByStatusOrderByInsertDateTimeDesc(
+        return blogRepository.findAllByStatusAndDeleteFlagFalseOrderByInsertDateTimeDesc(
             BlogStatusValidation.checkValidStatus(status), PageRequest.of(page - 1, 10))
             .stream()
             .map(BlogConvertor::toModel)
@@ -130,7 +130,7 @@ public class BlogServiceImpl implements BlogService{
 
     @Override
     public List<Blog> getAllBlogByPostTime(LocalDateTime startTime, LocalDateTime endTime, int page) {
-        return blogRepository.findAllByPostTimeBetween(startTime, endTime, PageRequest.of(page - 1, 10))
+        return blogRepository.findAllByDeleteFlagFalseAndPostTimeBetweenOrderByInsertDateTimeDesc(startTime, endTime, PageRequest.of(page - 1, 10))
             .stream()
             .map(BlogConvertor::toModel)
             .toList();
@@ -204,6 +204,20 @@ public class BlogServiceImpl implements BlogService{
             entity.setUpdateBy(blog.getUpdateBy());
             return contentRepository.save(entity);
         
+    }
+
+    @Override
+    public void deleteBlog(Long blogId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
+        }
+        BlogEntity entity = blogRepository.findById(blogId).orElseThrow(() ->  new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+        if (entity.getDeleteFlag()) {
+            throw new MessageException(ErrorConstants.INVALID_DATA_MESSAGE, ErrorConstants.INVALID_DATA_CODE);
+        }
+        entity.setDeleteFlag(true);
+        blogRepository.save(entity);
     }
 
     

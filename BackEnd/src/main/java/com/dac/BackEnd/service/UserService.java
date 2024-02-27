@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dac.BackEnd.model.User;
 import com.dac.BackEnd.model.request.ReviewerInput;
+import com.dac.BackEnd.model.request.UserStatusRequest;
 import com.dac.BackEnd.model.response.ResponsePage;
 
 public interface UserService {
@@ -21,5 +22,7 @@ public interface UserService {
     User updateReivewer(ReviewerInput input, Long reviewerId);
 
     void deleteUser(Long reiviewerId);
+
+    Object updateStatusReivewer(UserStatusRequest status, Long reviewerId);
     
 }
