@@ -100,9 +100,35 @@ const updateUser = (userId, name, job) => {
     return axios.put(`/api/users/${userId}`, { name, job });
 }
 
-const deleteBlog = async (blogId, jwtToken) => {
+const deleteAccount = async (accountId, jwtToken) => {
     try {
-      const response = await axios.delete(`/api/blogs/${blogId}`, {
+      const response = await axios.delete(`api/admin/reviewers/${accountId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const deleteBlog = async (blogId, jwtToken) => {
+    try {
+      const response = await axios.delete(`api/admin/blogs/${blogId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const deleteFilm = async (filmId, jwtToken) => {
+    try {
+      const response = await axios.delete(`api/admin/films/${filmId}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`
         }
@@ -126,4 +152,4 @@ const deleteBlog = async (blogId, jwtToken) => {
     }
   };
 
-export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, fetchAllBlog, deleteBlog, updateStatusBlog };
+export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, fetchAllBlog, deleteAccount, deleteFilm, deleteBlog, updateStatusBlog };
