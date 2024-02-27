@@ -15,25 +15,25 @@ import java.util.List;
 @Repository
 public interface BlogRepository extends JpaRepository<BlogEntity, Long>{
 
-    @Query(value = "SELECT COUNT(*) FROM blogs", nativeQuery = true)
+    @Query("SELECT COUNT(*) FROM BlogEntity b WHERE b.deleteFlag = false")
     int countAllBlogs();
 
-    @Query(value = "SELECT COUNT(*) FROM blogs WHERE status = :status", nativeQuery = true)
+    @Query("SELECT COUNT(*) FROM BlogEntity b WHERE b.status = :status AND b.deleteFlag = false")
     int countAllBlogsByStatus(@Param("status") BlogStatus status);
 
-    @Query("SELECT COUNT(b) FROM BlogEntity b JOIN b.film f JOIN b.insertBy r WHERE b.title LIKE %:searchTerm% OR f.nameFilm LIKE %:searchTerm% OR r.name LIKE %:searchTerm%")
+    @Query("SELECT COUNT(b) FROM BlogEntity b JOIN b.film f JOIN b.insertBy r WHERE (b.title LIKE %:searchTerm% OR f.nameFilm LIKE %:searchTerm% OR r.name LIKE %:searchTerm%) AND b.deleteFlag = false")
     int countAllBlogsByText(String searchTerm);
 
-    @Query("SELECT COUNT(b) FROM BlogEntity b WHERE b.postTime BETWEEN :startTime AND :endTime")
+    @Query("SELECT COUNT(b) FROM BlogEntity b WHERE (b.postTime BETWEEN :startTime AND :endTime) AND b.deleteFlag = false")
     int countAllBlogsByPostTime(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
-    List<BlogEntity> findAllByOrderByInsertDateTimeDesc(Pageable pageable);
+    List<BlogEntity> findAllByDeleteFlagFalseOrderByInsertDateTimeDesc(Pageable pageable);
 
-    List<BlogEntity> findAllByStatusOrderByInsertDateTimeDesc(BlogStatus status, Pageable pageable);
+    List<BlogEntity> findAllByStatusAndDeleteFlagFalseOrderByInsertDateTimeDesc(BlogStatus status, Pageable pageable);
 
-    @Query("SELECT b FROM BlogEntity b JOIN b.film f JOIN b.insertBy r WHERE b.title LIKE %:searchTerm% OR f.nameFilm LIKE %:searchTerm% OR r.name LIKE %:searchTerm% ORDER BY b.insertDateTime DESC")
+    @Query("SELECT b FROM BlogEntity b JOIN b.film f JOIN b.insertBy r WHERE (b.title LIKE %:searchTerm% OR f.nameFilm LIKE %:searchTerm% OR r.name LIKE %:searchTerm%) AND b.deleteFlag = false ORDER BY b.insertDateTime DESC")
     List<BlogEntity> findAllBySearchText(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-    List<BlogEntity> findAllByPostTimeBetween(LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
+    List<BlogEntity> findAllByDeleteFlagFalseAndPostTimeBetweenOrderByInsertDateTimeDesc(LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
 
 }

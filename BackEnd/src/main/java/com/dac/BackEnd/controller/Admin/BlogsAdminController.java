@@ -3,6 +3,7 @@ package com.dac.BackEnd.controller.Admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -105,5 +106,21 @@ public class BlogsAdminController {
             body.setMessage(Arrays.asList(e));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
         }
-    } 
+    }
+
+    @DeleteMapping("{blogId}")
+    public ResponseEntity<?> deleteBlog(@PathVariable Long blogId) {
+        try {
+            Response response = new Response();
+            response.setCode(SuccessConstants.OK_CODE);
+            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
+            blogService.deleteBlog(blogId);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (MessageException e) {
+            Response response = new Response();
+            response.setCode(e.getErrorCode());
+            response.setMessage(Arrays.asList(e));
+            return ResponseEntity.status(e.getErrorCode()).body(response);
+        }
+    }
 }

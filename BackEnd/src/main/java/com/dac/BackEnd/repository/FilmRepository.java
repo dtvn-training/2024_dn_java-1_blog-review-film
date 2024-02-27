@@ -15,24 +15,24 @@ import com.dac.BackEnd.entity.FilmEntity;
 @Repository
 public interface FilmRepository extends JpaRepository<FilmEntity, Long>{
 
-    @Query("SELECT COUNT(*) FROM FilmEntity")
+    @Query("SELECT COUNT(*) FROM FilmEntity f WHERE f.deleteFlag = false")
     int countAllFilm();
 
-    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE f.category = :category")
+    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE f.category = :category AND f.deleteFlag = false")
     int countAllFilmByCategory(CategoryEntity category);
 
-    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE f.nameFilm LIKE %:searchText% OR f.description LIKE %:searchText%")
+    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE (f.nameFilm LIKE %:searchText% OR f.description LIKE %:searchText%) AND f.deleteFlag = false")
     int countAllFilmByText(String searchText);
 
-    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE f.startDate BETWEEN :startTime AND :endTime")
+    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE (f.startDate BETWEEN :startTime AND :endTime) AND f.deleteFlag = false")
     int countAllBlogsByStartDate(LocalDate startTime, LocalDate endTime);
 
-    List<FilmEntity> findByCategory(CategoryEntity category, Pageable pageable);
+    List<FilmEntity> findByCategoryAndDeleteFlagFalse(CategoryEntity category, Pageable pageable);
 
-    @Query("SELECT f FROM FilmEntity f WHERE f.nameFilm LIKE %:searchText% OR f.description LIKE %:searchText%")
+    @Query("SELECT f FROM FilmEntity f WHERE (f.nameFilm LIKE %:searchText% OR f.description LIKE %:searchText%) AND f.deleteFlag = false")
     List<FilmEntity> findAllBySearchText(String searchText, Pageable pageable);
-    
-    @Query("SELECT f FROM FilmEntity f WHERE f.startDate BETWEEN :startTime AND :endTime")
+
+    @Query("SELECT f FROM FilmEntity f WHERE (f.startDate BETWEEN :startTime AND :endTime) AND f.deleteFlag = false")
     List<FilmEntity> findAllByStartDate(LocalDate startTime, LocalDate endTime, Pageable pageable);
 
     @Query("SELECT f FROM FilmEntity f WHERE f.deleteFlag = false AND f.startDate <= :currentDate")

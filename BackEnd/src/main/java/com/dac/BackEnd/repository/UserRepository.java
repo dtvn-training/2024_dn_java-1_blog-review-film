@@ -22,19 +22,25 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
 
     Boolean existsByEmail(String email);
 
-    List<UserEntity> findAllByDeleteFlagFalse();
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER")
+    long countAllReviewer();
+
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.status = :status")
+    long countReviewerByStatus(@Param("status") UserStatus status);
+
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.name LIKE %:searchText% ")
+    int countReviewerByTextInName(@Param("searchText") String searchText);
 
     long countByRole(UserRole role);
 
-    long countByStatus(UserStatus status);
+    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER")
+    List<UserEntity> findAllReviewer(Pageable pageable);
 
-    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.name LIKE %:searchText%")
-    int countByTextInName(@Param("searchText") String searchText);
+    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.status = :status")
+    List<UserEntity> findAllReviewersByStatus(@Param("status") UserStatus status, Pageable pageable);
 
-    @Query("SELECT u FROM UserEntity u WHERE LOWER(u.name) LIKE %:searchText%")
-    Page<UserEntity> findByTextInName(String searchText, Pageable pageable);
-
-    List<UserEntity> findAllByStatus(UserStatus status, Pageable pageable);
+    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND LOWER(u.name) LIKE %:searchText%")
+    Page<UserEntity> findReviewerByTextInName(String searchText, Pageable pageable);
 
     Optional<UserEntity> findByEmailAndRole(String email, UserRole role);
 }

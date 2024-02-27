@@ -28,6 +28,8 @@ public interface BlogService {
 
     Blog createNewBlog(BlogInput blogInput,  MultipartFile file);
 
+    void deleteBlog(Long blogId);
+
     
 
    

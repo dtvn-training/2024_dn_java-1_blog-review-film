@@ -9,6 +9,7 @@ import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.convertor.UserConvertor;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.request.ReviewerInput;
+import com.dac.BackEnd.model.request.UserStatusRequest;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
 import com.dac.BackEnd.model.response.ResponsesBody;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -103,13 +105,29 @@ public class UserAdminController {
         }
     }
 
+    @PatchMapping("{reviewerId}")
+    public ResponseEntity<?> updateStatusUser(@RequestBody UserStatusRequest status, @PathVariable Long reviewerId) {
+        try {
+            ResponseBody response = new ResponseBody();
+            response.setCode(SuccessConstants.OK_CODE);
+            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
+            response.setData(userService.updateStatusReivewer(status, reviewerId));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (MessageException e) {
+            Response response = new Response();
+            response.setCode(e.getErrorCode());
+            response.setMessage(Arrays.asList(e));
+            return ResponseEntity.status(e.getErrorCode()).body(response);
+        }
+    }
+
     @DeleteMapping("{reviewerId}")
-    public ResponseEntity<?> deleteReviewer(@PathVariable Long reiviewerId) {
+    public ResponseEntity<?> deleteReviewer(@PathVariable Long reviewerId) {
         try {
             Response response = new Response();
             response.setCode(SuccessConstants.OK_CODE);
             response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            userService.deleteUser(reiviewerId);
+            userService.deleteUser(reviewerId);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (MessageException e) {
             Response response = new Response();
