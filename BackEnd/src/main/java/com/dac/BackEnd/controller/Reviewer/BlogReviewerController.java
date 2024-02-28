@@ -7,14 +7,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.dac.BackEnd.constant.ErrorConstants;
 import com.dac.BackEnd.constant.SuccessConstants;
@@ -27,10 +23,8 @@ import com.dac.BackEnd.service.BlogService;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
 
 
 
@@ -42,13 +36,12 @@ public class BlogReviewerController {
     private BlogService blogService;
 
     @PostMapping()
-    public ResponseEntity<?> createNewBlog(@Valid BlogInput blogInput, 
-                                            @RequestPart(value = "file") MultipartFile file) {
+    public ResponseEntity<?> createNewBlog(@Valid BlogInput blogInput){
         try {
             ResponseBody response = new ResponseBody();
             response.setCode(SuccessConstants.CREATED_CODE);
             response.setMessage(Arrays.asList(new MessageException(SuccessConstants.CREATED_MESSAGE), SuccessConstants.CREATED_CODE));
-            response.setData(blogService.createNewBlog(blogInput, file));
+            response.setData(blogService.createNewBlog(blogInput));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (MessageException e) {
             Response response = new Response();

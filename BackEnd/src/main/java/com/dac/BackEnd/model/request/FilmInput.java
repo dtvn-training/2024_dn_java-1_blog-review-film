@@ -2,6 +2,8 @@ package com.dac.BackEnd.model.request;
 
 import java.time.LocalDate;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,6 +18,8 @@ public class FilmInput {
     @NotBlank
     @Size(max = 50)
     private String nameFilm;
+
+    private MultipartFile filmImage;
 
     @NotBlank
     @Size(max = 30)

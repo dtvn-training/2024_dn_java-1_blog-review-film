@@ -3,7 +3,6 @@ package com.dac.BackEnd.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.dac.BackEnd.entity.UserEntity.UserRole;
 import com.dac.BackEnd.model.response.SummaryResponse;
 import com.dac.BackEnd.repository.BlogRepository;
 import com.dac.BackEnd.repository.FilmRepository;

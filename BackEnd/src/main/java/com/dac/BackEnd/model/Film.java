@@ -3,8 +3,6 @@ package com.dac.BackEnd.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import com.dac.BackEnd.entity.UserEntity.UserEntity;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

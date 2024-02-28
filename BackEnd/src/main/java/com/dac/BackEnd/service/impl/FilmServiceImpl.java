@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dac.BackEnd.constant.ErrorConstants;
+import com.dac.BackEnd.constant.TypeImageConstants;
 import com.dac.BackEnd.convertor.FilmConvertor;
 import com.dac.BackEnd.entity.FilmEntity;
 import com.dac.BackEnd.entity.UserEntity.UserEntity;
@@ -19,7 +20,6 @@ import com.dac.BackEnd.entity.UserEntity.UserRole;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Film;
 import com.dac.BackEnd.model.request.FilmInput;
-import com.dac.BackEnd.model.request.ReviewerInput;
 import com.dac.BackEnd.model.response.ResponsePage;
 import com.dac.BackEnd.repository.CategoryRepository;
 import com.dac.BackEnd.repository.FilmRepository;
@@ -89,7 +89,7 @@ public class FilmServiceImpl implements FilmService{
 
     @Override
     public List<Film> getAllFilm(int page) {
-        return filmRepository.findAll(PageRequest.of(page - 1, 10))
+        return filmRepository.findByDeleteFlagFalse(PageRequest.of(page - 1, 10))
             .stream()
             .map(FilmConvertor::toModel)
             .toList();
@@ -126,15 +126,15 @@ public class FilmServiceImpl implements FilmService{
     }
 
     @Override
-    public Film createNewFilm(FilmInput filmInput, MultipartFile file) {
+    public Film createNewFilm(FilmInput filmInput) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
         }
-        return FilmConvertor.toModel(saveFilm(filmInput, authentication.getName(), file));
+        return FilmConvertor.toModel(saveFilm(filmInput, authentication.getName()));
     }
 
-    private FilmEntity saveFilm(FilmInput filmInput, String user, MultipartFile file) {
+    private FilmEntity saveFilm(FilmInput filmInput, String user) {
         UserEntity userEntity = userRepository.findByEmailAndRole(user, UserRole.ROLE_ADMIN)
                                                 .orElseThrow(() -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE));
         LocalDateTime now = LocalDateTime.now();
@@ -142,7 +142,7 @@ public class FilmServiceImpl implements FilmService{
         entity.setCategory(categoryRepository.findById(filmInput.getCategoryId())
                             .orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE)));
         entity.setNameFilm(filmInput.getNameFilm());
-        entity.setImage(imageService.upload(file, "FilmImage"));
+        entity.setImage(imageService.upload(filmInput.getFilmImage(), TypeImageConstants.FILM_IMAGE));
         entity.setDirector(filmInput.getDirector());
         entity.setCountry(filmInput.getCountry());
         entity.setStartDate(filmInput.getStartDate());
@@ -182,7 +182,7 @@ public class FilmServiceImpl implements FilmService{
             throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
         }
         FilmEntity entity = filmRepository.findById(filmId).orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
-        entity.setImage(imageService.upload(file, "FilmImage"));
+        entity.setImage(imageService.upload(file, TypeImageConstants.FILM_IMAGE));
         entity.setUpdateDateTime(LocalDateTime.now());
         entity.setUpdateBy(userRepository.findByEmailAndRole(authentication.getName(), UserRole.ROLE_ADMIN)
                                             .orElseThrow(() -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE)));

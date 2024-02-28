@@ -5,9 +5,10 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.model.Blog;
+import com.dac.BackEnd.model.Content;
 import com.dac.BackEnd.model.request.BlogInput;
+import com.dac.BackEnd.model.request.ContentInput;
 import com.dac.BackEnd.model.response.ResponsePage;
 
 public interface BlogService {
@@ -26,9 +27,17 @@ public interface BlogService {
 
     List<Blog> getAllBlogByPostTime(LocalDateTime startTime, LocalDateTime endTime, int page);
 
-    Blog createNewBlog(BlogInput blogInput,  MultipartFile file);
+    Blog createNewBlog(BlogInput blogInput);
 
     void deleteBlog(Long blogId);
+
+    Blog updateBlog(BlogInput blogInput, Long blogId);
+
+    List<Content> updateContent(List<ContentInput> contentInputs, Long blogId);
+
+    Object updateImageBlog(MultipartFile file, Long blogId);
+
+    Object updateImageContent(List<ContentInput> contents, Long blogId);
 
     
 

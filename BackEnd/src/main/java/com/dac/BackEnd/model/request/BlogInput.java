@@ -21,6 +21,8 @@ public class BlogInput {
     @Size(max = 255)
     private String title;
 
+    private MultipartFile blogImage;
+
     @NotBlank
     @Size(max = 700)
     private String summary;

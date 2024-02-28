@@ -22,24 +22,24 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
 
     Boolean existsByEmail(String email);
 
-    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER")
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.deleteFlag = false")
     long countAllReviewer();
 
-    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.status = :status")
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.status = :status AND u.deleteFlag = false")
     long countReviewerByStatus(@Param("status") UserStatus status);
 
-    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.name LIKE %:searchText% ")
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.name LIKE %:searchText%  AND u.deleteFlag = false")
     int countReviewerByTextInName(@Param("searchText") String searchText);
 
     long countByRole(UserRole role);
 
-    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER")
+    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.deleteFlag = false")
     List<UserEntity> findAllReviewer(Pageable pageable);
 
-    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.status = :status")
+    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.status = :status AND u.deleteFlag = false")
     List<UserEntity> findAllReviewersByStatus(@Param("status") UserStatus status, Pageable pageable);
 
-    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND LOWER(u.name) LIKE %:searchText%")
+    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND LOWER(u.name) LIKE %:searchText% AND u.deleteFlag = false")
     Page<UserEntity> findReviewerByTextInName(String searchText, Pageable pageable);
 
     Optional<UserEntity> findByEmailAndRole(String email, UserRole role);
