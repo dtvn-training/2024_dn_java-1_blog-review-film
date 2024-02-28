@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../services/AuthService';
 import '../css/AdminPage.css';
-
+import { Toast } from 'react-bootstrap';
+import { ToastContainer } from 'react-toastify';
+import CreateFilm from './CreateFilm';
 const AdminFilm = () => {
 
   const navigate = useNavigate();
@@ -33,6 +35,7 @@ const AdminFilm = () => {
 
   return (
     <div>
+      <ToastContainer />
       <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"></link>
       <nav>
         <div className="logo-name">
@@ -105,6 +108,7 @@ const AdminFilm = () => {
             </div>
             <div className="activity-data">
             <TableFilm />
+            <CreateFilm />
             </div>
           </div>
         </div>

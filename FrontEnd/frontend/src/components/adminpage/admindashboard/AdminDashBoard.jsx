@@ -153,7 +153,7 @@ const AdminDashBoard = () => {
           <div className="activity">
             <div class="title" style={{ backgroundColor: '#f0f0f0', padding: '10px', borderRadius: '5px' }}>
               <i class="uil uil-clock-three"></i>
-              <span class="text">Recent Activity</span>
+              <span class="text">Blog Waiting List</span>
             </div>
             <div className="activity-data">
               <DashBoard />

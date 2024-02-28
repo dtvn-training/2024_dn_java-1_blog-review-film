@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-import {login} from '../services/AuthService';
 import { ToastContainer } from 'react-toastify';
 import styles from './Login.module.css';
+import {login} from '../services/AuthService';
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
