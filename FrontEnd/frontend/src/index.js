@@ -10,13 +10,15 @@ import CreateBlog from "./components/adminpage/createblog/CreateBlog";
 import AdminDashBoard from "./components/adminpage/admindashboard/AdminDashBoard";
 import AdminFilm from "./components/adminpage/adminfilm/AdminFilm";
 import AdminAccount from "./components/adminpage/adminaccount/AdminAccount";
+import SignUp from "./pages/SignUp/SignUp";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route index element={<Login />} />
+        <Route index element={<App />} />
         <Route path="login" element={<Login />} />
+        <Route path="signup" element={<SignUp />} />
         <Route path="/admin/blog" element={<AdminBlog />} />
         <Route path="/admin/edit" element={<BlogDetail />} />
         <Route path="/admin/dashboard" element={<AdminDashBoard />} />

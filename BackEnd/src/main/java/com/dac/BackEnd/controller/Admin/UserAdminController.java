@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dac.BackEnd.constant.ErrorConstants;
 import com.dac.BackEnd.constant.SuccessConstants;
-import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.convertor.UserConvertor;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.request.ReviewerInput;
@@ -95,7 +94,7 @@ public class UserAdminController {
             ResponseBody response = new ResponseBody();
             response.setCode(SuccessConstants.OK_CODE);
             response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            response.setData(userService.updateReivewer(input, reviewerId));
+            response.setData(userService.updateReviewer(input, reviewerId));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (MessageException e) {
             Response response = new Response();
@@ -111,7 +110,7 @@ public class UserAdminController {
             ResponseBody response = new ResponseBody();
             response.setCode(SuccessConstants.OK_CODE);
             response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            response.setData(userService.updateStatusReivewer(status, reviewerId));
+            response.setData(userService.updateStatusReviewer(status, reviewerId));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (MessageException e) {
             Response response = new Response();

@@ -107,7 +107,7 @@ const Login = () => {
                 {isLoading ? 'Loading...' : 'Login'}
               </button>
               <div className={styles.register_link}>
-                <p>Dont have an account? <a href="#">Register</a></p>
+                <p>Dont have an account? <a href="signup">Register</a></p>
               </div>
             </form>
           </div>
