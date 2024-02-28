@@ -1,18 +1,11 @@
 package com.dac.BackEnd.service.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -20,15 +13,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.services.s3.model.PutObjectResult;
 import com.dac.BackEnd.constant.ErrorConstants;
+import com.dac.BackEnd.constant.TypeImageConstants;
 import com.dac.BackEnd.convertor.BlogConvertor;
+import com.dac.BackEnd.convertor.ContentConvertor;
+import com.dac.BackEnd.convertor.FilmConvertor;
 import com.dac.BackEnd.entity.ContentEntity;
+import com.dac.BackEnd.entity.FilmEntity;
 import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
 import com.dac.BackEnd.entity.UserEntity.UserEntity;
+import com.dac.BackEnd.entity.UserEntity.UserRole;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Blog;
+import com.dac.BackEnd.model.Content;
 import com.dac.BackEnd.model.request.BlogInput;
 import com.dac.BackEnd.model.request.ContentInput;
 import com.dac.BackEnd.model.response.ResponsePage;
@@ -153,8 +151,8 @@ public class BlogServiceImpl implements BlogService{
     }
 
     @Override
-    public Blog createNewBlog(BlogInput blogInput,  MultipartFile file) {
-        BlogEntity blogEntity = saveBlogEntity(blogInput, file);
+    public Blog createNewBlog(BlogInput blogInput) {
+        BlogEntity blogEntity = saveBlogEntity(blogInput);
         List<ContentEntity> contentEntities = new ArrayList<>();
         for (ContentInput contentInput : blogInput.getContents()) {
             contentEntities.add(saveContentEntity(blogEntity, contentInput));
@@ -163,7 +161,7 @@ public class BlogServiceImpl implements BlogService{
         return BlogConvertor.toModel(blogEntity);
     }
 
-    public BlogEntity saveBlogEntity(BlogInput blogInput,  MultipartFile file) {
+    public BlogEntity saveBlogEntity(BlogInput blogInput) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
@@ -177,7 +175,7 @@ public class BlogServiceImpl implements BlogService{
         entity.setTitle(blogInput.getTitle());
         entity.setSummary(blogInput.getSummary());
         entity.setPoint(blogInput.getPoint());
-        entity.setImage(imageService.upload(file, "BlogImage"));
+        entity.setImage(imageService.upload(blogInput.getBlogImage(), TypeImageConstants.BLOG_IMAGE));
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         if (roles.contains("ROLE_ADMIN")) {
             entity.setPostTime(now);
@@ -198,12 +196,64 @@ public class BlogServiceImpl implements BlogService{
         ContentEntity entity = new ContentEntity();
             entity.setBlog(blog);
             entity.setContent(content.getContent());
+            entity.setImageUrl(imageService.upload(content.getImage(), TypeImageConstants.CONTENT_IMAGE));
             entity.setInsertDateTime(blog.getInsertDateTime());
             entity.setInsertBy(blog.getInsertBy());
             entity.setUpdateDateTime(blog.getUpdateDateTime());
             entity.setUpdateBy(blog.getUpdateBy());
             return contentRepository.save(entity);
-        
+    }
+
+    @Override
+    public Blog updateBlog(BlogInput blogInput, Long blogId) {
+        BlogEntity entity = blogRepository.findById(blogId).orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+        entity.setTitle(blogInput.getTitle());
+        entity.setSummary(blogInput.getSummary());
+        entity.setPoint(blogInput.getPoint());
+        return BlogConvertor.toModel(blogRepository.save(entity));
+    }
+
+    @Override
+    public List<Content> updateContent(List<ContentInput> contentInputs, Long blogId) {
+        List<ContentEntity> contentEntities = new ArrayList<>();
+        for (ContentInput contentInput : contentInputs) {
+            ContentEntity contentEntity = contentRepository.findById(contentInput.getId()).orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+            if (contentEntity.getBlog().getId() != blogId) {
+                throw new MessageException(ErrorConstants.INVALID_DATA_MESSAGE, ErrorConstants.INVALID_DATA_CODE);
+            }
+            contentEntity.setContent(contentInput.getContent());
+            contentEntities.add(contentRepository.save(contentEntity));
+        }
+        return contentEntities.stream().map(ContentConvertor::toModel).toList();
+    }
+
+    @Override
+    public Object updateImageBlog(MultipartFile file, Long blogId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
+        }
+        BlogEntity entity = blogRepository.findById(blogId).orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+        entity.setImage(imageService.upload(file, TypeImageConstants.BLOG_IMAGE));
+        entity.setUpdateDateTime(LocalDateTime.now());
+        entity.setUpdateBy(userRepository.findByEmailAndRole(authentication.getName(), UserRole.ROLE_ADMIN)
+                                            .orElseThrow(() -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE)));
+        return BlogConvertor.toModel(blogRepository.save(entity));
+    }
+
+    @Override
+    public Object updateImageContent(List<ContentInput> contents, Long blogId) {
+        List<ContentEntity> contentEntities = new ArrayList<>();
+        for (ContentInput contentInput : contents) {
+            ContentEntity entity = contentRepository.findById(blogId).orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+            if (entity.getBlog().getId() != blogId) {
+                throw new MessageException(ErrorConstants.INVALID_DATA_MESSAGE, ErrorConstants.INVALID_DATA_CODE);
+            }
+            entity.setImageUrl(imageService.upload(contentInput.getImage(), TypeImageConstants.CONTENT_IMAGE));
+            contentEntities.add(contentRepository.save(entity));
+
+        }
+        return contentEntities.stream().map(ContentConvertor::toModel).toList();
     }
 
     @Override
@@ -219,11 +269,4 @@ public class BlogServiceImpl implements BlogService{
         entity.setDeleteFlag(true);
         blogRepository.save(entity);
     }
-
-    
-
-    
-
-    
-
 }

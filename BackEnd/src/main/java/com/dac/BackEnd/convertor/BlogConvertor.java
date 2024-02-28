@@ -3,7 +3,6 @@ package com.dac.BackEnd.convertor;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.dac.BackEnd.entity.ContentEntity;
 import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.model.Blog;
 

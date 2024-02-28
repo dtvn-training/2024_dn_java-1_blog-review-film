@@ -1,25 +1,20 @@
 package com.dac.BackEnd.service.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.dac.BackEnd.constant.ErrorConstants;
+import com.dac.BackEnd.constant.TypeImageConstants;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.service.AmazonS3Service;
 import com.dac.BackEnd.service.ImageService;
@@ -44,11 +39,14 @@ public class ImageServiceImpl implements ImageService{
                 throw new IOException("Cannot upload empty file");
             }
             switch (type) {
-                case "BlogImage":
-                    imageFor = "BlogImage";
+                case TypeImageConstants.BLOG_IMAGE:
+                    imageFor = TypeImageConstants.BLOG_IMAGE;
                     break;
-                case "FilmImage":
-                    imageFor = "FilmImage";
+                case TypeImageConstants.FILM_IMAGE:
+                    imageFor = TypeImageConstants.FILM_IMAGE;
+                    break;
+                case TypeImageConstants.CONTENT_IMAGE:
+                    imageFor = TypeImageConstants.CONTENT_IMAGE;
                     break;
                 default:
                     throw new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE);

@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dac.BackEnd.model.Film;
 import com.dac.BackEnd.model.request.FilmInput;
-import com.dac.BackEnd.model.request.ReviewerInput;
 import com.dac.BackEnd.model.response.ResponsePage;
 
 
@@ -26,7 +25,7 @@ public interface FilmService {
 
     List<Film> getAllFilmDeleteFalse();
 
-    Film createNewFilm(FilmInput filmInput, MultipartFile file);
+    Film createNewFilm(FilmInput filmInput);
 
     Film updateFilm(FilmInput input, Long filmId);
 

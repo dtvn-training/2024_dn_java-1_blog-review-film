@@ -27,6 +27,8 @@ public interface FilmRepository extends JpaRepository<FilmEntity, Long>{
     @Query("SELECT COUNT(f) FROM FilmEntity f WHERE (f.startDate BETWEEN :startTime AND :endTime) AND f.deleteFlag = false")
     int countAllBlogsByStartDate(LocalDate startTime, LocalDate endTime);
 
+    List<FilmEntity> findByDeleteFlagFalse(Pageable pageable);
+
     List<FilmEntity> findByCategoryAndDeleteFlagFalse(CategoryEntity category, Pageable pageable);
 
     @Query("SELECT f FROM FilmEntity f WHERE (f.nameFilm LIKE %:searchText% OR f.description LIKE %:searchText%) AND f.deleteFlag = false")

@@ -1,7 +1,6 @@
 package com.dac.BackEnd.controller;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,12 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dac.BackEnd.constant.SuccessConstants;
 import com.dac.BackEnd.exception.MessageException;
-import com.dac.BackEnd.model.Category;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
 import com.dac.BackEnd.service.CategoryService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController

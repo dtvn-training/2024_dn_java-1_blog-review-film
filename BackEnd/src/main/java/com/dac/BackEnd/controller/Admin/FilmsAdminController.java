@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("api/admin/film")
+@RequestMapping("api/admin/films")
 public class FilmsAdminController {
 
     @Autowired
@@ -82,13 +82,12 @@ public class FilmsAdminController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> createNewFilm(@Valid FilmInput filmInput,
-                                            @RequestPart(value = "file") MultipartFile file) {
+    public ResponseEntity<?> createNewFilm(@Valid FilmInput filmInput) {
         try {
             ResponseBody response = new ResponseBody();
             response.setCode(SuccessConstants.CREATED_CODE);
             response.setMessage(Arrays.asList(new MessageException(SuccessConstants.CREATED_MESSAGE), SuccessConstants.CREATED_CODE));
-            response.setData(filmService.createNewFilm(filmInput, file));
+            response.setData(filmService.createNewFilm(filmInput));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (MessageException e) {
             Response response = new Response();
