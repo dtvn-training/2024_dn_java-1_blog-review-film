@@ -2,9 +2,11 @@ import React, { useEffect } from "react";
 import TableAccount from "./TableAccount";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
 import { logout } from "../../services/AuthService";
 import "../css/AdminPage.css";
 import CreateAccount from "./CreateAccount";
+import EditAccount from "./EditAccount";
 const AdminAccount = () => {
   const navigate = useNavigate();
 
@@ -32,6 +34,7 @@ const AdminAccount = () => {
 
   return (
     <div>
+      <ToastContainer />
       <link
         rel="stylesheet"
         href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
@@ -111,13 +114,16 @@ const AdminAccount = () => {
               <i className="uil uil-clock-three"></i>
               <span className="text">Account</span>
               <div style ={{overflowX: 'auto'}}>
+                
                 <CreateAccount />
               </div>
             </div>
 
             <div className="activity-data">
               <TableAccount />
+              
             </div>
+            {/* <EditAccount /> */}
           </div>
         </div>
       </section>

@@ -65,7 +65,7 @@ const fetchSummaryData = (accessToken) => {
 
   const fetchAllFilm = (selectedPage, accessToken, category, searchText) => {
     
-    let query = `/api/admin/film?page=${selectedPage}`;
+    let query = `/api/admin/films?page=${selectedPage}`;
     if (category) {
         query += `&category=${category}`;
     }
@@ -152,4 +152,67 @@ const deleteAccount = async (accountId, jwtToken) => {
     }
   };
 
-export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, fetchAllBlog, deleteAccount, deleteFilm, deleteBlog, updateStatusBlog };
+  const postCreateAccount  =  async (name, phone, email, password, jwtToken) => {
+    try {
+      const response = await axios.post("/api/admin/reviewers", {
+        name,
+        phone,
+        email,
+        password
+      }, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+  const postCreateFilm = async (categoryId, name, director, country, startDate, description, filmImage, jwtToken) => {
+    try {
+      const formData = new FormData();
+      formData.append('categoryId', categoryId);
+      formData.append('nameFilm', name);
+      formData.append('director', director);
+      formData.append('country', country);
+      formData.append('startDate', startDate);
+      formData.append('description', description);
+      formData.append('filmImage', filmImage); // Assuming filmImage is a File object
+      
+      console.log(jwtToken);
+
+
+      const response = await axios.post("/api/admin/films", formData, {
+        headers: {
+          'Authorization': `Bearer ${jwtToken}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const putUpdateAccount = async (userData, jwtToken) => {
+    try {
+      const response = await axios.put(
+        `api/admin/reviewers/${userData.accountId}`, // Thay đổi địa chỉ API của bạn
+        userData, // Dữ liệu cần cập nhật, chẳng hạn userData.name, userData.phone, userData.email, userData.password
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`, // Thêm token vào header để xác thực
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+  
+  
+  
+
+export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, putUpdateAccount, fetchAllBlog, deleteAccount, deleteFilm, deleteBlog, postCreateFilm, postCreateAccount, updateStatusBlog };

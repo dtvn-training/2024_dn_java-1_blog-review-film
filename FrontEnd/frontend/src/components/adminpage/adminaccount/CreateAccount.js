@@ -1,114 +1,127 @@
 import React, { useEffect, useState } from "react";
-  import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Modal, Button, Form, Alert, ToastContainer } from 'react-bootstrap';
+import { postCreateAccount, updateUser } from "../../services/AdminService";
 
+const CreateAccount = ({ show, createUser }) => {
+  const handleClose = () => {
+    setShowModal(false);
+    setUserData({});
+  }
+  const handleShow = () => setShowModal(true);
 
-  const CreateAccount = ({ show, createUser }) => {
-    const handleClose = () => {
-      setShowModal(false);
-      setUserData({});
+  const [userData, setUserData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    password: '',
+  });
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserData({ ...userData, [name]: value });
+  };
+
+  const handleSubmit = async(event) => {
+    event.preventDefault();
+    let isError = false;
+    let errorMessageName = "";
+    let errorMessagePhone = "";
+    let errorMessageEmail = "";
+    let errorMessagePassword = "";
+
+    // Validate name
+    if (userData.name.trim() === "") {
+      errorMessageName += "Name is required.";
+      isError = true;
+    } else if (userData.name.length < 3 || userData.name.length > 30) {
+      errorMessageName = "Name must be between 3 and 30 characters.";
+      isError = true;
     }
-    const handleShow = () => setShowModal(true);
 
-    const [userData, setUserData] = useState({
-      name: '',
-      phone: '',
-      email: '',
-      password: '',
-    });
+    // Validate phone
+    if (userData.phone.trim() === "") {
+      errorMessagePhone += "Phone is required.";
+      isError = true;
+    } else if (!/^\+?\d{10}$/.test(userData.phone)) {
+      errorMessagePhone = "Invalid phone number. Phone number must be exactly 10 digits.";
+      isError = true;
+    }
 
-    const [showModal, setShowModal] = useState(false);  
+    // Validate email
+    if (userData.email.trim() === "") {
+      errorMessageEmail += "Email is required.";
+      isError = true;
+    } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
+      errorMessageEmail = "Email address is invalid.";
+      isError = true;
+    }
 
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      setUserData({ ...userData, [name]: value });
+    // Validate password
+    if (userData.password.trim() === "") {
+      errorMessagePassword += "Password is required.";
+      isError = true;
+    } else if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,50}/.test(userData.password)) {
+      errorMessagePassword = "Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and be between 6 and 50 characters long.";
+      isError = true;
+    }
+
+    setUserData({ ...userData, errorMessageName, errorMessagePhone, errorMessageEmail, errorMessagePassword });
+
+    // If there's an error, stop the submission
+    if (isError) {
+      return;
+    }
+
+    // Call API to create account
+    try {
+      
+      const res = await postCreateAccount(userData.name, userData.phone, userData.email, userData.password, localStorage.getItem("jwtToken"));
+      // check status success
+      console.log("data", res);
+      if (res.code === 201) {
+        toast.success('Create account successfully');
+        handleClose();
+      }
+    } catch (error) {
+      let array = error.response.data.message
+      for (let i = 0; i < array.length; i++) {
+        console.log(array[i].defaultMessage);
+        toast.error(array[i].defaultMessage);
+      }
+      console.error('Error creating account:', error.message);
+    }
+  };
+
+  const [buttonWidth, setButtonWidth] = useState("200px");
+  useEffect(() => {
+    const handleResize = () => {
+      // Lấy kích thước hiện tại của cửa sổ
+      const windowWidth = window.innerWidth;
+      
+      // Đặt kích thước mới cho nút dựa trên kích thước của cửa sổ
+      if (windowWidth < 768) { // Thay 768 bằng kích thước tối thiểu bạn muốn
+        setButtonWidth("100px"); // Thay đổi kích thước của nút khi cửa sổ thu nhỏ hơn kích thước nhất định
+      } else {
+        setButtonWidth("200px"); // Đặt lại kích thước mặc định khi cửa sổ đủ lớn
+      }
     };
 
-  const handleSubmit = (event) => {
-      event.preventDefault();
-      let isError = false;
-      let errorMessage = "";
-      let errorMessageName = "";
-      let errorMessagePhone = "";
-      let errorMessageEmail = "";
-      let errorMessagePassword = "";
-      let isErrorName = false;
-      let isErrorPhone = false;
-      let isErrorEmail = false;
-      let isErrorPassword = false;
+    // Thêm sự kiện lắng nghe cho cửa sổ trình duyệt
+    window.addEventListener("resize", handleResize);
 
-      //validate name
-      if (userData.name.trim() === "") {
-        errorMessageName += "Name is required.";
-        isErrorName = true;
-      } else if (userData.name.length < 3 || userData.name.length > 30) {
-        errorMessageName = "Name must be between 3 and 30 characters.";
-        isErrorName = true;
-      }
-
-      if (userData.phone.trim() === "") {
-        errorMessagePhone += "Phone is required.";
-        isErrorPhone = true;
-      } else if (!/^\+?\d{10}$/.test(userData.phone)) {
-        errorMessagePhone = "Invalid phone number. Phone number must be exactly 10 digits.";
-        isErrorPhone = true;
-      }
-      if (userData.email.trim() === "") {
-        errorMessageEmail += "Email is required.";
-        isErrorEmail = true;
-      } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
-        errorMessageEmail = "Email address is invalid.";
-        isErrorEmail = true;
-      }
-      if (userData.password.trim() === "") {
-        errorMessagePassword += "Password is required.";
-        isErrorPassword = true;
-      } else if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,50}/.test(userData.password)) {
-        errorMessagePassword = "Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and be between 6 and 50 characters long.";
-        isErrorPassword = true;
-      }
-      setUserData({ ...userData, errorMessageName: errorMessageName, errorMessagePhone: errorMessagePhone, errorMessageEmail: errorMessageEmail, errorMessagePassword: errorMessagePassword });
-      
-      
-
-      
-
-
-      // If there's an error, stop the submission
-      if (isError) {
-        return;
-      }
-
-      // If all validations pass, proceed with saving data
-     
-      // SaveDataFunction(userData);
+    // Xóa sự kiện lắng nghe khi component unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
     };
+  }, []);
 
-    const [buttonWidth, setButtonWidth] = useState("200px");
-    useEffect(() => {
-      const handleResize = () => {
-        // Lấy kích thước hiện tại của cửa sổ
-        const windowWidth = window.innerWidth;
-        
-        // Đặt kích thước mới cho nút dựa trên kích thước của cửa sổ
-        if (windowWidth < 768) { // Thay 768 bằng kích thước tối thiểu bạn muốn
-          setButtonWidth("100px"); // Thay đổi kích thước của nút khi cửa sổ thu nhỏ hơn kích thước nhất định
-        } else {
-          setButtonWidth("200px"); // Đặt lại kích thước mặc định khi cửa sổ đủ lớn
-        }
-      };
-  
-      // Thêm sự kiện lắng nghe cho cửa sổ trình duyệt
-      window.addEventListener("resize", handleResize);
-  
-      // Xóa sự kiện lắng nghe khi component unmount
-      return () => {
-        window.removeEventListener("resize", handleResize);
-      };
-    }, []);
-
-
-
-    return (
+  return (
+    <>
+    <ToastContainer />
       <>
         <Button variant="primary" onClick={handleShow} className="mt-100" style={{ marginLeft: '1200px', width: buttonWidth,  position: 'absolute',  right: '30px', top: '130px' }}>
           Create
@@ -153,6 +166,7 @@ import React, { useEffect, useState } from "react";
           </Modal.Footer>
         </Modal>
       </>
+    </>
     );
   }
 
