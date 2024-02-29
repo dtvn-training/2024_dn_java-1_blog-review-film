@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
+import com.dac.BackEnd.entity.UserEntity.UserEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,5 +36,16 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long>{
     List<BlogEntity> findAllBySearchText(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     List<BlogEntity> findAllByDeleteFlagFalseAndPostTimeBetweenOrderByInsertDateTimeDesc(LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
+
+    @Query("SELECT COUNT(b) FROM BlogEntity b WHERE b.deleteFlag = false AND b.insertBy = :user")
+    int countBlogsByReviewer(@Param("user") UserEntity user);
+
+    @Query("SELECT b FROM BlogEntity b WHERE b.deleteFlag = false AND b.insertBy = :user")
+    List<BlogEntity> getBlogsByReviewer(@Param("user") UserEntity user);
+
+    @Query("SELECT COUNT(b) FROM BlogEntity b WHERE (b.status = BlogStatus.WAITING OR b.insertBy = :user) AND b.deleteFlag = false")
+    int countAllBlogsByStatus(@Param("user") UserEntity user);
+
+    long countByInsertByAndStatusAndDeleteFlagFalse(UserEntity userEntity, BlogStatus status);
 
 }

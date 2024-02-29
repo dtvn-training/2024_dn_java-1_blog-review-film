@@ -11,7 +11,11 @@ import AdminDashBoard from "./components/adminpage/admindashboard/AdminDashBoard
 import AdminFilm from "./components/adminpage/adminfilm/AdminFilm";
 import AdminAccount from "./components/adminpage/adminaccount/AdminAccount";
 import SignUp from "./pages/SignUp/SignUp";
+import DashBoardReviewer from "./components/reviewerpage/reviewerDashboard/DashboardReviewer";
+import FilmReviewer from "./components/reviewerpage/reviewerFilm/FilmReviewer";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <React.StrictMode>
     <BrowserRouter>
@@ -24,6 +28,8 @@ root.render(
         <Route path="/admin/dashboard" element={<AdminDashBoard />} />
         <Route path="/admin/film" element={<AdminFilm />} />
         <Route path="/admin/account" element={<AdminAccount />} />
+        <Route path="/reviewer" element={<DashBoardReviewer />} />
+        <Route path="/reviewer/film" element={<FilmReviewer />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
