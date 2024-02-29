@@ -4,7 +4,7 @@
   import { fetchDashBoard, updateStatusBlog } from "../../services/AdminService";
   import Button from "react-bootstrap/Button";
   import Modal from "react-bootstrap/Modal";
-
+  import { toast } from "react-toastify";
   const Dashboard = () => {
     const [listUsers, setListUsers] = useState([]);
     const [pageCount, setPageCount] = useState(0);
@@ -15,6 +15,7 @@
     });
     const [show, setShow] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
       getBlogs(currentPage);
@@ -55,11 +56,24 @@
       setShow(true);
     };
 
+    const handleShowModal = (itemId) => {
+      setSelectedItemId(itemId); // Update selectedItemId when clicking the button
+      setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+      setSelectedItemId(null); // Reset selectedItemId when closing modal
+      setShowModal(false);
+    };
+
     const handleRefuseBlog = async (id) => {
       try {
         const res = await updateStatusBlog(id, localStorage.getItem("jwtToken"), "REFUSE");
         if (res?.code === 200) updateUserList();
-        setShow(false);
+        console.log(res)
+        toast.success("Refuse blog successfully");
+        handleCloseModal();
+        
       } catch (error) {
         console.error("Error refusing blog:", error);
       }
@@ -69,6 +83,7 @@
       try {
         const res = await updateStatusBlog(id, localStorage.getItem("jwtToken"), "APPROVE");
         if (res?.code === 200) updateUserList();
+        toast.success("Approve blog successfully");
         setShow(false);
       } catch (error) {
         console.error("Error approving blog:", error);
@@ -84,15 +99,15 @@
         <td style={{ minWidth: "200px" }}>{item.updateDateTime}</td>
         <td style={{ minWidth: "150px" }}>{item.updateBy.name}</td>
         <td>{item.status}</td>
-        <td className="d-flex flex-column flex-md-row align-items-md-center">
-        <button
+        <td>
+        {/* <button
               type="button"
               className="btn btn-danger mb-2 mb-md-0 me-md-2"
-              onClick={() => handleShow(item.id)}
+              onClick={() => handleShowModal(item.id)}
             >
               Refuse
             </button>
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={showModal} onHide={handleCloseModal}>
               <Modal.Header closeButton>
                 <Modal.Title>Confirm Refusal</Modal.Title>
               </Modal.Header>
@@ -126,7 +141,10 @@
                   Confirm
                 </Button>
               </Modal.Footer>
-            </Modal>
+            </Modal> */}
+             <a>
+             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="eye"><path fill="#6563FF" d="M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z" style={{height: '8px', color: 'blueviolet'}}></path></svg>
+             </a>
         </td>
       </tr>
     );

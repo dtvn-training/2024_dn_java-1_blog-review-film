@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../services/AuthService";
 import "../css/AdminPage.css";
+import { ToastContainer } from "react-toastify";
 const useSummaryData = () => {
   const [summaryData, setSummaryData] = useState({});
 
@@ -56,6 +57,7 @@ const AdminDashBoard = () => {
 
   return (
     <div>
+      <ToastContainer />
       <link
         rel="stylesheet"
         href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
