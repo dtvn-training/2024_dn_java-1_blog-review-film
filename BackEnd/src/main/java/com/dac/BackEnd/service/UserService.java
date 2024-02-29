@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dac.BackEnd.model.User;
 import com.dac.BackEnd.model.request.ReviewerInput;
+import com.dac.BackEnd.model.request.ReviewerUpdateInput;
 import com.dac.BackEnd.model.request.UserStatusRequest;
 import com.dac.BackEnd.model.response.ResponsePage;
 
@@ -19,10 +20,10 @@ public interface UserService {
 
     User createNewReviewer(ReviewerInput input);
 
-    User updateReivewer(ReviewerInput input, Long reviewerId);
+    User updateReviewer(ReviewerUpdateInput input, Long reviewerId);
 
-    void deleteUser(Long reiviewerId);
+    void deleteUser(Long reviewerId);
 
-    Object updateStatusReivewer(UserStatusRequest status, Long reviewerId);
+    Object updateStatusReviewer(UserStatusRequest status, Long reviewerId);
     
 }

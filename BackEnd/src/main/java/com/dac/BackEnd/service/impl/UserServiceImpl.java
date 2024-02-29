@@ -21,6 +21,7 @@ import com.dac.BackEnd.entity.UserEntity.UserStatus;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.User;
 import com.dac.BackEnd.model.request.ReviewerInput;
+import com.dac.BackEnd.model.request.ReviewerUpdateInput;
 import com.dac.BackEnd.model.request.UserStatusRequest;
 import com.dac.BackEnd.model.response.ResponsePage;
 import com.dac.BackEnd.repository.UserRepository;
@@ -38,30 +39,30 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ResponsePage getPageInfo(int page, String by, String status, String searchText) {
-        int totalReivewer = 0;
+        int totalReviewer = 0;
         int totalPages = 0;
         int perPage = 10;
         switch (by) {
             case "status":
                 if (status != null) {
-                    totalReivewer = (int) userRepository.countReviewerByStatus(UserStatusValidation.checkValidStatus(status));
+                    totalReviewer = (int) userRepository.countReviewerByStatus(UserStatusValidation.checkValidStatus(status));
                 }
                 break;
             case "searchText":
                 if (searchText != null) {
-                    totalReivewer = userRepository.countReviewerByTextInName(searchText);
+                    totalReviewer = userRepository.countReviewerByTextInName(searchText);
                 }
                 break;
             default:
-            totalReivewer = (int) userRepository.countAllReviewer();
+            totalReviewer = (int) userRepository.countAllReviewer();
                 break;
         }
 
-        if (totalReivewer == 0) {
+        if (totalReviewer == 0) {
             throw new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE);
         }
 
-        totalPages = (int) Math.ceil((double) totalReivewer / perPage);
+        totalPages = (int) Math.ceil((double) totalReviewer / perPage);
 
         if (page < 1 || page > totalPages) {
             throw new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE);
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService{
         ResponsePage responsePage = new ResponsePage();
         responsePage.setPage(page);
         responsePage.setPer_page(perPage);
-        responsePage.setTotal(totalReivewer);
+        responsePage.setTotal(totalReviewer);
         responsePage.setTotal_pages(totalPages);
         return responsePage;
     }
@@ -105,7 +106,6 @@ public class UserServiceImpl implements UserService{
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new MessageException(ErrorConstants.EMAIL_ALREADY_EXISTS_MESSAGE, ErrorConstants.EMAIL_ALREADY_EXISTS_CODE);
         }
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LocalDateTime now = LocalDateTime.now();
         UserEntity entity = new UserEntity();
@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public User updateReivewer(ReviewerInput input, Long reviewerId) {
+    public User updateReviewer(ReviewerUpdateInput input, Long reviewerId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
@@ -143,17 +143,17 @@ public class UserServiceImpl implements UserService{
     }
 
 
-    private UserEntity updateUser(UserEntity entity, ReviewerInput input, String authenName) {
+    private UserEntity updateUser(UserEntity entity, ReviewerUpdateInput input, String name) {
         entity.setName(input.getName());
         entity.setPhone(input.getPhone());
-        UserEntity user = userRepository.findByEmailAndRole(authenName, UserRole.ROLE_ADMIN).orElseThrow(() ->  new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE));
+        UserEntity user = userRepository.findByEmailAndRole(name, UserRole.ROLE_ADMIN).orElseThrow(() ->  new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE));
         entity.setUpdateByUserId(user.getId());
         entity.setUpdateDateTime(LocalDateTime.now());
         return userRepository.save(entity);
     }
 
     @Override
-    public Object updateStatusReivewer(UserStatusRequest status, Long reviewerId) {
+    public Object updateStatusReviewer(UserStatusRequest status, Long reviewerId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);

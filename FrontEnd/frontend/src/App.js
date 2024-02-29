@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import BlogDetail from './components/adminpage/blogdetail/BlogDetail';
 import CreateBlog from './components/adminpage/createblog/CreateBlog';
 import Login from './components/login/Login';
+import SignUp from './pages/SignUp/SignUp';
 
 const App = () => {
   return (

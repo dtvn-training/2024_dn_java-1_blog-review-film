@@ -10,18 +10,26 @@ import CreateBlog from "./components/adminpage/createblog/CreateBlog";
 import AdminDashBoard from "./components/adminpage/admindashboard/AdminDashBoard";
 import AdminFilm from "./components/adminpage/adminfilm/AdminFilm";
 import AdminAccount from "./components/adminpage/adminaccount/AdminAccount";
+import SignUp from "./pages/SignUp/SignUp";
+import DashBoardReviewer from "./components/reviewerpage/reviewerDashboard/DashboardReviewer";
+import FilmReviewer from "./components/reviewerpage/reviewerFilm/FilmReviewer";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route index element={<Login />} />
+        <Route index element={<App />} />
         <Route path="login" element={<Login />} />
+        <Route path="signup" element={<SignUp />} />
         <Route path="/admin/blog" element={<AdminBlog />} />
         <Route path="/admin/edit" element={<BlogDetail />} />
         <Route path="/admin/dashboard" element={<AdminDashBoard />} />
         <Route path="/admin/film" element={<AdminFilm />} />
         <Route path="/admin/account" element={<AdminAccount />} />
+        <Route path="/reviewer" element={<DashBoardReviewer />} />
+        <Route path="/reviewer/film" element={<FilmReviewer />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

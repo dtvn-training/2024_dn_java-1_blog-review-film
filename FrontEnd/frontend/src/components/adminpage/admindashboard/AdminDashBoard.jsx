@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../services/AuthService";
 import "../css/AdminPage.css";
 import { ToastContainer } from "react-toastify";
+
 const useSummaryData = () => {
   const [summaryData, setSummaryData] = useState({});
 
