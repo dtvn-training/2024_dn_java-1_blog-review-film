@@ -8,6 +8,7 @@ import com.dac.BackEnd.constant.SuccessConstants;
 import com.dac.BackEnd.convertor.UserConvertor;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.request.ReviewerInput;
+import com.dac.BackEnd.model.request.ReviewerUpdateInput;
 import com.dac.BackEnd.model.request.UserStatusRequest;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
@@ -89,7 +90,7 @@ public class UserAdminController {
     }
 
     @PutMapping("{reviewerId}")
-    public ResponseEntity<?> updateReviewer(@Valid @RequestBody ReviewerInput input, @PathVariable Long reviewerId) {
+    public ResponseEntity<?> updateReviewer(@Valid @RequestBody ReviewerUpdateInput input, @PathVariable Long reviewerId) {
         try {
             ResponseBody response = new ResponseBody();
             response.setCode(SuccessConstants.OK_CODE);

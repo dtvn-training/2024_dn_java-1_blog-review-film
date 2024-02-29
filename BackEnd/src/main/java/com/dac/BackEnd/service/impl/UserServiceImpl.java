@@ -21,6 +21,7 @@ import com.dac.BackEnd.entity.UserEntity.UserStatus;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.User;
 import com.dac.BackEnd.model.request.ReviewerInput;
+import com.dac.BackEnd.model.request.ReviewerUpdateInput;
 import com.dac.BackEnd.model.request.UserStatusRequest;
 import com.dac.BackEnd.model.response.ResponsePage;
 import com.dac.BackEnd.repository.UserRepository;
@@ -130,7 +131,7 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public User updateReviewer(ReviewerInput input, Long reviewerId) {
+    public User updateReviewer(ReviewerUpdateInput input, Long reviewerId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
@@ -142,7 +143,7 @@ public class UserServiceImpl implements UserService{
     }
 
 
-    private UserEntity updateUser(UserEntity entity, ReviewerInput input, String name) {
+    private UserEntity updateUser(UserEntity entity, ReviewerUpdateInput input, String name) {
         entity.setName(input.getName());
         entity.setPhone(input.getPhone());
         UserEntity user = userRepository.findByEmailAndRole(name, UserRole.ROLE_ADMIN).orElseThrow(() ->  new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE));

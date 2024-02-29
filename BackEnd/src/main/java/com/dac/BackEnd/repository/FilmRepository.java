@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.dac.BackEnd.entity.CategoryEntity;
 import com.dac.BackEnd.entity.FilmEntity;
+import com.dac.BackEnd.entity.UserEntity.UserEntity;
 
 @Repository
 public interface FilmRepository extends JpaRepository<FilmEntity, Long>{
@@ -39,4 +40,8 @@ public interface FilmRepository extends JpaRepository<FilmEntity, Long>{
 
     @Query("SELECT f FROM FilmEntity f WHERE f.deleteFlag = false AND f.startDate <= :currentDate")
     List<FilmEntity> findAllReleasedFilms(@Param("currentDate") LocalDate currentDate);
+
+    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE f.deleteFlag = false AND f.startDate <= :currentDate")
+    int countReleasedFilms(@Param("currentDate") LocalDate currentDate);
+
 }

@@ -52,7 +52,7 @@ const Login = () => {
         if (userRole === 'ROLE_ADMIN') {
           navigate("/admin/dashboard");
         } else if (userRole === 'ROLE_REVIEWER') {
-          navigate("/reviewer/dashboard");
+          navigate("/reviewer");
         } else {
           // Xử lý chuyển hướng cho các vai trò khác (nếu cần)
         }

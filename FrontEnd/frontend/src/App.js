@@ -11,7 +11,7 @@ import SignUp from './pages/SignUp/SignUp';
 const App = () => {
   return (
     <>
-      <SignUp />
+      <Login />
     </>
   );
 }
