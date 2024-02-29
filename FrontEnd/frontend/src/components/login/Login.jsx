@@ -52,7 +52,7 @@ const Login = () => {
         if (userRole === 'ROLE_ADMIN') {
           navigate("/admin/dashboard");
         } else if (userRole === 'ROLE_REVIEWER') {
-          navigate("/reviewer/dashboard");
+          navigate("/reviewer");
         } else {
           // Xử lý chuyển hướng cho các vai trò khác (nếu cần)
         }
@@ -107,7 +107,7 @@ const Login = () => {
                 {isLoading ? 'Loading...' : 'Login'}
               </button>
               <div className={styles.register_link}>
-                <p>Dont have an account? <a href="#">Register</a></p>
+                <p>Dont have an account? <a href="signup">Register</a></p>
               </div>
             </form>
           </div>

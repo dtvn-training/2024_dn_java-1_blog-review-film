@@ -78,7 +78,6 @@ public class FilmsAdminController {
             body.setMessage(Arrays.asList(e));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
         }
-        
     }
 
     @PostMapping()
