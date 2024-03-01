@@ -34,83 +34,90 @@ const CreateFilm = ({ show, createFilm }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         let isError = false;
-        let errorMessageCategory = "";
-        let errorMessageName = "";
-        let errorMessageDirector = "";
-        let errorMessageCountry = "";
-        let errorMessageStartDate = "";
-        let errorMessageDescription = "";
-        let errorMessageImage = ""; // Add this line
-
+    
+        // Reset error messages
+        let errorMessages = {
+            errorMessageCategory: "",
+            errorMessageName: "",
+            errorMessageDirector: "",
+            errorMessageCountry: "",
+            errorMessageStartDate: "",
+            errorMessageDescription: "",
+            errorMessageImage: ""
+        };
+    
         // Validate category
-        if (filmData.categoryId.trim() === "") {
-            errorMessageCategory += "Category is required.";
+        if (!filmData.categoryId || filmData.categoryId.trim() === "") {
+            errorMessages.errorMessageCategory = "Category is required.";
             isError = true;
         }
+    
         // Validate name
-        if (filmData.nameFilm.trim() === "") {
-            errorMessageName += "Name is required.";
+        if (!filmData.nameFilm || filmData.nameFilm.trim() === "") {
+            errorMessages.errorMessageName = "Name is required.";
             isError = true;
         } else if (filmData.nameFilm.length > 50) {
-            errorMessageName = "Name must be at most 50 characters.";
+            errorMessages.errorMessageName = "Name must be at most 50 characters.";
             isError = true;
         }
-
+    
         // Validate director
-        if (filmData.director.trim() === "") {
-            errorMessageDirector += "Director is required.";
+        if (!filmData.director || filmData.director.trim() === "") {
+            errorMessages.errorMessageDirector = "Director is required.";
             isError = true;
         } else if (filmData.director.length > 30) {
-            errorMessageDirector = "Director must be at most 30 characters.";
+            errorMessages.errorMessageDirector = "Director must be at most 30 characters.";
             isError = true;
         }
-
+    
         // Validate country
-        if (filmData.country.trim() === "") {
-            errorMessageCountry += "Country is required.";
+        if (!filmData.country || filmData.country.trim() === "") {
+            errorMessages.errorMessageCountry = "Country is required.";
             isError = true;
         } else if (filmData.country.length > 5) {
-            errorMessageCountry = "Country must be at most 5 characters.";
+            errorMessages.errorMessageCountry = "Country must be at most 5 characters.";
             isError = true;
         }
-
+    
         // Validate start date
         if (!filmData.startDate) {
-            errorMessageStartDate += "Start Date is required.";
+            errorMessages.errorMessageStartDate = "Start Date is required.";
             isError = true;
         }
-
+    
         // Validate description
-        if (filmData.description.trim() === "") {
-            errorMessageDescription += "Description is required.";
+        if (!filmData.description || filmData.description.trim() === "") {
+            errorMessages.errorMessageDescription = "Description is required.";
             isError = true;
         } else if (filmData.description.length > 255) {
-            errorMessageDescription = "Description must be at most 255 characters.";
+            errorMessages.errorMessageDescription = "Description must be at most 255 characters.";
             isError = true;
         }
-
-        // validate image
+    
+        // Validate image
         if (!filmData.filmImage) {
-            errorMessageImage += "Image is required.";
+            errorMessages.errorMessageImage = "Image is required.";
             isError = true;
         }
-
-        setFilmData({ ...filmData, errorMessageCategory, errorMessageName, errorMessageDirector, errorMessageCountry, errorMessageStartDate, errorMessageDescription, errorMessageImage });
-
+    
+        // Update state with error messages
+        setFilmData({ ...filmData, ...errorMessages });
+    
         // If there's an error, stop the submission
         if (isError) {
             return;
         }
+    
         // Call API to create film
         try {
             const data = await postCreateFilm(filmData.categoryId, filmData.nameFilm, filmData.director, filmData.country, filmData.startDate, filmData.description, filmData.filmImage, localStorage.getItem("jwtToken"));
-            console.log("123", data)
+            console.log("123", data);
             if (data.code === 201) {
                 toast.success('Create film successfully');
                 handleClose();
             }
         } catch (error) {
-            let array = error.response.data.message
+            let array = error.response.data.message;
             for (let i = 0; i < array.length; i++) {
                 console.log(array[i].defaultMessage);
                 toast.error(array[i].defaultMessage);
@@ -118,7 +125,7 @@ const CreateFilm = ({ show, createFilm }) => {
             console.error('Error creating film:', error.message);
         }
     };
-
+    
     const [buttonWidth, setButtonWidth] = useState("200px");
     useEffect(() => {
         const handleResize = () => {
