@@ -24,8 +24,9 @@ import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.request.BlogInput;
-import com.dac.BackEnd.model.request.BlogStatusRequest;
 import com.dac.BackEnd.model.request.ContentInput;
+import com.dac.BackEnd.model.request.DeleteRequest;
+import com.dac.BackEnd.model.request.StatusRequest;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
 import com.dac.BackEnd.model.response.ResponsesBody;
@@ -114,7 +115,7 @@ public class BlogsAdminController {
         }
     }
 
-    @PatchMapping("{blogId}/image")
+    @PatchMapping("{blogId}")
     public ResponseEntity<?> updateImageBlog(@RequestPart(value = "file") MultipartFile file, @PathVariable Long blogId) {
         try {
             ResponseBody response = new ResponseBody();
@@ -131,7 +132,7 @@ public class BlogsAdminController {
     }
 
     @PutMapping("{blogId}/content")
-    public ResponseEntity<?> updateConent(@Valid @RequestBody List<ContentInput> contentInputs, @PathVariable Long blogId) {
+    public ResponseEntity<?> updateContent(@Valid @RequestBody List<ContentInput> contentInputs, @PathVariable Long blogId) {
         try {
             ResponseBody response = new ResponseBody();
             response.setCode(SuccessConstants.OK_CODE);
@@ -146,7 +147,7 @@ public class BlogsAdminController {
         }
     }
 
-    @PatchMapping("{blogId}/content/image")
+    @PatchMapping("{blogId}/content")
     public ResponseEntity<?> updateImageContent(@RequestPart(value = "files") List<ContentInput> contents, @PathVariable Long blogId) {
         try {
             ResponseBody response = new ResponseBody();
@@ -163,11 +164,11 @@ public class BlogsAdminController {
     }
 
     @Transactional
-    @PatchMapping("{blogId}")
-    public ResponseEntity<?> updateBlogStatus(@PathVariable Long blogId, @RequestBody BlogStatusRequest blogStatus) {
+    @PatchMapping()
+    public ResponseEntity<?> updateBlogStatus(@RequestBody StatusRequest blogStatus) {
         try {
             Response response = new Response();
-            blogService.updateStatusBlog(blogId, blogStatus.getStatus());
+            blogService.updateStatusBlog(blogStatus);
             response.setCode(SuccessConstants.OK_CODE);
             response.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
             return ResponseEntity.ok().body(response);
@@ -186,6 +187,22 @@ public class BlogsAdminController {
             response.setCode(SuccessConstants.OK_CODE);
             response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
             blogService.deleteBlog(blogId);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (MessageException e) {
+            Response response = new Response();
+            response.setCode(e.getErrorCode());
+            response.setMessage(Arrays.asList(e));
+            return ResponseEntity.status(e.getErrorCode()).body(response);
+        }
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<?> deleteBlogs(@RequestBody DeleteRequest deletes) {
+        try {
+            Response response = new Response();
+            response.setCode(SuccessConstants.OK_CODE);
+            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
+            blogService.deleteBlogs(deletes);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (MessageException e) {
             Response response = new Response();

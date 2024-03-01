@@ -8,6 +8,7 @@ import com.dac.BackEnd.constant.ErrorConstants;
 import com.dac.BackEnd.constant.SuccessConstants;
 import com.dac.BackEnd.convertor.FilmConvertor;
 import com.dac.BackEnd.exception.MessageException;
+import com.dac.BackEnd.model.request.DeleteRequest;
 import com.dac.BackEnd.model.request.FilmInput;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
@@ -135,6 +136,23 @@ public class FilmsAdminController {
             response.setCode(SuccessConstants.OK_CODE);
             response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
             filmService.deleteFilm(filmId);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (MessageException e) {
+            Response response = new Response();
+            response.setCode(e.getErrorCode());
+            response.setMessage(Arrays.asList(e));
+            return ResponseEntity.status(e.getErrorCode()).body(response);
+        }
+        
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<Response> deleteFilms(@RequestBody DeleteRequest deletes) {
+        try {
+            Response response = new Response();
+            response.setCode(SuccessConstants.OK_CODE);
+            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
+            filmService.deleteFilms(deletes);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (MessageException e) {
             Response response = new Response();

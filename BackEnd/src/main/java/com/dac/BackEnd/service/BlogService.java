@@ -9,6 +9,8 @@ import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.Content;
 import com.dac.BackEnd.model.request.BlogInput;
 import com.dac.BackEnd.model.request.ContentInput;
+import com.dac.BackEnd.model.request.DeleteRequest;
+import com.dac.BackEnd.model.request.StatusRequest;
 import com.dac.BackEnd.model.response.ResponsePage;
 
 public interface BlogService {
@@ -23,7 +25,7 @@ public interface BlogService {
 
     Blog getBlogById(Long blogId);
 
-    void updateStatusBlog(Long blogId, String status);
+    void updateStatusBlog(StatusRequest status);
 
     List<Blog> getAllBlogByPostTime(LocalDateTime startTime, LocalDateTime endTime, int page);
 
@@ -38,6 +40,8 @@ public interface BlogService {
     Object updateImageBlog(MultipartFile file, Long blogId);
 
     Object updateImageContent(List<ContentInput> contents, Long blogId);
+
+    void deleteBlogs(DeleteRequest deletes);
 
     
 
