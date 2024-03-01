@@ -63,7 +63,7 @@ const TableFilm = () => {
         if (category === null) {
             setCurrentPage(0);
             setCategoryFilter({ filter: false, category: "" });
-            getFilms(currentPage);
+            console.log('All2');
         } else {
             setCategoryFilter({ filter: true, category: category });
             setCurrentPage(0);
@@ -89,6 +89,7 @@ const TableFilm = () => {
         const categoryId = event.target.value;
         if (categoryId === "All") {
             handleFilter(null);
+            console.log('All');
         } else {
             handleFilter(categoryId);
         }
@@ -109,14 +110,12 @@ const TableFilm = () => {
     }
 
     const renderTableRow = (item, index) => (
-        <tr key={index} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-            <td>{item.id}</td>
+        <tr key={index} style={{verticalAlign: 'middle' }}>
+            <td style ={{  textAlign: 'right'  }}>{index + 1}</td>
             <td>{item.nameFilm}</td>
             <td>{item.director}</td>
             <td>{item.country}</td>
-            <td style={{ minWidth: '200px' }}>{item.description}</td>
             <td style={{ minWidth: '150px' }}>{item.startDate}</td>
-            <td style={{ minWidth: '200px' }}>{item.updateDateTime}</td>
             <td className="d-flex flex-column flex-md-row align-items-md-center">
                 {isAdmin && (
                     <>
@@ -158,13 +157,11 @@ const TableFilm = () => {
                 <Table striped bordered hover>
                     <thead>
                         <tr style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                            <th>id</th>
+                            <th>STT</th>
                             <th>Name</th>
                             <th>Director</th>
                             <th>Country</th>
-                            <th>Description</th>
                             <th>Start Date</th>
-                            <th>Update Date TIme</th>
                             <th>Action</th>
                         </tr>
                     </thead>
