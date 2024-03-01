@@ -11,23 +11,15 @@ import com.dac.BackEnd.model.request.BlogInput;
 import com.dac.BackEnd.model.request.ContentInput;
 import com.dac.BackEnd.model.request.DeleteRequest;
 import com.dac.BackEnd.model.request.StatusRequest;
-import com.dac.BackEnd.model.response.ResponsePage;
+import com.dac.BackEnd.model.response.PagedResponse;
 
 public interface BlogService {
 
-    ResponsePage getPageInfo(int page, String by, String status, String searchText, LocalDateTime startTime, LocalDateTime endTime);
-
-    List<Blog> getAllBlogs(int page);
-
-    List<Blog> getAllBlogsByStatus(String status, int page);
-
-    List<Blog> getAllBlogByText(String searchText, int page);
+    PagedResponse<Blog> getAllBlogs(String status, String searchText, LocalDateTime startTime, LocalDateTime endTime, int page);   
 
     Blog getBlogById(Long blogId);
 
     void updateStatusBlog(StatusRequest status);
-
-    List<Blog> getAllBlogByPostTime(LocalDateTime startTime, LocalDateTime endTime, int page);
 
     Blog createNewBlog(BlogInput blogInput);
 
@@ -42,11 +34,4 @@ public interface BlogService {
     Object updateImageContent(List<ContentInput> contents, Long blogId);
 
     void deleteBlogs(DeleteRequest deletes);
-
-    
-
-   
-
-    
-    
 }

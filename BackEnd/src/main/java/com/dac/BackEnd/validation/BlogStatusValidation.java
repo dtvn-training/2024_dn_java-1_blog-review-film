@@ -8,6 +8,9 @@ public class BlogStatusValidation {
 
     // Phương thức kiểm tra status có hợp lệ không
     public static BlogStatus checkValidStatus(String status) {
+        if (status.equals("")) {
+            return null;
+        }
         for (BlogStatus validStatus : BlogStatus.values()) {
             if (validStatus.toString().equals(status)) {
                 return validStatus;

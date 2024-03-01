@@ -1,7 +1,6 @@
 package com.dac.BackEnd.controller.Admin;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.dac.BackEnd.constant.ErrorConstants;
 import com.dac.BackEnd.constant.SuccessConstants;
@@ -10,7 +9,9 @@ import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.request.ReviewerInput;
 import com.dac.BackEnd.model.request.ReviewerUpdateInput;
 import com.dac.BackEnd.model.request.StatusRequest;
+import com.dac.BackEnd.model.User;
 import com.dac.BackEnd.model.request.DeleteRequest;
+import com.dac.BackEnd.model.response.PagedResponse;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
 import com.dac.BackEnd.model.response.ResponsesBody;
@@ -18,27 +19,15 @@ import com.dac.BackEnd.service.UserService;
 
 import jakarta.validation.Valid;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/admin/reviewers")
@@ -46,31 +35,22 @@ public class UserAdminController {
 
     @Autowired
     private UserService userService;
-    
+
     @GetMapping()
-    public ResponseEntity<?> getAllReviewer(@RequestParam(required = false, defaultValue = "1") int page,
-                                @RequestParam(required = false) String status,
-                                @RequestParam(required = false) String searchText) {
+    public ResponseEntity<?> getAllReviewer(
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false, defaultValue = "") String searchText) {
         try {
             ResponsesBody body = new ResponsesBody();
-            if (status != null) {
-                body.setData(UserConvertor.convertToObjects(userService.getAllUserByStatus(status, page)));
-                body.setPageInfo(userService.getPageInfo(page, "status", status, searchText));
-            } else if (searchText != null) {
-                body.setData(UserConvertor.convertToObjects(userService.getAllUserByText(searchText, page)));
-                body.setPageInfo(userService.getPageInfo(page, "searchText", status, searchText));
-            } else {
-                body.setData(UserConvertor.convertToObjects(userService.getAllUser(page)));
-                body.setPageInfo(userService.getPageInfo(page, "all", status, searchText));
-            }
             body.setCode(SuccessConstants.OK_CODE);
-            body.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            return ResponseEntity.ok(body);
+            body.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE));
+            PagedResponse<User> pagedResponse = userService.getAllUser(page, status, searchText);
+            body.setData(UserConvertor.convertToObjects(pagedResponse.getContent()));
+            body.setPageInfo(pagedResponse.getResponsePage());
+            return ResponseEntity.ok().body(body);
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e));
         }
     }
 
@@ -83,90 +63,82 @@ public class UserAdminController {
             response.setData(userService.createNewReviewer(input));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @PutMapping("{reviewerId}")
     public ResponseEntity<?> updateReviewer(@Valid @RequestBody ReviewerUpdateInput input, @PathVariable Long reviewerId) {
         try {
-            ResponseBody response = new ResponseBody();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            response.setData(userService.updateReviewer(input, reviewerId));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(userService.updateReviewer(input, reviewerId)));
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @PatchMapping()
-    public ResponseEntity<?> updateStatusUser(@RequestBody StatusRequest status) {
+    public ResponseEntity<Response> updateStatusUser(@RequestBody StatusRequest status) {
         try {
-            Response response = new Response();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
             userService.updateStatusReviewer(status);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @DeleteMapping("{reviewerId}")
-    public ResponseEntity<?> deleteReviewer(@PathVariable Long reviewerId) {
+    public ResponseEntity<Response> deleteReviewer(@PathVariable Long reviewerId) {
         try {
-            Response response = new Response();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
             userService.deleteUser(reviewerId);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @DeleteMapping()
-    public ResponseEntity<?> deleteReviewers(@RequestBody DeleteRequest deletes) {
+    public ResponseEntity<Response> deleteReviewers(@RequestBody DeleteRequest deletes) {
         try {
-            Response response = new Response();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
             userService.deleteUsers(deletes);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response handleValidationExceptions(MethodArgumentNotValidException ex){
+    public Response handleValidationExceptions(MethodArgumentNotValidException ex) {
         Response response = new Response();
         response.setCode(ErrorConstants.INVALID_DATA_CODE);
         List<Object> messages = new ArrayList<>();
-        ex.getBindingResult().getAllErrors().forEach((error)->{
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             messages.add(new MessageException(fieldName + ": " + error.getDefaultMessage(), response.getCode()));
         });
         response.setMessage(messages);
         return response;
     }
-    
-    
+
+    private ResponseBody createSuccessResponse(Object data) {
+        ResponseBody responseBody = new ResponseBody();
+        responseBody.setCode(SuccessConstants.OK_CODE);
+        responseBody.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
+        responseBody.setData(data);
+        return responseBody;
+    }
+
+    private Response createSuccessResponse() {
+        Response response = new Response();
+        response.setCode(SuccessConstants.OK_CODE);
+        response.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
+        return response;
+    }
+
+    private Response createErrorResponse(MessageException e) {
+        Response response = new Response();
+        response.setCode(e.getErrorCode());
+        response.setMessage(Arrays.asList(e));
+        return response;
+    }
 }

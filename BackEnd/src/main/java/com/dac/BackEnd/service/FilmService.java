@@ -8,23 +8,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dac.BackEnd.model.Film;
 import com.dac.BackEnd.model.request.DeleteRequest;
 import com.dac.BackEnd.model.request.FilmInput;
+import com.dac.BackEnd.model.response.PagedResponse;
 import com.dac.BackEnd.model.response.ResponsePage;
 
 
 
 public interface FilmService {
 
-    ResponsePage getPageInfo(int page, String by, Long category, String searchText, LocalDate startTime, LocalDate endTime);
-
-    List<Film> getAllFilm(int page);
-
-    List<Film> getAllBlogsByCategory(Long category, int page);
-
-    List<Film> getAllFilmByText(String searchText, int page);
-
-    List<Film> getAllFilmByStartDate(LocalDate startTime, LocalDate endTime, int page);
-
-    List<Film> getAllFilmDeleteFalse();
+    PagedResponse<Film> getAllFilm(int page, Long category, String searchText, LocalDate startTime, LocalDate endTime);
 
     Film createNewFilm(FilmInput filmInput);
 
