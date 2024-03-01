@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dac.BackEnd.model.Film;
+import com.dac.BackEnd.model.request.DeleteRequest;
 import com.dac.BackEnd.model.request.FilmInput;
 import com.dac.BackEnd.model.response.ResponsePage;
 
@@ -32,5 +33,7 @@ public interface FilmService {
     Film updateImageFilm(MultipartFile file, Long filmId);
 
     void deleteFilm(Long filmId);
+
+    void deleteFilms(DeleteRequest deletes);
     
 }

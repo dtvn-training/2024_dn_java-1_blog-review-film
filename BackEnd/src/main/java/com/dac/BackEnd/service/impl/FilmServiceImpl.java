@@ -19,6 +19,7 @@ import com.dac.BackEnd.entity.UserEntity.UserEntity;
 import com.dac.BackEnd.entity.UserEntity.UserRole;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Film;
+import com.dac.BackEnd.model.request.DeleteRequest;
 import com.dac.BackEnd.model.request.FilmInput;
 import com.dac.BackEnd.model.response.ResponsePage;
 import com.dac.BackEnd.repository.CategoryRepository;
@@ -89,7 +90,7 @@ public class FilmServiceImpl implements FilmService{
 
     @Override
     public List<Film> getAllFilm(int page) {
-        return filmRepository.findByDeleteFlagFalse(PageRequest.of(page - 1, 10))
+        return filmRepository.findByDeleteFlagFalseOrderByInsertDateTimeDesc(PageRequest.of(page - 1, 10))
             .stream()
             .map(FilmConvertor::toModel)
             .toList();
@@ -97,7 +98,7 @@ public class FilmServiceImpl implements FilmService{
 
     @Override
     public List<Film> getAllBlogsByCategory(Long category, int page) {
-        return filmRepository.findByCategoryAndDeleteFlagFalse(categoryRepository.findById(category)
+        return filmRepository.findByCategoryAndDeleteFlagFalseOrderByInsertDateTimeDesc(categoryRepository.findById(category)
             .orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE)), PageRequest.of(page - 1, 10))
             .stream()
             .map(FilmConvertor::toModel)
@@ -198,5 +199,12 @@ public class FilmServiceImpl implements FilmService{
         FilmEntity entity = filmRepository.findById(filmId).orElseThrow(() ->  new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
         entity.setDeleteFlag(true);
         filmRepository.save(entity);
+    }
+
+    @Override
+    public void deleteFilms(DeleteRequest deletes) {
+        for (Long filmId : deletes.getIds()) {
+            deleteFilm(filmId);
+        }
     }
 }

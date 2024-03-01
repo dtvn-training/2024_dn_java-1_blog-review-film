@@ -27,6 +27,8 @@ import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.Content;
 import com.dac.BackEnd.model.request.BlogInput;
 import com.dac.BackEnd.model.request.ContentInput;
+import com.dac.BackEnd.model.request.DeleteRequest;
+import com.dac.BackEnd.model.request.StatusRequest;
 import com.dac.BackEnd.model.response.ResponsePage;
 import com.dac.BackEnd.repository.BlogRepository;
 import com.dac.BackEnd.repository.ContentRepository;
@@ -138,14 +140,16 @@ public class BlogServiceImpl implements BlogService{
     }
 
     @Override
-    public void updateStatusBlog(Long blogId, String status) {
-        BlogStatus blogStatus = BlogStatusValidation.checkValidStatus(status);
-        BlogEntity blogEntity = blogRepository.findById(blogId).orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
-        blogEntity.setStatus(blogStatus);
-        if (BlogStatus.APPROVE == blogEntity.getStatus()) {
-            blogEntity.setPostTime(LocalDateTime.now());
+    public void updateStatusBlog(StatusRequest status) {
+        BlogStatus blogStatus = BlogStatusValidation.checkValidStatus(status.getStatus());
+        for (Long blogId : status.getIds()) {
+            BlogEntity blogEntity = blogRepository.findById(blogId).orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE));
+            blogEntity.setStatus(blogStatus);
+            if (BlogStatus.APPROVE == blogEntity.getStatus()) {
+                blogEntity.setPostTime(LocalDateTime.now());
+            }
+            blogRepository.save(blogEntity);
         }
-        blogRepository.save(blogEntity);
     }
 
     @Override
@@ -266,5 +270,12 @@ public class BlogServiceImpl implements BlogService{
         }
         entity.setDeleteFlag(true);
         blogRepository.save(entity);
+    }
+
+    @Override
+    public void deleteBlogs(DeleteRequest deletes) {
+        for (Long blogId : deletes.getIds()) {
+            deleteBlog(blogId);
+        }
     }
 }

@@ -33,13 +33,13 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
 
     long countByRole(UserRole role);
 
-    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.deleteFlag = false")
+    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.deleteFlag = false ORDER BY u.insertDateTime DESC")
     List<UserEntity> findAllReviewer(Pageable pageable);
 
-    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.status = :status AND u.deleteFlag = false")
+    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.status = :status AND u.deleteFlag = false ORDER BY u.insertDateTime DESC")
     List<UserEntity> findAllReviewersByStatus(@Param("status") UserStatus status, Pageable pageable);
 
-    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND LOWER(u.name) LIKE %:searchText% AND u.deleteFlag = false")
+    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND LOWER(u.name) LIKE %:searchText% AND u.deleteFlag = false ORDER BY u.insertDateTime DESC")
     Page<UserEntity> findReviewerByTextInName(String searchText, Pageable pageable);
 
     Optional<UserEntity> findByEmailAndRole(String email, UserRole role);

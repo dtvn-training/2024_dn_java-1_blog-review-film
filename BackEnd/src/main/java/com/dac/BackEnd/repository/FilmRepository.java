@@ -28,20 +28,20 @@ public interface FilmRepository extends JpaRepository<FilmEntity, Long>{
     @Query("SELECT COUNT(f) FROM FilmEntity f WHERE (f.startDate BETWEEN :startTime AND :endTime) AND f.deleteFlag = false")
     int countAllBlogsByStartDate(LocalDate startTime, LocalDate endTime);
 
-    List<FilmEntity> findByDeleteFlagFalse(Pageable pageable);
+    List<FilmEntity> findByDeleteFlagFalseOrderByInsertDateTimeDesc(Pageable pageable);
 
-    List<FilmEntity> findByCategoryAndDeleteFlagFalse(CategoryEntity category, Pageable pageable);
+    List<FilmEntity> findByCategoryAndDeleteFlagFalseOrderByInsertDateTimeDesc(CategoryEntity category, Pageable pageable);
 
-    @Query("SELECT f FROM FilmEntity f WHERE (f.nameFilm LIKE %:searchText% OR f.description LIKE %:searchText%) AND f.deleteFlag = false")
+    @Query("SELECT f FROM FilmEntity f WHERE (f.nameFilm LIKE %:searchText% OR f.description LIKE %:searchText%) AND f.deleteFlag = false ORDER BY f.insertDateTime DESC")
     List<FilmEntity> findAllBySearchText(String searchText, Pageable pageable);
 
-    @Query("SELECT f FROM FilmEntity f WHERE (f.startDate BETWEEN :startTime AND :endTime) AND f.deleteFlag = false")
+    @Query("SELECT f FROM FilmEntity f WHERE (f.startDate BETWEEN :startTime AND :endTime) AND f.deleteFlag = false ORDER BY f.insertDateTime DESC")
     List<FilmEntity> findAllByStartDate(LocalDate startTime, LocalDate endTime, Pageable pageable);
 
-    @Query("SELECT f FROM FilmEntity f WHERE f.deleteFlag = false AND f.startDate <= :currentDate")
+    @Query("SELECT f FROM FilmEntity f WHERE f.deleteFlag = false AND f.startDate <= :currentDate ORDER BY f.insertDateTime DESC")
     List<FilmEntity> findAllReleasedFilms(@Param("currentDate") LocalDate currentDate);
 
-    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE f.deleteFlag = false AND f.startDate <= :currentDate")
+    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE f.deleteFlag = false AND f.startDate <= :currentDate ORDER BY f.insertDateTime DESC")
     int countReleasedFilms(@Param("currentDate") LocalDate currentDate);
 
 }
