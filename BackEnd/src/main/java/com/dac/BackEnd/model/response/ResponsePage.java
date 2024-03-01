@@ -8,7 +8,7 @@ import lombok.Setter;
 public class ResponsePage {
     private int page;
     private int per_page;
-    private int total;
+    private long total;
     private int total_pages;
 
 }

@@ -45,4 +45,15 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
     Optional<UserEntity> findByEmailAndRole(String email, UserRole role);
 
     Optional<UserEntity> findByEmail(String email);
+
+    @Query("SELECT u FROM UserEntity u " +
+            "WHERE ((:status IS NULL) OR (u.status = :status)) " +
+            "AND (LOWER(u.name) LIKE LOWER(CONCAT('%', COALESCE(:searchText, ''), '%')) " +
+            "OR LOWER(u.phone) LIKE LOWER(CONCAT('%', COALESCE(:searchText, ''), '%')) " +
+            "OR LOWER(u.email) LIKE LOWER(CONCAT('%', COALESCE(:searchText, ''), '%'))) " +
+            "ORDER BY u.insertDateTime DESC")
+    Page<UserEntity> findAllReviewers(
+            @Param("status") UserStatus status,
+            @Param("searchText") String searchText,
+            Pageable pageable);
 }

@@ -7,6 +7,9 @@ import com.dac.BackEnd.exception.MessageException;
 public class UserStatusValidation {
     // Phương thức kiểm tra status có hợp lệ không
     public static UserStatus checkValidStatus(String status) {
+        if (status == null) {
+            return null;
+        }
         for (UserStatus validStatus : UserStatus.values()) {
             if (validStatus.toString().equals(status)) {
                 return validStatus;

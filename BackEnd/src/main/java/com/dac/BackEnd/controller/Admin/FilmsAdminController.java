@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dac.BackEnd.constant.ErrorConstants;
 import com.dac.BackEnd.constant.SuccessConstants;
+import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.convertor.FilmConvertor;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.request.DeleteRequest;
@@ -47,39 +48,6 @@ public class FilmsAdminController {
 
     @Autowired
     private FilmService filmService;
-    
-    @GetMapping()
-    public ResponseEntity<?> getAllFilm(@RequestParam(required = false, defaultValue = "1") int page,
-                                        @RequestParam(required = false) Long category,
-                                        @RequestParam(required = false) String searchText,
-                                        @RequestParam(required = false) LocalDate startTime,
-                                        @RequestParam(required = false) LocalDate endTime) {
-        try {
-            ResponsesBody body = new ResponsesBody();
-            if (category != null) {
-                body.setData(FilmConvertor.convertToObjects(filmService.getAllBlogsByCategory(category, page)));
-                body.setPageInfo(filmService.getPageInfo(page, "category", category, searchText, startTime, endTime));
-            } else if (searchText != null) {
-                body.setData(FilmConvertor.convertToObjects(filmService.getAllFilmByText(searchText, page)));
-                body.setPageInfo(filmService.getPageInfo(page, "searchText", category, searchText, startTime, endTime));
-            } else if (startTime != null && endTime != null) {
-                body.setData(FilmConvertor.convertToObjects(filmService.getAllFilmByStartDate(startTime, endTime, page)));
-                body.setPageInfo(filmService.getPageInfo(page, "startDate", category, searchText, startTime, endTime));
-            } else {
-                body.setData(FilmConvertor.convertToObjects(filmService.getAllFilm(page)));
-                body.setPageInfo(filmService.getPageInfo(page, "all", category, searchText, startTime, endTime));
-            }
-
-            body.setCode(SuccessConstants.OK_CODE);
-            body.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE));
-            return ResponseEntity.ok().body(body);
-        } catch (MessageException e) {
-            Response body = new Response();
-            body.setCode(e.getErrorCode());
-            body.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
-        }
-    }
 
     @PostMapping()
     public ResponseEntity<?> createNewFilm(@Valid FilmInput filmInput) {
@@ -90,58 +58,35 @@ public class FilmsAdminController {
             response.setData(filmService.createNewFilm(filmInput));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @PutMapping("{filmId}")
     public ResponseEntity<?> updateFilm(@RequestBody FilmInput input, @PathVariable Long filmId) {
         try {
-            ResponseBody response = new ResponseBody();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            response.setData(filmService.updateFilm(input, filmId));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(filmService.updateFilm(input, filmId)));
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @PatchMapping("{filmId}")
     public ResponseEntity<?> updateImageFilm(@RequestPart(value = "file") MultipartFile file, @PathVariable Long filmId) {
         try {
-            ResponseBody response = new ResponseBody();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            response.setData(filmService.updateImageFilm(file, filmId));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(filmService.updateImageFilm(file, filmId)));
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @DeleteMapping("{filmId}")
     public ResponseEntity<Response> deleteFilm(@PathVariable Long filmId) {
         try {
-            Response response = new Response();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
             filmService.deleteFilm(filmId);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
         
     }
@@ -149,16 +94,10 @@ public class FilmsAdminController {
     @DeleteMapping()
     public ResponseEntity<Response> deleteFilms(@RequestBody DeleteRequest deletes) {
         try {
-            Response response = new Response();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
             filmService.deleteFilms(deletes);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
         
     }
@@ -174,6 +113,28 @@ public class FilmsAdminController {
             messages.add(new MessageException(fieldName + ": " + error.getDefaultMessage(), response.getCode()));
         });
         response.setMessage(messages);
+        return response;
+    }
+
+    private ResponseBody createSuccessResponse(Object data) {
+        ResponseBody responseBody = new ResponseBody();
+        responseBody.setCode(SuccessConstants.OK_CODE);
+        responseBody.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
+        responseBody.setData(data);
+        return responseBody;
+    }
+
+    private Response createSuccessResponse() {
+        Response response = new Response();
+        response.setCode(SuccessConstants.OK_CODE);
+        response.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
+        return response;
+    }
+
+    private Response createErrorResponse(MessageException e) {
+        Response response = new Response();
+        response.setCode(e.getErrorCode());
+        response.setMessage(Arrays.asList(e));
         return response;
     }
     

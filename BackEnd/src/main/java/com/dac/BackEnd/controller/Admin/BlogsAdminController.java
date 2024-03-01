@@ -1,5 +1,6 @@
 package com.dac.BackEnd.controller.Admin;
 
+import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import com.dac.BackEnd.model.request.BlogInput;
 import com.dac.BackEnd.model.request.ContentInput;
 import com.dac.BackEnd.model.request.DeleteRequest;
 import com.dac.BackEnd.model.request.StatusRequest;
+import com.dac.BackEnd.model.response.PagedResponse;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
 import com.dac.BackEnd.model.response.ResponsesBody;
@@ -44,171 +46,123 @@ public class BlogsAdminController {
 
     @Autowired
     private BlogService blogService;
-    
+
     @GetMapping()
-    public ResponseEntity<?> getAllBlogs(@RequestParam(required = false, defaultValue = "1") int page,
-                                        @RequestParam(required = false) String status,
-                                        @RequestParam(required = false) String searchText,
-                                        @RequestParam(required = false) LocalDateTime startTime,
-                                        @RequestParam(required = false) LocalDateTime endTime) {
+    public ResponseEntity<?> getAllBlogs(
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "") String status,
+            @RequestParam(required = false, defaultValue = "") String searchText,
+            @RequestParam(required = false) LocalDateTime startTime,
+            @RequestParam(required = false) LocalDateTime endTime) {
         try {
-            ResponsesBody body = new ResponsesBody();
-            if (status != null) {
-                // Nếu có status, gọi hàm getAllBlogByStatus
-                body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogsByStatus(status, page)));
-                body.setPageInfo(blogService.getPageInfo(page, "status", status, searchText, startTime, endTime));
-            } else if (searchText != null) {
-                // Nếu có searchText, gọi hàm getAllBlogByText
-                body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogByText(searchText, page)));
-                body.setPageInfo(blogService.getPageInfo(page, "searchText", status, searchText, startTime, endTime));
-            } else if (startTime != null && endTime != null) {
-                // Nếu có startTime và endTime, gọi hàm getAllBlogByPostTime
-                body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogByPostTime(startTime, endTime, page)));
-                body.setPageInfo(blogService.getPageInfo(page, "postTime", status, searchText, startTime, endTime));
-            } else {
-                // Mặc định, gọi hàm getAllBlog
-                body.setData(BlogConvertor.convertToObjects(blogService.getAllBlogs(page)));
-                body.setPageInfo(blogService.getPageInfo(page, "all", status, searchText, startTime, endTime));
-            }
-            
-            body.setCode(SuccessConstants.OK_CODE);
-            body.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE));
-            return ResponseEntity.ok().body(body);
+            ResponsesBody responseBody = new ResponsesBody();
+            responseBody.setCode(SuccessConstants.OK_CODE);
+            responseBody.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE));
+            PagedResponse<Blog> pagedResponse = blogService.getAllBlogs(status, searchText, startTime, endTime, page);
+            responseBody.setData(BlogConvertor.convertToObjects(pagedResponse.getContent()));
+            responseBody.setPageInfo(pagedResponse.getResponsePage());
+            return ResponseEntity.ok().body(responseBody);
         } catch (MessageException e) {
-            Response body = new Response();
-            body.setCode(e.getErrorCode());
-            body.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e));
         }
     }
 
     @GetMapping("{blogId}")
     public ResponseEntity<?> getBlogsById(@PathVariable Long blogId) {
         try {
-            Blog blog = blogService.getBlogById(blogId);
-            ResponseBody body = new ResponseBody();
-            body.setCode(SuccessConstants.OK_CODE);
-            body.setData(blog);
-            body.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
-            return ResponseEntity.ok().body(body);
+            return ResponseEntity.ok().body(createSuccessResponse(blogService.getBlogById(blogId)));
         } catch (MessageException e) {
-            Response body = new Response();
-            body.setCode(e.getErrorCode());
-            body.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e));
         }
     }
 
     @PutMapping("{blogId}")
     public ResponseEntity<?> updateBlog(@Valid @RequestBody BlogInput blogInput, @PathVariable Long blogId) {
         try {
-            ResponseBody response = new ResponseBody();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            response.setData(blogService.updateBlog(blogInput, blogId));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(blogService.updateBlog(blogInput, blogId)));
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @PatchMapping("{blogId}")
-    public ResponseEntity<?> updateImageBlog(@RequestPart(value = "file") MultipartFile file, @PathVariable Long blogId) {
+    public ResponseEntity<?> updateImageBlog(@RequestPart("file") MultipartFile file, @PathVariable Long blogId) {
         try {
-            ResponseBody response = new ResponseBody();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            response.setData(blogService.updateImageBlog(file, blogId));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(blogService.updateImageBlog(file, blogId)));
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @PutMapping("{blogId}/content")
     public ResponseEntity<?> updateContent(@Valid @RequestBody List<ContentInput> contentInputs, @PathVariable Long blogId) {
         try {
-            ResponseBody response = new ResponseBody();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            response.setData(blogService.updateContent(contentInputs, blogId));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(blogService.updateContent(contentInputs, blogId)));
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @PatchMapping("{blogId}/content")
-    public ResponseEntity<?> updateImageContent(@RequestPart(value = "files") List<ContentInput> contents, @PathVariable Long blogId) {
+    public ResponseEntity<?> updateImageContent(@RequestPart("files") List<ContentInput> contents, @PathVariable Long blogId) {
         try {
-            ResponseBody response = new ResponseBody();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
-            response.setData(blogService.updateImageContent(contents, blogId));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(blogService.updateImageContent(contents, blogId)));
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @Transactional
     @PatchMapping()
-    public ResponseEntity<?> updateBlogStatus(@RequestBody StatusRequest blogStatus) {
+    public ResponseEntity<Response> updateBlogStatus(@RequestBody StatusRequest blogStatus) {
         try {
-            Response response = new Response();
             blogService.updateStatusBlog(blogStatus);
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
-            return ResponseEntity.ok().body(response);
+            return ResponseEntity.ok().body(createSuccessResponse());
         } catch (MessageException e) {
-            Response body = new Response();
-            body.setCode(e.getErrorCode());
-            body.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e));
         }
     }
 
     @DeleteMapping("{blogId}")
-    public ResponseEntity<?> deleteBlog(@PathVariable Long blogId) {
+    public ResponseEntity<Response> deleteBlog(@PathVariable Long blogId) {
         try {
-            Response response = new Response();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
             blogService.deleteBlog(blogId);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
 
     @DeleteMapping()
-    public ResponseEntity<?> deleteBlogs(@RequestBody DeleteRequest deletes) {
+    public ResponseEntity<Response> deleteBlogs(@RequestBody DeleteRequest deletes) {
         try {
-            Response response = new Response();
-            response.setCode(SuccessConstants.OK_CODE);
-            response.setMessage(Arrays.asList(new MessageException(SuccessConstants.OK_MESSAGE), SuccessConstants.OK_CODE));
             blogService.deleteBlogs(deletes);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
         } catch (MessageException e) {
-            Response response = new Response();
-            response.setCode(e.getErrorCode());
-            response.setMessage(Arrays.asList(e));
-            return ResponseEntity.status(e.getErrorCode()).body(response);
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
     }
+
+    private ResponseBody createSuccessResponse(Object data) {
+        ResponseBody responseBody = new ResponseBody();
+        responseBody.setCode(SuccessConstants.OK_CODE);
+        responseBody.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
+        responseBody.setData(data);
+        return responseBody;
+    }
+
+    private Response createSuccessResponse() {
+        Response response = new Response();
+        response.setCode(SuccessConstants.OK_CODE);
+        response.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
+        return response;
+    }
+
+    private Response createErrorResponse(MessageException e) {
+        Response response = new Response();
+        response.setCode(e.getErrorCode());
+        response.setMessage(Arrays.asList(e));
+        return response;
+    }
 }
+

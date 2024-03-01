@@ -3,6 +3,7 @@ package com.dac.BackEnd.repository;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,29 +20,22 @@ public interface FilmRepository extends JpaRepository<FilmEntity, Long>{
     @Query("SELECT COUNT(*) FROM FilmEntity f WHERE f.deleteFlag = false")
     int countAllFilm();
 
-    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE f.category = :category AND f.deleteFlag = false")
-    int countAllFilmByCategory(CategoryEntity category);
-
-    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE (f.nameFilm LIKE %:searchText% OR f.description LIKE %:searchText%) AND f.deleteFlag = false")
-    int countAllFilmByText(String searchText);
-
-    @Query("SELECT COUNT(f) FROM FilmEntity f WHERE (f.startDate BETWEEN :startTime AND :endTime) AND f.deleteFlag = false")
-    int countAllBlogsByStartDate(LocalDate startTime, LocalDate endTime);
-
-    List<FilmEntity> findByDeleteFlagFalseOrderByInsertDateTimeDesc(Pageable pageable);
-
-    List<FilmEntity> findByCategoryAndDeleteFlagFalseOrderByInsertDateTimeDesc(CategoryEntity category, Pageable pageable);
-
-    @Query("SELECT f FROM FilmEntity f WHERE (f.nameFilm LIKE %:searchText% OR f.description LIKE %:searchText%) AND f.deleteFlag = false ORDER BY f.insertDateTime DESC")
-    List<FilmEntity> findAllBySearchText(String searchText, Pageable pageable);
-
-    @Query("SELECT f FROM FilmEntity f WHERE (f.startDate BETWEEN :startTime AND :endTime) AND f.deleteFlag = false ORDER BY f.insertDateTime DESC")
-    List<FilmEntity> findAllByStartDate(LocalDate startTime, LocalDate endTime, Pageable pageable);
-
-    @Query("SELECT f FROM FilmEntity f WHERE f.deleteFlag = false AND f.startDate <= :currentDate ORDER BY f.insertDateTime DESC")
-    List<FilmEntity> findAllReleasedFilms(@Param("currentDate") LocalDate currentDate);
-
     @Query("SELECT COUNT(f) FROM FilmEntity f WHERE f.deleteFlag = false AND f.startDate <= :currentDate ORDER BY f.insertDateTime DESC")
     int countReleasedFilms(@Param("currentDate") LocalDate currentDate);
 
+    @Query("SELECT f FROM FilmEntity f JOIN f.category c " +
+        "WHERE ((:categoryEntity IS NULL) OR (f.category = :categoryEntity)) " +
+        "AND (LOWER(f.nameFilm) LIKE LOWER(CONCAT('%', COALESCE(:searchTerm, ''), '%')) " +
+        "OR LOWER(f.director) LIKE LOWER(CONCAT('%', COALESCE(:searchTerm, ''), '%')) " +
+        "OR LOWER(f.country) LIKE LOWER(CONCAT('%', COALESCE(:searchTerm, ''), '%')) " +
+        "OR LOWER(f.description) LIKE LOWER(CONCAT('%', COALESCE(:searchTerm, ''), '%'))) " +
+        "AND ((:startDate IS NULL) OR (f.startDate >= :startDate)) " +
+        "AND ((:endDate IS NULL) OR (f.startDate <= :endDate)) " +
+        "ORDER BY f.insertDateTime DESC")
+    Page<FilmEntity> findAllFilms(
+        @Param("categoryEntity") CategoryEntity categoryEntity,
+        @Param("searchTerm") String searchTerm,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate,
+        Pageable pageable);
 }
