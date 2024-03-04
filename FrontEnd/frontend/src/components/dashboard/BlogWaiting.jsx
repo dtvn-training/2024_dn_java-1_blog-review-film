@@ -4,6 +4,8 @@ import Table from "react-bootstrap/Table";
 import ReactPaginate from "react-paginate";
 import { fetchDashBoard, updateStatusBlog } from "../../services/AdminService";
 import { toast } from "react-toastify";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 import "../../styles/UserPage.css";
 
 const BlogWaiting = () => {
@@ -19,6 +21,9 @@ const BlogWaiting = () => {
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showRefuseModal, setShowRefuseModal] = useState(false);
+
 
   // Fetch data from API
   useEffect(() => {
@@ -77,10 +82,29 @@ const BlogWaiting = () => {
     setShowModal(false);
   };
 
+  const handleShowApproveModal = () => {
+    setShowApproveModal(true);
+  };
+
+  const handleCloseApproveModal = () => {
+    setShowApproveModal(false);
+  };
+
+  const handleShowRefuseModal = (itemId) => {
+    setSelectedItemId(itemId);
+    setShowRefuseModal(true);
+  };
+
+  const handleCloseRefuseModal = () => {
+    setSelectedItemId(null);
+    setShowRefuseModal(false);
+  };
+
   const handleSelectItem = (id) => {
     const selectedIndex = selectedItems.indexOf(id);
     if (selectedIndex === -1) {
       setSelectedItems([...selectedItems, id]);
+      console.log(selectedItems);
     } else {
       const updatedSelectedItems = [...selectedItems];
       updatedSelectedItems.splice(selectedIndex, 1);
@@ -98,29 +122,56 @@ const BlogWaiting = () => {
 
   const handleApproveSelectedBlogs = async () => {
     try {
-      const promises = selectedItems.map((id) =>
-        updateStatusBlog(id, localStorage.getItem("jwtToken"), "APPROVE")
-      );
-      await Promise.all(promises);
+      // Gọi hàm updateStatusBlog để gửi yêu cầu PATCH đến API
+      try {
+        await updateStatusBlog(selectedItems, localStorage.getItem("jwtToken"), "APPROVE");
+        console.log("Approve selected blogs successfully");
+        handleCloseApproveModal();
+      } catch (error) {
+        // Xử lý lỗi nếu có
+        console.error(`Error approving blog with ids ${selectedItems}:`, error);
+        throw error;
+      }
+  
+      // Cập nhật danh sách blog sau khi duyệt
       getBlogs(currentPage);
+  
+      // Hiển thị thông báo thành công
       toast.success("Approve selected blogs successfully");
     } catch (error) {
+      // Xử lý lỗi nếu có
       console.error("Error approving selected blogs:", error);
+      // Hiển thị thông báo lỗi cho người dùng
+      toast.error("An error occurred while approving selected blogs");
     }
   };
-
+  
   const handleRefuseSelectedBlogs = async () => {
     try {
-      const promises = selectedItems.map((id) =>
-        updateStatusBlog(id, localStorage.getItem("jwtToken"), "REFUSE")
-      );
-      await Promise.all(promises);
+      // Gọi hàm updateStatusBlog để gửi yêu cầu PATCH đến API
+      try {
+        await updateStatusBlog(selectedItems, localStorage.getItem("jwtToken"), "REFUSE");
+        handleCloseRefuseModal();
+      } catch (error) {
+        // Xử lý lỗi nếu có
+        console.error(`Error refuse blog with ids ${selectedItems}:`, error);
+        throw error;
+      }
+  
+      // Cập nhật danh sách blog sau khi duyệt
       getBlogs(currentPage);
+  
+      // Hiển thị thông báo thành công
       toast.success("Refuse selected blogs successfully");
     } catch (error) {
-      console.error("Error refusing selected blogs:", error);
+      // Xử lý lỗi nếu có
+      console.error("Error refuse selected blogs:", error);
+      // Hiển thị thông báo lỗi cho người dùng
+      toast.error("An error occurred while refuse selected blogs");
     }
   };
+  
+
 
   const renderTableRow = (item, index) => (
     <tr key={index} style={{ textAlign: "center", height: "30px" }}>
@@ -145,37 +196,78 @@ const BlogWaiting = () => {
   );
 
   return (
-    <div className="activity">
+    <div className="activity" style={{ position: "relative" }}>
       <div
-        class="title"
+        className="title"
         style={{
           backgroundColor: "#f0f0f0",
           padding: "10px",
           borderRadius: "5px",
+          position: "relative", // Đảm bảo phần tử cha có kiểu hiển thị là relative
         }}
       >
-        <i class="uil uil-clock-three"></i>
-        <span class="text">Blog Waiting List</span>
-        <div style ={{  right: "10px",  }}> 
-        {/* Render buttons only if there are selected items */}
+        <i className="uil uil-clock-three"></i>
+        <span className="text">Blog Waiting List</span>
+        {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
         {selectedItems.length > 0 && (
-          <div style={{ margin: "10px", textAlign: "center", }}>
+          <div
+            style={{ position: "absolute", top: 0, right: 0, margin: "10px" }}
+          >
             <button
               className="btn btn-primary mr-2"
-              onClick={handleApproveSelectedBlogs}
+              onClick={handleShowApproveModal}
+              style = {{marginRight: "10px"}}
             >
-              Approve All
+              Approve 
             </button>
+            <Modal show={showApproveModal} onHide={handleCloseApproveModal}>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirm Approve</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                Are you sure you want to approve all this blog?
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseApproveModal}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                onClick={ handleApproveSelectedBlogs}
+                >
+                  Confirm
+                </Button>
+              </Modal.Footer>
+            </Modal>
             <button
               className="btn btn-danger"
-              onClick={handleRefuseSelectedBlogs}
+              onClick={handleShowRefuseModal}
             >
-              Reject All
+              Refuse
             </button>
+            <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirm Refusal</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                Are you sure you want to refuse this blog?
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseRefuseModal}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleRefuseSelectedBlogs}
+                >
+                  Confirm
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </div>
         )}
       </div>
-      </div>
+
       <div className="activity-data">
         <div style={{ overflowX: "auto" }}>
           <div
