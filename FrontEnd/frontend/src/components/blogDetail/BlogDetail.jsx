@@ -10,6 +10,7 @@ const BlogDetail = ({ blogId }) => {
     const [id, setId] = useState(blogId);
 
     useEffect(() => {
+        console.log("1")
         fetchBlogDetail(blogId);
     }, [id]);
 
@@ -17,15 +18,13 @@ const BlogDetail = ({ blogId }) => {
         try {
             const res = await fetchBlogById(blogId, localStorage.getItem("jwtToken"));
             if (res && res.data) {
+                console.log(res.data)
                 setBlogDetail(res.data.data);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
-            alert.error()
         }
     };
-
-    console.log("data: ", authenticated)
 
     return (
         (blogDetail ? (

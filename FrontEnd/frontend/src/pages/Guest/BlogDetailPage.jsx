@@ -1,9 +1,12 @@
+import { useParams } from "react-router-dom";
 import BlogDetail from "../../components/blogDetail/BlogDetail"
 
 function BlogDetailPage() {
+
+    const { blogId } = useParams();
     
     return (  
-        <BlogDetail />
+        <BlogDetail blogId={blogId} />
     );
 }
 

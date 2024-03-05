@@ -160,7 +160,7 @@ public class BlogServiceImpl implements BlogService{
 
         BlogEntity entity = new BlogEntity();
         entity.setFilm(filmRepository.findById(blogInput.getFilmId())
-                .orElseThrow(() -> new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE)));
+                .orElseThrow(() -> notFoundException()));
         entity.setTitle(blogInput.getTitle());
         entity.setSummary(blogInput.getSummary());
         entity.setPoint(blogInput.getPoint());
@@ -274,5 +274,10 @@ public class BlogServiceImpl implements BlogService{
     
     private MessageException notFoundException() {
         return new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE);
+    }
+
+    @Override
+    public Blog getBlogByIdGuest(Long blogId) {
+        return BlogConvertor.toModel(blogRepository.findBlogByIdGuest(blogId).orElseThrow(() -> notFoundException()));
     }
 }
