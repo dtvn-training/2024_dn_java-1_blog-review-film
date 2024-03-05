@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 
 
 
+
 // ... Import statements ...
 
 const NavBarUser = () => {
@@ -120,7 +121,9 @@ const NavBarUser = () => {
                 </div>
             </nav>
         </div>
-    );
-}
+      </nav>
+    </div>
+  );
+};
 
 export default NavBarUser;

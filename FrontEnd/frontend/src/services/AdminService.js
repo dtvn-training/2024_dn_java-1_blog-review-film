@@ -3,7 +3,6 @@ import axios from "./customize-axios";
 const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, endTime) => {
     
     let query = `/api/reviewer/blogs?page=${selectedPage}`;
-
     if (status) {
         query += `&status=${status}`;
     }
@@ -51,6 +50,7 @@ const fetchAccount = (selectedPage, accessToken, status, searchText) => {
 
 const fetchDashBoard = (selectedPage, accessToken, status, searchText) => {
     const query = `/api/reviewer/blogs?page=${selectedPage}` + `&status=${status}` + `&searchText=${searchText}`;
+
     return axios.get(query, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -63,7 +63,7 @@ const fetchSummaryData = (accessToken) => {
   const user = JSON.parse(localStorage.getItem('user'));
   let query = `/api/reviewer/dashboard`;
   if (user.role === 'ROLE_ADMIN') {
-    query = `/api/admin/dashboard`;
+    query = `/api/reviewer/dashboard`;
   }
     return axios.get(query, {
         headers: {
@@ -108,31 +108,48 @@ const updateUser = (userId, name, job) => {
     return axios.put(`/api/users/${userId}`, { name, job });
 }
 
-const deleteAccount = async (accountId, jwtToken) => {
-    try {
-      const response = await axios.delete(`api/admin/reviewers/${accountId}`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`
-        }
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
+const deleteAccount = async (accountIds, jwtToken) => {
+  console.log(jwtToken);
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`
+      },
+      data: {
+        ids: accountIds
+      }
+    };
 
-  const deleteBlog = async (blogId, jwtToken) => {
-    try {
-      const response = await axios.delete(`api/admin/blogs/${blogId}`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`
-        }
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
+    const query = `/api/admin/reviewers`;
+    // Make the DELETE request using axios with the config object
+    return axios.delete(query, config);
+  } catch (error) {
+    // Handle errors if any
+    throw error;
+  }
+};
+
+const deleteBlog = async (accountIds, jwtToken) => {
+  console.log(jwtToken);
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`
+      },
+      data: {
+        ids: accountIds
+      }
+    };
+
+    const query = `/api/admin/blogs`;
+    // Make the DELETE request using axios with the config object
+    return axios.delete(query, config);
+  } catch (error) {
+    // Handle errors if any
+    throw error;
+  }
+};
+
 
   const deleteFilm = async (filmId, jwtToken) => {
     try {
@@ -147,15 +164,29 @@ const deleteAccount = async (accountId, jwtToken) => {
     }
   };
 
-  const updateStatusBlog = async (id, jwtToken, status) => {
+  const updateStatusBlog = async (ids, jwtToken, status) => {
+    console.log(ids);
     try {
-      const response = await axios.patch(`/api/admin/blogs/${id}`, { status: status }, {
+      // Tạo đối tượng dữ liệu để gửi lên API
+      const data = {
+        ids: ids,
+        status: status
+      };
+
+      console.log(data);
+  
+      // Gửi yêu cầu PATCH đến API endpoint
+      const response = await axios.patch(`/api/admin/blogs`, data, {
         headers: {
-          Authorization: `Bearer ${jwtToken}`
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json' // Thiết lập header Content-Type
         }
       });
+  
+      // Trả về dữ liệu từ phản hồi
       return response.data;
     } catch (error) {
+      // Xử lý lỗi nếu có
       throw error;
     }
   };
@@ -219,8 +250,30 @@ const deleteAccount = async (accountId, jwtToken) => {
       throw error;
     }
   };
-  
-  
-  
 
-export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, putUpdateAccount, fetchAllBlog, deleteAccount, deleteFilm, deleteBlog, postCreateFilm, postCreateAccount, updateStatusBlog, fetchBlogById };
+  const updateStatusAccount = async (ids, jwtToken, status) => {
+    try {
+      // Tạo đối tượng dữ liệu để gửi lên API
+      const data = {
+        ids: ids,
+        status: status
+      };
+  
+      // Gửi yêu cầu PATCH đến API endpoint
+      const response = await axios.patch(`/api/admin/reviewers`, data, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json' // Thiết lập header Content-Type
+        }
+      });
+  
+      // Trả về dữ liệu từ phản hồi
+      return response.data;
+    } catch (error) {
+      // Xử lý lỗi nếu có
+      throw error;
+    }
+  }
+
+  export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, putUpdateAccount, fetchAllBlog, deleteAccount, deleteFilm, deleteBlog, postCreateFilm, postCreateAccount, updateStatusBlog, updateStatusAccount, fetchBlogById };
+

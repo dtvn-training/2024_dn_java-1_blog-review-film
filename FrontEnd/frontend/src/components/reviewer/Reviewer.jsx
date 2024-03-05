@@ -4,6 +4,9 @@ import TableReviewer from "./TableReviewer";
 
 
 const Reviewer = () => {
+    
+
+
     return (
         <section className="dashboard">
             <div className="top">
@@ -15,30 +18,9 @@ const Reviewer = () => {
                 <img src="images/3.jpg" alt="" />
             </div>
             <div className="dash-content">
-                <div className="activity">
-                    <div
-                        className="title"
-                        style={{
-                            backgroundColor: "#f0f0f0",
-                            padding: "10px",
-                            borderRadius: "5px",
-                        }}
-                    >
-                        <i className="uil uil-clock-three"></i>
-                        <span className="text">Account</span>
-                        <div style={{ overflowX: 'auto' }}>
-
-                            <CreateReviewer />
-                        </div>
-                    </div>
-
-                    <div className="activity-data">
-                        <TableReviewer />
-
-                    </div>
+                <TableReviewer />
                     {/* <EditAccount /> */}
                 </div>
-            </div>
         </section>
     );
 }
