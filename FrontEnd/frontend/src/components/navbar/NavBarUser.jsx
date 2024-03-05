@@ -121,8 +121,6 @@ const NavBarUser = () => {
                 </div>
             </nav>
         </div>
-      </nav>
-    </div>
   );
 };
 

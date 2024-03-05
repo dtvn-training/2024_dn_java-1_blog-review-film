@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import ReactPaginate from "react-paginate";
+import { toast } from "react-toastify";
 import { deleteBlog, fetchAllBlog } from "../../services/AdminService";
 import DateTimePicker from "react-datetime-picker";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlogDetail from "../blogDetail/BlogDetail";
 import "../../styles/BlogDetail.css"
+import { updateStatusBlog } from "../../services/AdminService";
+
 
 
 const TableBlog = ({ searchText }) => {
@@ -23,7 +26,10 @@ const TableBlog = ({ searchText }) => {
     const [selectedBlogId, setSelectedBlogId] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showApproveModal, setShowApproveModal] = useState(false);
+    const [showRefuseModal, setShowRefuseModal] = useState(false);
     
+    console.log(searchText);
 
     const handleShowBlogDetail = (id) => {
         setSelectedBlogId(id);
@@ -35,53 +41,30 @@ const TableBlog = ({ searchText }) => {
         setShowBlogDetail(false);
     };
 
-
-
     useEffect(() => {
-        fetchData(currentPage);
+      fetchData(currentPage);
     }, [currentPage, statusFilter, searchText]);
-
+  
     const fetchData = async (selectedPage, status) => {
-        try {
-            if (statusFilter.filter) {
-                status = statusFilter.status;
-            }
-            const res = await fetchAllBlog(selectedPage + 1, localStorage.getItem("jwtToken"), status, searchText);
-            if (res && res.data) {
-                const { data, pageInfo } = res.data;
-                setListItems(data);
-                setPageCount(pageInfo.total_pages);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
+      try {
+        if (statusFilter.filter) {
+          status = statusFilter.status;
         }
-    }
-
-
-
-  useEffect(() => {
-    fetchData(currentPage);
-  }, [currentPage, statusFilter]);
-
-  const fetchData = async (selectedPage, status) => {
-    try {
-      if (statusFilter.filter) {
-        status = statusFilter.status;
+        const res = await fetchAllBlog(
+          selectedPage + 1,
+          localStorage.getItem("jwtToken"),
+          status,
+          searchText
+        );
+        if (res && res.data) {
+          const { data, pageInfo } = res.data;
+          setListItems(data);
+          setPageCount(pageInfo.total_pages);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-      const res = await fetchAllBlog(
-        selectedPage + 1,
-        localStorage.getItem("jwtToken"),
-        status
-      );
-      if (res && res.data) {
-        const { data, pageInfo } = res.data;
-        setListItems(data);
-        setPageCount(pageInfo.total_pages);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+    };
 
 
   const handlePageClick = (selectedPage) => {
@@ -94,14 +77,35 @@ const TableBlog = ({ searchText }) => {
     setActiveFilter(status);
   };
 
-  const handleShow = (itemId) => {
-    setSelectedItemId(itemId); // Update selectedItemId when clicking the button
-    setShow(true);
+  const handleShowDeleteModal = () => {
+    setShowDeleteModal(true);
   };
 
-  const handleClose = () => {
-    setSelectedItemId(null); // Reset selectedItemId when closing modal
-    setShow(false);
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setSelectedItemId(null);
+    setSelectedItemId([]);
+    setSelectedItems([])
+  };
+
+  const handleShowApproveModal = () => {
+    setShowApproveModal(true);
+  };
+
+  const handleCloseApproveModal = () => {
+    setShowApproveModal(false);
+    setSelectedItemId(null);
+    setSelectedItems([]);
+  };
+
+  const handleShowRefuseModal = () => {
+    setShowRefuseModal(true);
+  };
+
+  const handleCloseRefuseModal = () => {
+    setShowRefuseModal(false);
+    setSelectedItemId(null);
+    setSelectedItems([]);
   };
 
   const updateUserList = () => {
@@ -123,27 +127,75 @@ const TableBlog = ({ searchText }) => {
     }
   };
 
+  const handleDeleteBlog = async () => {
+    try {
+      const res = await deleteBlog(
+        selectedItems,
+        localStorage.getItem("jwtToken")
+      );
+      if (res.code === 200) {
+        updateUserList();
+        handleCloseDeleteModal();
+        toast.success("Delete blog successfully");
+      } else {
+        toast.error("Failed to delete blog. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error delete blog:", error);
+      toast.error("An error occurred while delete blog.");
+    }
+  };
+
   const handleEditItem = (item) => {
     console.log("Edit item:", item);
   };
 
-  const handleDeleteBlog = async (id) => {
+  const handleApproveBlog = async () => {
     try {
-      const res = await deleteBlog(id, localStorage.getItem("jwtToken"));
-      if (res?.code === 200) updateUserList();
-      setShow(false);
+      const res = await updateStatusBlog(
+        selectedItems,
+        localStorage.getItem("jwtToken"),
+        "APPROVE"
+      )
+      console.log(res);
+      if (res.code === 200) {
+        updateUserList();
+        handleCloseApproveModal();
+        toast.success("Approve blog successfully");
+      } else {
+        toast.error("Failed to approve blog. Please try again later.");
+      }
     } catch (error) {
-      console.error("Error Delete blog:", error);
+      console.error("Error active blog:", error);
+      toast.error("An error occurred while approve blog.");
     }
   };
 
-  const handleShowDeleteModal = () => {
-    setShowDeleteModal(true);
+  const handleRefuseBlog = async () => {
+    try {
+      const res = await updateStatusBlog(
+        selectedItems,
+        localStorage.getItem("jwtToken"),
+        "REFUSE"
+      )
+      console.log(res);
+      if (res.code === 200) {
+        updateUserList();
+        handleCloseRefuseModal();
+        toast.success("Refuse blog successfully");
+      } else {
+        toast.error("Failed to refuse blog. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error refuse blog:", error);
+      toast.error("An error occurred while refuse blog.");
+    }
   };
 
-  const handleCloseDeleteModal = () => {
-    setShowDeleteModal(false);
-  };
+
+ 
+
+
 
 
 
@@ -216,7 +268,7 @@ const TableBlog = ({ searchText }) => {
               </button>
               <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
                 <Modal.Header closeButton>
-                  <Modal.Title>Confirm Refusal</Modal.Title>
+                  <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>Are you sure you want to delete all this blog?</Modal.Body>
                 <Modal.Footer>
@@ -224,6 +276,40 @@ const TableBlog = ({ searchText }) => {
                     Cancel
                   </Button>
                   <Button variant="primary" onClick={handleDeleteBlog}>
+                    Confirm
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              <Button variant= "success" onClick={handleShowApproveModal} style={{ marginRight: "10px" }}>
+                Approve
+              </Button>
+              <Modal show={showApproveModal} onHide={handleCloseApproveModal}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Confirm Approve</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to approve all this blog?</Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseApproveModal} style={{ marginRight: "10px" }}>
+                    Cancel
+                  </Button>
+                  <Button variant="primary" onClick={handleApproveBlog}>
+                    Confirm
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              <Button variant= "secondary" onClick={handleShowRefuseModal}>
+                Refuse
+              </Button>
+              <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Confirm Refuse</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to refuse all this blog?</Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseRefuseModal}>
+                    Cancel
+                  </Button>
+                  <Button variant="primary" onClick={handleRefuseBlog}>
                     Confirm
                   </Button>
                 </Modal.Footer>

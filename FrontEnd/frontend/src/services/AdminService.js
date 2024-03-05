@@ -164,33 +164,6 @@ const deleteBlog = async (accountIds, jwtToken) => {
     }
   };
 
-  const updateStatusBlog = async (ids, jwtToken, status) => {
-    console.log(ids);
-    try {
-      // Tạo đối tượng dữ liệu để gửi lên API
-      const data = {
-        ids: ids,
-        status: status
-      };
-
-      console.log(data);
-  
-      // Gửi yêu cầu PATCH đến API endpoint
-      const response = await axios.patch(`/api/admin/blogs`, data, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-          'Content-Type': 'application/json' // Thiết lập header Content-Type
-        }
-      });
-  
-      // Trả về dữ liệu từ phản hồi
-      return response.data;
-    } catch (error) {
-      // Xử lý lỗi nếu có
-      throw error;
-    }
-  };
-
   const postCreateAccount  =  async (name, phone, email, password, jwtToken) => {
     try {
       const response = await axios.post("/api/admin/reviewers", {
@@ -275,5 +248,30 @@ const deleteBlog = async (accountIds, jwtToken) => {
     }
   }
 
+  const updateStatusBlog = async (ids, jwtToken, status) => {
+    try {
+      // Tạo đối tượng dữ liệu để gửi lên API
+      const data = {
+        ids: ids,
+        status: status
+      };
+  
+      // Gửi yêu cầu PATCH đến API endpoint
+      const response = await axios.patch(`/api/admin/blogs`, data, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json' // Thiết lập header Content-Type
+        }
+      });
+  
+      // Trả về dữ liệu từ phản hồi
+      return response.data;
+    } catch (error) {
+      // Xử lý lỗi nếu có
+      throw error;
+    }
+  }
+  
   export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, putUpdateAccount, fetchAllBlog, deleteAccount, deleteFilm, deleteBlog, postCreateFilm, postCreateAccount, updateStatusBlog, updateStatusAccount, fetchBlogById };
+
 
