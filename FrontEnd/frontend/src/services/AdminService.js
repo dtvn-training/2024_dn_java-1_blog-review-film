@@ -24,9 +24,6 @@ const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, 
 }
 
 const fetchBlogById = (id, accessToken) => {
-  if (accessToken == null) {
-    return axios.get(`/api/blogs/${id}`);
-  }
   return axios.get(`/api/reviewer/blogs/${id}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
@@ -154,18 +151,26 @@ const deleteBlog = async (accountIds, jwtToken) => {
 };
 
 
-  const deleteFilm = async (filmId, jwtToken) => {
-    try {
-      const response = await axios.delete(`api/admin/films/${filmId}`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`
-        }
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
+const deleteFilm = async (filmIds, jwtToken) => {
+  console.log("a" ,filmIds);
+  console.log("b", jwtToken);
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`
+      },
+      data: {
+        ids: filmIds
+      }
+    };
+    const query = `/api/admin/films`;
+    // Make the DELETE request using axios with the config object
+    return axios.delete(query, config);
+  } catch (error) {
+    // Handle errors if any
+    throw error;
+  }
+};
 
   const postCreateAccount  =  async (name, phone, email, password, jwtToken) => {
     try {
