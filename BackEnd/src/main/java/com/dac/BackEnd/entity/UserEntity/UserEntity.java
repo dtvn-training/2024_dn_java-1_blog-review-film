@@ -55,7 +55,7 @@ public class UserEntity {
     private UserRole role;
 
     @NotBlank
-    @Size(min = 3, max = 30)
+    @Size(max = 30)
     private String name;
 
     @Size(min = 10, max = 10, message = "Phone number must be exactly 10 characters")

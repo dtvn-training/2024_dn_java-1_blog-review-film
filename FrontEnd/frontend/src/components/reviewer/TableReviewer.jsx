@@ -76,9 +76,15 @@ const TableReviewer = () => {
     }
 
     const handleFilter = (status) => {
-        setActiveFilter(status);
+        if (activeFilter === status) {
+            setStatusFilter({ filter: false, status: "" });
+            setActiveFilter(null);
+        } else {
+            // Nếu không, cập nhật bình thường
+            setStatusFilter({ filter: true, status: status });
+            setActiveFilter(status);
+        }
         setCurrentPage(0);
-        setStatusFilter({ filter: true, status: status });
     };
 
 

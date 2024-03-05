@@ -117,6 +117,12 @@ nav .menu-items{
     flex-direction: column;
     justify-content: space-between;
 }
+
+.active {
+    background-color: lightblue;
+    color: black;
+}
+
 .menu-items li{
     list-style: none;
 }

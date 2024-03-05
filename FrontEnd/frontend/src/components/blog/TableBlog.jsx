@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
-import { Button, Modal, Table } from "react-bootstrap";
+import { Button, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import ReactPaginate from "react-paginate";
 import { deleteBlog, fetchAllBlog } from "../../services/AdminService";
+import DateTimePicker from "react-datetime-picker";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import BlogDetail from "../blogDetail/BlogDetail";
+import "../../styles/BlogDetail.css"
 
-const TableBlog = () => {
+const TableBlog = ({ searchText }) => {
     const [listItems, setListItems] = useState([]);
     const [pageCount, setPageCount] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
@@ -12,16 +16,34 @@ const TableBlog = () => {
     const [activeFilter, setActiveFilter] = useState(null);
     const [show, setShow] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [showBlogDetail, setShowBlogDetail] = useState(false);
+    const [selectedBlogId, setSelectedBlogId] = useState(null);
+    
+
+    const handleShowBlogDetail = (id) => {
+        setSelectedBlogId(id);
+        setShowBlogDetail(true);
+    };
+    
+
+    const handleCloseBlogDetail = () => {
+        setShowBlogDetail(false);
+    };
+
+
+
     useEffect(() => {
         fetchData(currentPage);
-    }, [currentPage, statusFilter]);
+    }, [currentPage, statusFilter, searchText]);
 
     const fetchData = async (selectedPage, status) => {
         try {
             if (statusFilter.filter) {
                 status = statusFilter.status;
             }
-            const res = await fetchAllBlog(selectedPage + 1, localStorage.getItem("jwtToken"), status);
+            const res = await fetchAllBlog(selectedPage + 1, localStorage.getItem("jwtToken"), status, searchText);
             if (res && res.data) {
                 const { data, pageInfo } = res.data;
                 setListItems(data);
@@ -39,9 +61,15 @@ const TableBlog = () => {
     }
 
     const handleFilter = (status) => {
-        setStatusFilter({ filter: true, status: status });
+        if (activeFilter === status) {
+            setStatusFilter({ filter: false, status: "" });
+            setActiveFilter(null);
+        } else {
+            // Nếu không, cập nhật bình thường
+            setStatusFilter({ filter: true, status: status });
+            setActiveFilter(status);
+        }
         setCurrentPage(0);
-        setActiveFilter(status);
     };
 
     const handleShow = (itemId) => {
@@ -73,6 +101,11 @@ const TableBlog = () => {
         }
     };
 
+    const handleSearchTime = () => {
+        // Thực hiện tìm kiếm theo thời gian dựa trên giá trị startDate và endDate
+        console.log("Searching by time:", startDate, endDate);
+    };
+
     const renderTableRow = (item, index) => (
         <tr key={index} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
             <td>{item.id}</td>
@@ -86,31 +119,16 @@ const TableBlog = () => {
                 <div className="d-flex flex-column flex-md-row align-items-md-center">
                     <button
                         type="button"
-                        className="btn btn-danger mb-2 mb-md-0 me-md-2"
-                        onClick={() => handleShow(item.id)}
+                        className="btn btn-primary"
+                        onClick={() => handleShowBlogDetail(item.id)}
                     >
-                        Delete
-                    </button>
-                    <Modal show={show} onHide={handleClose}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Confirm Refusal</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>Are you sure you want to delete this blog?</Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="secondary" onClick={handleClose}>
-                                Cancel
-                            </Button>
-                            <Button variant="primary" onClick={() => handleDeleteBlog(selectedItemId)}>
-                                Confirm
-                            </Button>
-                        </Modal.Footer>
-                    </Modal>
-                    <button type="button" className="btn btn-primary" onClick={() => handleEditItem(item)}>
-                        Edit
+                        <FontAwesomeIcon icon="fa-solid fa-eye" />
                     </button>
                 </div>
             </td>
         </tr>
+
+        
     );
     return (
         <div style={{ overflowX: 'auto' }}>
@@ -174,6 +192,11 @@ const TableBlog = () => {
                     nextLinkClassName="page-link"
                 />
             </div>
+            <Modal show={showBlogDetail} onHide={handleCloseBlogDetail} dialogClassName="custom-modal-width">
+                <Modal.Body>
+                    <BlogDetail blogId={selectedBlogId}/>
+                </Modal.Body>
+            </Modal>
         </div>
     );
 }

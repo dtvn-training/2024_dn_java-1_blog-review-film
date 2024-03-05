@@ -9,6 +9,8 @@ import UserPage from "./pages/User/DashboardPage";
 import ReviewerPage from "./pages/User/ReviewerPage";
 import FilmPage from "./pages/User/FilmPage";
 import BlogPage from "./pages/User/BlogPage";
+import HomePage from "./pages/Guest/HomePage";
+import BlogDetailPage from "./pages/Guest/BlogDetailPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -23,6 +25,8 @@ root.render(
         <Route path="/user/reviewers" element={<ReviewerPage />} />
         <Route path="/user/films" element={<FilmPage />} />
         <Route path="/user/blogs" element={<BlogPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/blogs/detail" element={<BlogDetailPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

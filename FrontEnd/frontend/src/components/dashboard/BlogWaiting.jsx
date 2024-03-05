@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
   import { toast } from "react-toastify";
 
 
-const BlogWaiting = () => {
+const BlogWaiting = ({ searchText }) => {
 
     const [listUsers, setListUsers] = useState([]);
     const [pageCount, setPageCount] = useState(0);
@@ -20,14 +20,14 @@ const BlogWaiting = () => {
 
     useEffect(() => {
       getBlogs(currentPage);
-    }, [currentPage, statusFilter]);
-
+    }, [currentPage, statusFilter, searchText]);
     const getBlogs = async (selectedPage) => {
       try {
         const res = await fetchDashBoard(
           selectedPage + 1,
           localStorage.getItem("jwtToken"),
-          "WAITING"
+          "WAITING",
+          searchText
         );
         if (res && res.data) {
           const { data, pageInfo } = res.data;

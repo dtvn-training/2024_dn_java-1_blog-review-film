@@ -23,7 +23,7 @@ const Film = () => {
             </div>
             <div className="activity-data">
             <TableFilm />
-            {isAdmin && <CreateFilm />}
+              {isAdmin && <CreateFilm />}
             </div>
           </div>
         </div>

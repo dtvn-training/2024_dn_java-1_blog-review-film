@@ -2,7 +2,8 @@ import axios from "./customize-axios";
 
 const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, endTime) => {
     
-    let query = `/api/admin/blogs?page=${selectedPage}`;
+    let query = `/api/reviewer/blogs?page=${selectedPage}`;
+
     if (status) {
         query += `&status=${status}`;
     }
@@ -15,14 +16,20 @@ const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, 
     if (endTime) {
         query += `&endTime=${endTime}`;
     }
-    
-    // console.log(query);
     return axios.get(query, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
         }
     });
     
+}
+
+const fetchBlogById = (id, accessToken) => {
+  return axios.get(`/api/reviewer/blogs/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+  });
 }
 
 const fetchAccount = (selectedPage, accessToken, status, searchText) => {
@@ -34,7 +41,6 @@ const fetchAccount = (selectedPage, accessToken, status, searchText) => {
   if (searchText) {
       query += `&searchText=${searchText}`;
   }
-  // console.log(query);
   return axios.get(query, {
       headers: {
           'Authorization': `Bearer ${accessToken}`
@@ -43,8 +49,8 @@ const fetchAccount = (selectedPage, accessToken, status, searchText) => {
   
 }
 
-const fetchDashBoard = (selectedPage, accessToken, status) => {
-    const query = `/api/admin/blogs?page=${selectedPage}` + `&status=${status}`;
+const fetchDashBoard = (selectedPage, accessToken, status, searchText) => {
+    const query = `/api/reviewer/blogs?page=${selectedPage}` + `&status=${status}` + `&searchText=${searchText}`;
     return axios.get(query, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -59,7 +65,6 @@ const fetchSummaryData = (accessToken) => {
   if (user.role === 'ROLE_ADMIN') {
     query = `/api/admin/dashboard`;
   }
-    console.log(query);
     return axios.get(query, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -69,11 +74,7 @@ const fetchSummaryData = (accessToken) => {
   };
 
   const fetchAllFilm = (selectedPage, accessToken, category, searchText) => {
-    const user = JSON.parse(localStorage.getItem('user'));
     let query = `/api/films?page=${selectedPage}`;
-    if (user.role === 'ROLE_ADMIN') {
-      query = `/api/admin/films?page=${selectedPage}`;
-    }
     
     if (category) {
         query += `&category=${category}`;
@@ -81,7 +82,6 @@ const fetchSummaryData = (accessToken) => {
     if (searchText) {
         query += `&searchText=${searchText}`;
     }
-    console.log(accessToken);
     return axios.get(query, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -92,7 +92,6 @@ const fetchSummaryData = (accessToken) => {
 
 const fetchCategories = (accessToken) => {
   const query = `/api/categories`; // Đường dẫn API để lấy danh sách các categories
-  console.log(query);
   return axios.get(query, {
     headers: {
       'Authorization': `Bearer ${accessToken}`
@@ -224,4 +223,4 @@ const deleteAccount = async (accountId, jwtToken) => {
   
   
 
-export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, putUpdateAccount, fetchAllBlog, deleteAccount, deleteFilm, deleteBlog, postCreateFilm, postCreateAccount, updateStatusBlog };
+export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, putUpdateAccount, fetchAllBlog, deleteAccount, deleteFilm, deleteBlog, postCreateFilm, postCreateAccount, updateStatusBlog, fetchBlogById };
