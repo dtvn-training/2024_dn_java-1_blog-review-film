@@ -24,6 +24,9 @@ const fetchAllBlog = (selectedPage, accessToken, status, searchText, startTime, 
 }
 
 const fetchBlogById = (id, accessToken) => {
+  if (accessToken == null) {
+    return axios.get(`/api/blogs/${id}`);
+  }
   return axios.get(`/api/reviewer/blogs/${id}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`

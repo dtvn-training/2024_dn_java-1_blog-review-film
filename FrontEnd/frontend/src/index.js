@@ -26,7 +26,7 @@ root.render(
         <Route path="/user/films" element={<FilmPage />} />
         <Route path="/user/blogs" element={<BlogPage />} />
         <Route path="/" element={<HomePage />} />
-        <Route path="/blogs/detail" element={<BlogDetailPage />} />
+        <Route path="/blogs/blog-detail/:blogId" element={<BlogDetailPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

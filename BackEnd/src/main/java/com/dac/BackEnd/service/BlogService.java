@@ -34,4 +34,6 @@ public interface BlogService {
     Object updateImageContent(List<ContentInput> contents, Long blogId);
 
     void deleteBlogs(DeleteRequest deletes);
+
+    Blog getBlogByIdGuest(Long blogId);
 }
