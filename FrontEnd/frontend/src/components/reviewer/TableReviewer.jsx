@@ -304,9 +304,9 @@ const TableReviewer = () => {
               </button>
               <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
                 <Modal.Header closeButton>
-                  <Modal.Title>Confirm Refusal</Modal.Title>
+                  <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to delete all this blog?</Modal.Body>
+                <Modal.Body>Are you sure you want to delete all this account?</Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" onClick={handleCloseDeleteModal}>
                     Cancel
@@ -325,10 +325,10 @@ const TableReviewer = () => {
             </Button>
             <Modal show={showActiveModal} onHide={handleCloseActiveModal}>
               <Modal.Header closeButton>
-                <Modal.Title>Confirm Approve</Modal.Title>
+                <Modal.Title>Confirm Active</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                Are you sure you want to active all this blog?
+                Are you sure you want to active all this account?
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseActiveModal}>
@@ -350,10 +350,10 @@ const TableReviewer = () => {
             </Button>
             <Modal show={showInActiveModal} onHide={handleCloseInActiveModal}>
               <Modal.Header closeButton>
-                <Modal.Title>Confirm Refusal</Modal.Title>
+                <Modal.Title>Confirm InActive</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                Are you sure you want to inactive this blog?
+                Are you sure you want to inactive this account?
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseInActiveModal}>

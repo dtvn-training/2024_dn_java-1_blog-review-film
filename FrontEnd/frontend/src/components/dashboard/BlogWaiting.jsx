@@ -8,7 +8,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import "../../styles/UserPage.css";
 
-const BlogWaiting = () => {
+const BlogWaiting = ( {searchText} ) => {
   // Define state variables
   const [listUsers, setListUsers] = useState([]);
   const [pageCount, setPageCount] = useState(0);
@@ -24,7 +24,10 @@ const BlogWaiting = () => {
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [showRefuseModal, setShowRefuseModal] = useState(false);
 
+  const user = JSON.parse(localStorage.getItem('user'));
+  const isAdmin = user.role === 'ROLE_ADMIN';
 
+  console.log(searchText);
   // Fetch data from API
   useEffect(() => {
     const savedListUsers = JSON.parse(localStorage.getItem("listUsers"));
@@ -36,6 +39,9 @@ const BlogWaiting = () => {
   useEffect(() => {
       getBlogs(currentPage);
     }, [currentPage, statusFilter, searchText]);
+
+
+
     const getBlogs = async (selectedPage) => {
       try {
         const res = await fetchDashBoard(
@@ -52,9 +58,6 @@ const BlogWaiting = () => {
       } catch (error) {
         console.error("Error fetching users:", error);
       }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
   };
 
   const handlePageClick = (selectedPage) => {
@@ -210,7 +213,7 @@ const BlogWaiting = () => {
         }}
       >
         <i className="uil uil-clock-three"></i>
-        <span className="text">Blog Waiting List</span>
+        <span class="text">{isAdmin ? 'Blog Waiting List' : 'Blog List'}</span>
         {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
         {selectedItems.length > 0 && (
           <div
