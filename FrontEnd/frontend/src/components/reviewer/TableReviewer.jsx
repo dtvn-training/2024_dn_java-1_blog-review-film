@@ -136,7 +136,7 @@ const TableReviewer = () => {
       toast.error("An error occurred while active account.");
     }
   };
-
+  
   const handleInActiveSelectedBlogs = async () => {
     try {
       const res = await updateStatusAccount(

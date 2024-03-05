@@ -27,6 +27,8 @@ public class Blog {
     @Size(max = 255)
     private String title;
 
+    private String summary;
+
     private String image;
 
     @NotNull

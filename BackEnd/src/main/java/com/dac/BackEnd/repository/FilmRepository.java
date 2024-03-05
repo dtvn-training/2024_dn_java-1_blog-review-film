@@ -23,6 +23,7 @@ public interface FilmRepository extends JpaRepository<FilmEntity, Long>{
     @Query("SELECT COUNT(f) FROM FilmEntity f WHERE f.deleteFlag = false AND f.startDate <= :currentDate ORDER BY f.insertDateTime DESC")
     int countReleasedFilms(@Param("currentDate") LocalDate currentDate);
 
+    
     @Query("SELECT f FROM FilmEntity f JOIN f.category c " +
         "WHERE ((:categoryEntity IS NULL) OR (f.category = :categoryEntity)) " +
         "AND (LOWER(f.nameFilm) LIKE LOWER(CONCAT('%', COALESCE(:searchTerm, ''), '%')) " +

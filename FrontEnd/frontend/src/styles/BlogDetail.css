@@ -1,0 +1,5 @@
+.custom-modal-width {
+    max-width: 70%; /* Thay đổi giá trị tùy thuộc vào chiều rộng mong muốn */
+    margin: auto; /* Để modal hiển thị giữa màn hình */
+  }
+  

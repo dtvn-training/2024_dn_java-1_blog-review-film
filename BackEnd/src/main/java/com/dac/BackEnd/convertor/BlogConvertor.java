@@ -13,9 +13,11 @@ public class BlogConvertor {
         blog.setId(entity.getId());
         blog.setFilm(FilmConvertor.toModel(entity.getFilm()));
         blog.setTitle(entity.getTitle());
+        blog.setSummary(entity.getSummary());
         blog.setImage(entity.getImage());
         blog.setPoint(entity.getPoint());
         blog.setPostTime(entity.getPostTime());
+        blog.setImage(entity.getImage());
         blog.setStatus(entity.getStatus());
         blog.setInsertDateTime(entity.getInsertDateTime());
         blog.setInsertBy(UserConvertor.toModel(entity.getInsertBy()));

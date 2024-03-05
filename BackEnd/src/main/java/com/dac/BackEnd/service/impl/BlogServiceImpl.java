@@ -108,7 +108,7 @@ public class BlogServiceImpl implements BlogService{
 
     private boolean rolesContainReviewer() {
         Set<String> roles = AuthorityUtils.authorityListToSet(getAuthentication().getAuthorities());
-        return roles.contains(UserRole.ROLE_REVIEWER);
+        return roles.contains(UserRole.ROLE_REVIEWER.name());
     }
 
     private Page<BlogEntity> getBlogEntities(String status, String searchText, LocalDateTime startTime, LocalDateTime endTime, UserEntity userEntity, Pageable pageable) {
@@ -124,7 +124,7 @@ public class BlogServiceImpl implements BlogService{
     }
 
     private void checkOwnershipAndRole(BlogEntity blogEntity, UserEntity userEntity) {
-        if (rolesContainReviewer() && blogEntity.getInsertBy() == userEntity) {
+        if (rolesContainReviewer() && blogEntity.getInsertBy() != userEntity) {
             throwForbiddenException();
         }
     }

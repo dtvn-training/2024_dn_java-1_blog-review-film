@@ -25,23 +25,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
     @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.deleteFlag = false")
     long countAllReviewer();
 
-    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.status = :status AND u.deleteFlag = false")
-    long countReviewerByStatus(@Param("status") UserStatus status);
-
-    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.name LIKE %:searchText%  AND u.deleteFlag = false")
-    int countReviewerByTextInName(@Param("searchText") String searchText);
-
-    long countByRole(UserRole role);
-
-    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.deleteFlag = false ORDER BY u.insertDateTime DESC")
-    List<UserEntity> findAllReviewer(Pageable pageable);
-
-    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.status = :status AND u.deleteFlag = false ORDER BY u.insertDateTime DESC")
-    List<UserEntity> findAllReviewersByStatus(@Param("status") UserStatus status, Pageable pageable);
-
-    @Query("SELECT u FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND LOWER(u.name) LIKE %:searchText% AND u.deleteFlag = false ORDER BY u.insertDateTime DESC")
-    Page<UserEntity> findReviewerByTextInName(String searchText, Pageable pageable);
-
     Optional<UserEntity> findByEmailAndRole(String email, UserRole role);
 
     Optional<UserEntity> findByEmail(String email);
@@ -51,7 +34,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
             "AND (LOWER(u.name) LIKE LOWER(CONCAT('%', COALESCE(:searchText, ''), '%')) " +
             "OR LOWER(u.phone) LIKE LOWER(CONCAT('%', COALESCE(:searchText, ''), '%')) " +
             "OR LOWER(u.email) LIKE LOWER(CONCAT('%', COALESCE(:searchText, ''), '%'))) " +
-            "ORDER BY u.insertDateTime DESC")
+            "AND u.deleteFlag = false ORDER BY u.insertDateTime DESC")
     Page<UserEntity> findAllReviewers(
             @Param("status") UserStatus status,
             @Param("searchText") String searchText,

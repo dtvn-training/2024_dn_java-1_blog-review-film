@@ -34,20 +34,23 @@ const BlogWaiting = () => {
   }, []);
 
   useEffect(() => {
-    getBlogs(currentPage);
-  }, [currentPage, statusFilter]);
-
-  const getBlogs = async (selectedPage) => {
-    try {
-      const res = await fetchDashBoard(
-        selectedPage + 1,
-        localStorage.getItem("jwtToken"),
-        "WAITING"
-      );
-      if (res && res.data) {
-        const { data, pageInfo } = res.data;
-        setListUsers(data);
-        setPageCount(pageInfo.total_pages);
+      getBlogs(currentPage);
+    }, [currentPage, statusFilter, searchText]);
+    const getBlogs = async (selectedPage) => {
+      try {
+        const res = await fetchDashBoard(
+          selectedPage + 1,
+          localStorage.getItem("jwtToken"),
+          "WAITING",
+          searchText
+        );
+        if (res && res.data) {
+          const { data, pageInfo } = res.data;
+          setListUsers(data);
+          setPageCount(pageInfo.total_pages);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
