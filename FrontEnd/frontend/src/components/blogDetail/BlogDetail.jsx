@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./BlogDetail.css"
-import { fetchBlogById } from "../../services/AdminService";
+import { fetchBlogById, fetchBlogByIdGuest } from "../../services/AdminService";
 
 const BlogDetail = ({ blogId }) => {
 
@@ -16,7 +16,7 @@ const BlogDetail = ({ blogId }) => {
 
     const fetchBlogDetail = async (blogId) => {
         try {
-            const res = await fetchBlogById(blogId, localStorage.getItem("jwtToken"));
+            const res = await fetchBlogByIdGuest(blogId, localStorage.getItem("jwtToken"));
             if (res && res.data) {
                 console.log(res.data)
                 setBlogDetail(res.data.data);
@@ -25,6 +25,8 @@ const BlogDetail = ({ blogId }) => {
             console.error("Error fetching data:", error);
         }
     };
+
+    console.log(blogDetail);
 
     return (
         (blogDetail ? (

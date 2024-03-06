@@ -250,18 +250,13 @@ const handleCloseBlogDetail = () => {
       <td>
         <div className="d-flex flex-column flex-md-row align-items-md-center">
           <button
+              style={{ display: 'block', margin: 'auto' }}
               type="button"
               className="btn btn-primary"
               onClick={() => handleShowBlogDetail(item.id)}
            >
               <FontAwesomeIcon icon="fa-solid fa-eye" />
            </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => handleEditItem(item)}>
-            <FontAwesomeIcon icon="fa-regular fa-pen-to-square" />
-          </button>
         </div>
       </td>
     </tr>
