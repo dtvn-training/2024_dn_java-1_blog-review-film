@@ -131,7 +131,8 @@ const TableBlog = ({ searchText }) => {
         selectedItems,
         localStorage.getItem("jwtToken")
       );
-      if (res.code === 200) {
+      console.log(res);
+      if (res.data.code === 200) {
         updateUserList();
         handleCloseDeleteModal();
         toast.success("Delete blog successfully");

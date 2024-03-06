@@ -1,9 +1,25 @@
 import CreateFilm from "./CreateFilm";
 import TableFilm from "./TableFilm";
+import { useState, useEffect } from "react";
 
 const Film = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const isAdmin = user.role === 'ROLE_ADMIN';
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = user.role === "ROLE_ADMIN";
+  const [searchText, setSearchText] = useState("");
+  const [currentSearchText, setCurrentSearchText] = useState("");
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleSearchChange(currentSearchText);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [currentSearchText]);
+
+  const handleSearchChange = (text) => {
+    setSearchText(text);
+  };
 
   return (
     <section className="dashboard">

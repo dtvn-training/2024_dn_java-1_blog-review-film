@@ -14,6 +14,8 @@ import BlogDetailPage from "./pages/Guest/BlogDetailPage";
 import BlogsPage from "./pages/Guest/BlogsPage";
 import FilmsPage from "./pages/Guest/FilmsPage";
 import BlogByFilm from "./components/blogGuest/BlogByFilm";
+import CreateBlog from "./components/blog/CreateBlog";
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -29,6 +31,7 @@ root.render(
         <Route path="/user/films" element={<FilmPage />} />
         <Route path="/user/blogs" element={<BlogPage />} />
         <Route path="/" element={<HomePage />} />
+        <Route path="/blogs/create" element={<CreateBlog />} />
         <Route path="/blogs/blog-detail/:blogId" element={<BlogDetailPage />} />
         <Route path="/blogs" element={<BlogsPage />} />
         <Route path="/films" element={<FilmsPage />} />
