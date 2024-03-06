@@ -1,5 +1,9 @@
 :root {
-  --primary-color: black;
+  --primary-color: grey;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: grey;
 }
 
 

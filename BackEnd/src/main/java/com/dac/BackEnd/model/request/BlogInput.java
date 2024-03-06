@@ -23,6 +23,8 @@ public class BlogInput {
 
     private MultipartFile blogImage;
 
+    private MultipartFile blogImageIntroduce;
+
     @NotBlank
     @Size(max = 700)
     private String summary;

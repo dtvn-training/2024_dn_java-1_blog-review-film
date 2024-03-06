@@ -24,9 +24,6 @@ const RecentBlog = () => {
         }
     }
 
-
-
-
     return (
         <section class="design" id="design">
             <div class="container">
@@ -38,16 +35,16 @@ const RecentBlog = () => {
                 <div class="design-content">
                     {recentBlogs.map((blog, index) => (
                         <div key={index} class="design-item">
-                            <div class="design-img">
-                                <img src={blog.image} alt="" />
-                                <span><i class="uil uil-star"></i> {blog.point}/10</span>
-                                <span></span>
-                            </div>
-                            <div class="design-title">
-                                <Link to={`/blogs/blog-detail/${blog.id}`}>
+                            <Link className="link-blog" to={`/blogs/blog-detail/${blog.id}`}>
+                                <div class="design-img">
+                                    <img src={blog.imageIntroduce} alt="" />
+                                    <span><i class="uil uil-star"></i> {blog.point}/10</span>
+                                    <span></span>
+                                </div>
+                                <div class="design-title">
                                     {blog.title}
-                                </Link>
-                            </div>
+                                </div>
+                            </Link>
                         </div>
                     ))}
                 </div>

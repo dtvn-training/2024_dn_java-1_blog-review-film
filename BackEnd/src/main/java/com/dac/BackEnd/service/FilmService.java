@@ -26,5 +26,9 @@ public interface FilmService {
     void deleteFilm(Long filmId);
 
     void deleteFilms(DeleteRequest deletes);
+
+    List<Film> getAllFilmSelect();
+
+    PagedResponse<Film> getAllFilmGuest(int page, String searchText);
     
 }

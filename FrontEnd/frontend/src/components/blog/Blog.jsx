@@ -6,12 +6,10 @@ const Blog = () => {
   const [currentSearchText, setCurrentSearchText] = useState("");
 
   useEffect(() => {
-    // Thiết lập một timer để chờ 1 giây trước khi gọi hàm handleSearchChange
     const timer = setTimeout(() => {
       handleSearchChange(currentSearchText);
     }, 1000);
 
-    // Hủy timer cũ khi useEffect được gọi lại
     return () => clearTimeout(timer);
   }, [currentSearchText]);
 

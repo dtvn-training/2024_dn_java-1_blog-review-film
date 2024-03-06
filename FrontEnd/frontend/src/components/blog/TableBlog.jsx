@@ -28,8 +28,6 @@ const TableBlog = ({ searchText }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showApproveModal, setShowApproveModal] = useState(false);
     const [showRefuseModal, setShowRefuseModal] = useState(false);
-    
-    console.log(searchText);
 
     const handleShowBlogDetail = (id) => {
         setSelectedBlogId(id);

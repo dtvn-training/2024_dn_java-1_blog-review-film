@@ -1,7 +1,7 @@
-import RecentBlog from "../../components/blog/RecentBlog";
+import RecentBlog from "../../components/blogGuest/RecentBlog";
 import Footer from "../../components/default/Footer";
 import Header from "../../components/default/Header";
-import TopFilm from "../../components/film/TopFilm";
+import TopFilm from "../../components/filmGuest/TopFilm";
 
 const HomePage = () => {
     return ( 
