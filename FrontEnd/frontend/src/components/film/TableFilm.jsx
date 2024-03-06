@@ -23,8 +23,7 @@ const TableFilm = ({ searchText }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user.role === "ROLE_ADMIN";
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     getFilms(currentPage);
@@ -107,31 +106,34 @@ const TableFilm = ({ searchText }) => {
       console.log("All");
     } else {
       handleFilter(categoryId);
+      console.log(categoryId);
     }
   };
 
-    const handleShowDeleteModal = () => {
+  const handleShowDeleteModal = () => {
     setShowDeleteModal(true);
-    };
+  };
 
-    const handleCloseDeleteModal = () => {
+  const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
-    };
+  };
 
-    const handleDeleteBlog = async () => {
+  const handleDeleteBlog = async () => {
     try {
-        const res = await deleteFilm(selectedItems, localStorage.getItem("jwtToken"));
-        console.log(res);
-        if (res && res.data) {
+      const res = await deleteFilm(
+        selectedItems,
+        localStorage.getItem("jwtToken")
+      );
+      console.log(res);
+      if (res && res.data) {
         updateUserList();
         setSelectedItems([]);
         setShowDeleteModal(false);
-        }
+      }
     } catch (error) {
-        console.error("Error deleting film:", error);
+      console.error("Error deleting film:", error);
     }
-    };
-
+  };
 
   const handleSelectItem = (id) => {
     if (selectedItems.includes(id)) {

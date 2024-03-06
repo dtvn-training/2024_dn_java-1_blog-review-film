@@ -2,15 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import axios from "axios";
-import { fetchAllFilmList, postCreateBlog } from "../../services/AdminService";
+import { fetchAllFilmList, postEditBlog } from "../../services/AdminService";
 import { toast } from "react-toastify";
 
-
-const CreateBlog = () => {
-  const [buttonWidth, setButtonWidth] = useState("200px");
+const EditBlog = ({ editBlogData }) => {
   const [formData, setFormData] = useState({
-    nameFilm: "",
+    filmId: "",
     blogImageIntroduce: null,
     title: "",
     blogImage: null,
@@ -18,9 +15,28 @@ const CreateBlog = () => {
     point: "",
     contents: [{ id: null, image: null, content: "" }],
   });
-
   const [show, setShow] = useState(false);
-  const [filmList, setFilmList] = useState([{}]);
+    const [filmList, setFilmList] = useState([]);
+
+  console.log("edit: ",editBlogData);
+
+  useEffect(() => {
+    if (editBlogData) {
+      setFormData(editBlogData);
+      setShow(true);
+    } else {
+      setFormData({
+        filmId: "",
+        blogImageIntroduce: null,
+        title: "",
+        blogImage: null,
+        summary: "",
+        point: "",
+        contents: [{ id: null, image: null, content: "" }],
+      });
+      setShow(false);
+    }
+  }, [editBlogData]);
 
   useEffect(() => {
     const fetchFilms = async () => {
@@ -35,7 +51,6 @@ const CreateBlog = () => {
   }, []);
 
   const handleClose = () => {
-    setShow(false);
     setFormData({
       filmId: "",
       blogImageIntroduce: null,
@@ -45,67 +60,12 @@ const CreateBlog = () => {
       point: "",
       contents: [{ id: null, image: null, content: "" }],
     });
+    setShow(false);
   };
-  const handleShow = () => {
-    setShow(true);
-  }
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    // Kiểm tra tên trường để xác định cách xử lý
-    switch (name) {
-      case "filmId":
-      case "title":
-      case "summary":
-      case "point":
-        // Các trường thông tin chính của biểu mẫu, cập nhật giá trị vào state `formData`
-        setFormData({
-          ...formData,
-          [name]: value,
-        });
-        break;
-      case "blogImageIntroduce":
-        // Xử lý tải lên hình ảnh giới thiệu
-        const introImageFile = event.target.files[0];
-        setFormData({
-          ...formData,
-          blogImageIntroduce: introImageFile,
-        });
-        break;
-
-      case "blogImage":
-        // Xử lý tải lên hình ảnh của blog
-        const imageFile = event.target.files[0];
-        setFormData({
-          ...formData,
-          blogImage: imageFile,
-        });
-        break;
-      default:
-        // Xử lý các trường cho nội dung bài viết
-        if (name.startsWith("content-")) {
-          const index = parseInt(name.split("-")[1]); // Lấy chỉ số của nội dung từ tên trường
-          const updatedContents = [...formData.contents];
-          updatedContents[index].content = value; // Cập nhật nội dung tương ứng
-          setFormData({
-            ...formData,
-            contents: updatedContents,
-          });
-        } else if (name.startsWith("image-")) {
-          // Xử lý khi thay đổi hình ảnh trong nội dung bài viết
-          const contentIndex = parseInt(name.split("-")[1]); // Lấy chỉ số của nội dung từ tên trường
-          const imageFile = event.target.files[0];
-          const updatedContents = [...formData.contents];
-          // Lưu đường dẫn hình ảnh vào trường image của nội dung tương ứng
-          updatedContents[contentIndex].image = imageFile;
-          setFormData({
-            ...formData,
-            contents: updatedContents,
-          });
-        }
-        break;
-    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleContentChange = (index, value) => {
@@ -131,28 +91,17 @@ const CreateBlog = () => {
     const jwtToken = localStorage.getItem("jwtToken");
     const { filmId, blogImageIntroduce, title, blogImage, summary, point, contents } = formData;
 
-    // Tạo một mảng mới để lưu trữ tất cả các cặp content và image
     const contentData = [];
 
-    // Lặp qua mỗi phần tử trong mảng contents
-    contents.forEach((content, index) => {
-      // Nếu content có dữ liệu
+    contents.forEach((content) => {
       if (content.content) {
-        // Thêm cặp content và image vào mảng contentData
         contentData.push({ content: content.content, image: content.image });
       }
     });
-    console.log("filmId:", filmId);
-    console.log("Title:", title);
-    console.log("Summary:", summary); 
-    console.log("Point:", point);
-    console.log("blogImageIntroduce:", blogImageIntroduce)
-    console.log("Content data:", contentData);
-    console.log("Blog Image:", blogImage);
 
     try {
-      // Gọi API với dữ liệu mới đã được xử lý
-      const response = await postCreateBlog(
+      const response = await postEditBlog(
+        editBlogData.id,
         filmId,
         blogImageIntroduce,
         title,
@@ -162,82 +111,37 @@ const CreateBlog = () => {
         contentData,
         jwtToken
       );
-      if (response.status === 201) {
-        toast.success("Create blog successfully");
-        console.log("Create blog successfully");
+      if (response.status === 200) {
+        toast.success("Edit blog successfully");
         handleClose();
       } else {
-        toast.error("Create blog failed");
-        console.error("Create blog failed", response.message);
+        toast.error("Edit blog failed");
+        console.error("Edit blog failed", response.message);
       }
-    }
-    catch (error) {
-      toast.error("Create blog failed");
-      console.error("Create blog failed", error.message);
+    } catch (error) {
+      toast.error("Edit blog failed");
+      console.error("Edit blog failed", error.message);
     }
   };
-  useEffect(() => {
-    const handleResize = () => {
-      // Lấy kích thước hiện tại của cửa sổ
-      const windowWidth = window.innerWidth;
-
-      // Đặt kích thước mới cho nút dựa trên kích thước của cửa sổ
-      if (windowWidth < 768) {
-        // Thay 768 bằng kích thước tối thiểu bạn muốn
-        setButtonWidth("100px"); // Thay đổi kích thước của nút khi cửa sổ thu nhỏ hơn kích thước nhất định
-      } else {
-        setButtonWidth("200px"); // Đặt lại kích thước mặc định khi cửa sổ đủ lớn
-      }
-    };
-
-    // Thêm sự kiện lắng nghe cho cửa sổ trình duyệt
-    window.addEventListener("resize", handleResize);
-
-    // Xóa sự kiện lắng nghe khi component unmount
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   return (
     <>
-      <Button
-        variant="primary"
-        onClick={handleShow}
-        style={{
-          marginLeft: "1200px",
-          width: buttonWidth,
-          position: "absolute",
-          right: "30px",
-          top: "130px",
-        }}
-      >
-        Create
-      </Button>
-
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Create Blog</Modal.Title>
+          <Modal.Title>Edit Blog</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="filmId">
-              {/* Thay đổi controlId từ filmId thành nameFilm */}
               <Form.Label>Choose Film</Form.Label>
               <Form.Control
                 as="select"
                 name="filmId"
-                value={formData.filmId} // Thay đổi từ formData.id thành formData.filmId
+                value={formData.filmId}
                 onChange={handleChange}
               >
                 <option value="">Select Film</option>
-                {filmList.map((film) => (
-                  <option key={film.id} value={film.id}>
-                    {" "}
-                    {/* Thay đổi từ film.nameFilm thành film.id */}
-                    {film.nameFilm}
-                  </option>
-                ))}
+                {/* Thêm code hiển thị danh sách phim tương tự như trong component CreateBlog */}
               </Form.Control>
             </Form.Group>
             <Form.Group controlId="blogImageIntroduce">
@@ -298,7 +202,7 @@ const CreateBlog = () => {
                   <Form.Label>Image</Form.Label>
                   <Form.Control
                     type="file"
-                    name={`image-${index}`} // Đặt tên trường là duy nhất và phản ánh chỉ số của nội dung
+                    name={`image-${index}`}
                     onChange={handleChange}
                   />
                 </Form.Group>
@@ -330,4 +234,4 @@ const CreateBlog = () => {
   );
 };
 
-export default CreateBlog;
+export default EditBlog;

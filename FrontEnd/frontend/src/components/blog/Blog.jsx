@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import TableBlog from "./TableBlog";
-
+import CreateBlog from "./CreateBlog";
+import { Toast, ToastContainer } from "react-bootstrap";
 const Blog = () => {
   const [searchText, setSearchText] = useState("");
   const [currentSearchText, setCurrentSearchText] = useState("");
@@ -34,6 +35,7 @@ const Blog = () => {
       </div>
       <div className="dash-content">
         < TableBlog searchText={searchText} />
+        <CreateBlog />
       </div>
     </section>
   );

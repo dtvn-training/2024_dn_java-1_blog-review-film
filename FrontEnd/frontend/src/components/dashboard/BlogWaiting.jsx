@@ -2,11 +2,14 @@
 import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
 import ReactPaginate from "react-paginate";
-import { fetchDashBoard, updateStatusBlog } from "../../services/AdminService";
 import { toast } from "react-toastify";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import "../../styles/UserPage.css";
+import { deleteBlog } from "../../services/AdminService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { fetchDashBoard, updateStatusBlog } from "../../services/AdminService";
+import BlogDetail from "../blogDetail/BlogDetail";
 
 const BlogWaiting = ( {searchText} ) => {
   // Define state variables
@@ -17,12 +20,17 @@ const BlogWaiting = ( {searchText} ) => {
     filter: false,
     status: "",
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [show, setShow] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [showRefuseModal, setShowRefuseModal] = useState(false);
+  const [showBlogDetail, setShowBlogDetail] = useState(false);
+  const [selectedBlogId, setSelectedBlogId] = useState(null);
+
+
 
   const user = JSON.parse(localStorage.getItem('user'));
   const isAdmin = user.role === 'ROLE_ADMIN';
@@ -106,6 +114,28 @@ const BlogWaiting = ( {searchText} ) => {
     setShowRefuseModal(false);
   };
 
+  const handleEditItem = (item) => {
+    console.log("Edit item:", item);
+  };
+
+  const handleShowDeleteModal = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+  };
+
+  const handleShowBlogDetail = (id) => {
+    setSelectedBlogId(id);
+    setShowBlogDetail(true);
+};
+
+const handleCloseBlogDetail = () => {
+    setSelectedBlogId(null);
+    setShowBlogDetail(false);
+};
+
   const handleSelectItem = (id) => {
     const selectedIndex = selectedItems.indexOf(id);
     if (selectedIndex === -1) {
@@ -177,7 +207,26 @@ const BlogWaiting = ( {searchText} ) => {
     }
   };
   
+  const handleDeleteBlog = async () => {
+    try {
+      const res = await deleteBlog(
+        selectedItems,
+        localStorage.getItem("jwtToken")
+      );
+      if (res.data.code === 200) {
+        updateUserList();
+        handleCloseDeleteModal();
+        toast.success("Delete blog successfully");
+      } else {
+        toast.error("Failed to delete blog. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error delete blog:", error);
+      toast.error("An error occurred while delete blog.");
+    }
+  };
 
+  
 
   const renderTableRow = (item, index) => (
     <tr key={index} style={{ textAlign: "center", height: "30px" }}>
@@ -198,6 +247,18 @@ const BlogWaiting = ( {searchText} ) => {
         {item.updateBy.name}
       </td>
       <td style={{ textAlign: "center" }}>{item.status}</td>
+      <td>
+        <div className="d-flex flex-column flex-md-row align-items-md-center">
+          <button
+              style={{ display: 'block', margin: 'auto' }}
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleShowBlogDetail(item.id)}
+           >
+              <FontAwesomeIcon icon="fa-solid fa-eye" />
+           </button>
+        </div>
+      </td>
     </tr>
   );
 
@@ -219,6 +280,27 @@ const BlogWaiting = ( {searchText} ) => {
           <div
             style={{ position: "absolute", top: 0, right: 0, margin: "10px" }}
           >
+            <button
+                className="btn btn-danger mb-2 mb-md-0 me-md-2"
+                onClick={handleShowDeleteModal}
+                style={{ marginRight: "10px" }}
+              >
+                Delete
+              </button>
+              <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete all this blog?</Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseDeleteModal}>
+                    Cancel
+                  </Button>
+                  <Button variant="primary" onClick={handleDeleteBlog}>
+                    Confirm
+                  </Button>
+                </Modal.Footer>
+              </Modal>
             <button
               className="btn btn-primary mr-2"
               onClick={handleShowApproveModal}
@@ -245,12 +327,12 @@ const BlogWaiting = ( {searchText} ) => {
                 </Button>
               </Modal.Footer>
             </Modal>
-            <button
-              className="btn btn-danger"
+            <Button
+              variant= "secondary" 
               onClick={handleShowRefuseModal}
             >
               Refuse
-            </button>
+            </Button>
             <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
               <Modal.Header closeButton>
                 <Modal.Title>Confirm Refusal</Modal.Title>
@@ -327,6 +409,11 @@ const BlogWaiting = ( {searchText} ) => {
                 nextLinkClassName="page-link"
               />
             </div>
+            <Modal show={showBlogDetail} onHide={handleCloseBlogDetail} dialogClassName="custom-modal-width">
+                <Modal.Body>
+                    <BlogDetail blogId={selectedBlogId}/>
+                </Modal.Body>
+            </Modal>
           </div>
         </div>
       </div>

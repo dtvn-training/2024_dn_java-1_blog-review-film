@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlogDetail from "../blogDetail/BlogDetail";
 import "../../styles/BlogDetail.css"
 import { updateStatusBlog } from "../../services/AdminService";
+import CreateBlog from "./CreateBlog";
+import EditBlog from "./EditBlog";
 
 
 
@@ -28,7 +30,7 @@ const TableBlog = ({ searchText }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showApproveModal, setShowApproveModal] = useState(false);
     const [showRefuseModal, setShowRefuseModal] = useState(false);
-
+    const [editBlogData, setEditBlogData] = useState(null);
     const handleShowBlogDetail = (id) => {
         setSelectedBlogId(id);
         setShowBlogDetail(true);
@@ -70,9 +72,16 @@ const TableBlog = ({ searchText }) => {
   };
 
   const handleFilter = (status) => {
-    setStatusFilter({ filter: true, status: status });
-    setCurrentPage(0);
-    setActiveFilter(status);
+    // Nếu đã chọn nút đã được chọn trước đó, thì đặt lại giá trị của activeFilter và setStatusFilter
+    if (activeFilter === status) {
+      setActiveFilter(null); // Đặt lại activeFilter về null
+      setStatusFilter({ filter: false, status: "" }); // Đặt lại statusFilter về giá trị mặc định
+    } else {
+      // Nếu không, thực hiện như bình thường
+      setActiveFilter(status);
+      setCurrentPage(0);
+      setStatusFilter({ filter: true, status: status });
+    }
   };
 
   const handleShowDeleteModal = () => {
@@ -131,7 +140,6 @@ const TableBlog = ({ searchText }) => {
         selectedItems,
         localStorage.getItem("jwtToken")
       );
-      console.log(res);
       if (res.data.code === 200) {
         updateUserList();
         handleCloseDeleteModal();
@@ -147,6 +155,7 @@ const TableBlog = ({ searchText }) => {
 
   const handleEditItem = (item) => {
     console.log("Edit item:", item);
+    setEditBlogData(item);
   };
 
   const handleApproveBlog = async () => {
@@ -190,14 +199,6 @@ const TableBlog = ({ searchText }) => {
       toast.error("An error occurred while refuse blog.");
     }
   };
-
-
- 
-
-
-
-
-
   const renderTableRow = (item, index) => (
     <tr key={index} style={{ textAlign: "center", verticalAlign: "middle" }}>
       <td style={{ textAlign: "center" }}>
@@ -251,6 +252,7 @@ const TableBlog = ({ searchText }) => {
       >
         <i className="uil uil-clock-three"></i>
         <span className="text">Blog List</span>
+        {/* < CreateBlog /> */}
         {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
         {selectedItems.length > 0 &&
           (console.log(selectedItems),
@@ -296,7 +298,7 @@ const TableBlog = ({ searchText }) => {
                   </Button>
                 </Modal.Footer>
               </Modal>
-              <Button variant= "secondary" onClick={handleShowRefuseModal}>
+              <Button variant= "secondary" onClick={handleShowRefuseModal} style = {{ marginRight: "10px"}}>
                 Refuse
               </Button>
               <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
@@ -397,6 +399,8 @@ const TableBlog = ({ searchText }) => {
                 </Modal.Body>
             </Modal>
       </div>
+      <EditBlog editBlogData={editBlogData} />
+
     </div>
   );
 };

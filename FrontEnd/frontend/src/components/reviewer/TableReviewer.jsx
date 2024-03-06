@@ -9,8 +9,9 @@ import {
   updateStatusAccount,
 } from "../../services/AdminService";
 import CreateReviewer from "./CreateReviewer";
+import EditBlog from "../blog/EditBlog";
 
-const TableReviewer = () => {
+const TableReviewer = ({  searchText  }) => {
   const [listUsers, setListUsers] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -29,9 +30,11 @@ const TableReviewer = () => {
   const [showInActiveModal, setShowInActiveModal] = useState(false);
 
 
+
+
   useEffect(() => {
     getAccount(currentPage);
-  }, [currentPage, statusFilter]);
+  }, [currentPage, statusFilter, searchText]);
 
   const getAccount = async (selectedPage, status) => {
     try {
@@ -41,7 +44,8 @@ const TableReviewer = () => {
       const res = await fetchAccount(
         selectedPage + 1,
         localStorage.getItem("jwtToken"),
-        status
+        status,
+        searchText
       );
       if (res && res.data) {
         const { data, pageInfo } = res.data;
@@ -93,9 +97,16 @@ const TableReviewer = () => {
   };
 
   const handleFilter = (status) => {
-    setActiveFilter(status);
-    setCurrentPage(0);
-    setStatusFilter({ filter: true, status: status });
+    // Nếu đã chọn nút đã được chọn trước đó, thì đặt lại giá trị của activeFilter và setStatusFilter
+    if (activeFilter === status) {
+      setActiveFilter(null); // Đặt lại activeFilter về null
+      setStatusFilter({ filter: false, status: "" }); // Đặt lại statusFilter về giá trị mặc định
+    } else {
+      // Nếu không, thực hiện như bình thường
+      setActiveFilter(status);
+      setCurrentPage(0);
+      setStatusFilter({ filter: true, status: status });
+    }
   };
   
   const handleShowActiveModal = () => {
@@ -264,6 +275,7 @@ const TableReviewer = () => {
       <td>
         <div className="d-flex flex-column flex-md-row align-items-md-center">
           <button
+          style = {{  display: 'block', margin: 'auto'  }}
             type="button"
             className="btn btn-primary"
             onClick={() => handleEditUser(item)}
@@ -343,6 +355,7 @@ const TableReviewer = () => {
               </Modal.Footer>
             </Modal>
             <Button
+              style = {{marginRight: "10px"}}
               variant="warning"
               onClick={handleShowInActiveModal}
             >
