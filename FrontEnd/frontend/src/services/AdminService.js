@@ -74,8 +74,7 @@ const fetchSummaryData = (accessToken) => {
   };
 
   const fetchAllFilm = (selectedPage, accessToken, category, searchText) => {
-    console.log("a", accessToken);
-    let query = `/api/films?page=${selectedPage}`;
+    let query = `/api/reviewer/films?page=${selectedPage}`;
     
     if (category) {
         query += `&category=${category}`;
@@ -83,6 +82,7 @@ const fetchSummaryData = (accessToken) => {
     if (searchText) {
         query += `&searchText=${searchText}`;
     }
+    console.log(query);
     return axios.get(query, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -125,7 +125,6 @@ const postCreateBlog = async (filmId, title, blogImage, summary, point, contents
         formData.append(`contents[${index}].image`, content.image);
         formData.append(`contents[${index}].content`, content.content); 
       });
-      console.log("formData", ...formData.entries());
       const response = await axios.post("/api/reviewer/blogs", formData, {
         headers: {
           'Authorization': `Bearer ${jwtToken}`,
@@ -143,7 +142,6 @@ const updateUser = (userId, name, job) => {
 }
 
 const deleteAccount = async (accountIds, jwtToken) => {
-  console.log(jwtToken);
   try {
     const config = {
       headers: {
@@ -164,7 +162,6 @@ const deleteAccount = async (accountIds, jwtToken) => {
 };
 
 const deleteBlog = async (accountIds, jwtToken) => {
-  console.log(jwtToken);
   try {
     const config = {
       headers: {
@@ -186,8 +183,6 @@ const deleteBlog = async (accountIds, jwtToken) => {
 
 
 const deleteFilm = async (filmIds, jwtToken) => {
-  console.log("a" ,filmIds);
-  console.log("b", jwtToken);
   try {
     const config = {
       headers: {

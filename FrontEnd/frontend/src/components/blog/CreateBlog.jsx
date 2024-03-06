@@ -5,6 +5,7 @@ import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { fetchAllFilmList, postCreateBlog } from "../../services/AdminService";
 const CreateBlog = () => {
+  const [buttonWidth, setButtonWidth] = useState("200px");
   const [formData, setFormData] = useState({
     nameFilm: "",
     title: "",
@@ -130,7 +131,7 @@ const handleChange = (event) => {
     console.log("Title:", title);
     console.log("Summary:", summary);
     console.log("Point:", point);
-    
+
     console.log("Content data:", contentData);
     console.log("Blog Image:", blogImage);
 
@@ -151,11 +152,32 @@ const handleChange = (event) => {
       console.error("Error creating blog:", error.message);
     }
   };
+  useEffect(() => {
+    const handleResize = () => {
+        // Lấy kích thước hiện tại của cửa sổ
+        const windowWidth = window.innerWidth;
+
+        // Đặt kích thước mới cho nút dựa trên kích thước của cửa sổ
+        if (windowWidth < 768) { // Thay 768 bằng kích thước tối thiểu bạn muốn
+            setButtonWidth("100px"); // Thay đổi kích thước của nút khi cửa sổ thu nhỏ hơn kích thước nhất định
+        } else {
+            setButtonWidth("200px"); // Đặt lại kích thước mặc định khi cửa sổ đủ lớn
+        }
+    };
+
+    // Thêm sự kiện lắng nghe cho cửa sổ trình duyệt
+    window.addEventListener("resize", handleResize);
+
+    // Xóa sự kiện lắng nghe khi component unmount
+    return () => {
+        window.removeEventListener("resize", handleResize);
+    };
+}, []);
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
-        Create Blog
+      <Button variant="primary" onClick={handleShow} style={{ marginLeft: '1200px', width: buttonWidth, position: 'absolute', right: '30px', top: '130px' }}>
+        Create 
       </Button>
 
       <Modal show={show} onHide={handleClose}>

@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlogDetail from "../blogDetail/BlogDetail";
 import "../../styles/BlogDetail.css"
 import { updateStatusBlog } from "../../services/AdminService";
-import {CreateBlog} from "../blog/CreateBlog";
+
 
 
 const TableBlog = ({ searchText }) => {
@@ -133,7 +133,6 @@ const TableBlog = ({ searchText }) => {
         selectedItems,
         localStorage.getItem("jwtToken")
       );
-      console.log(res);
       if (res.data.code === 200) {
         updateUserList();
         handleCloseDeleteModal();
