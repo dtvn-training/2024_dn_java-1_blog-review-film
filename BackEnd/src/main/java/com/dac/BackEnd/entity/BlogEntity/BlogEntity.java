@@ -54,6 +54,8 @@ public class BlogEntity {
 
     private String image;
 
+    private String imageIntroduce;
+
     @NotNull
     private double point;
 

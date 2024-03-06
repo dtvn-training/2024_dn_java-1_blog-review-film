@@ -14,6 +14,7 @@ import com.dac.BackEnd.entity.UserEntity.UserEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import com.dac.BackEnd.entity.FilmEntity;
 
 @Repository
 public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
@@ -61,4 +62,12 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
         Optional<BlogEntity> findBlogByIdGuest(
                         @Param("id") Long id);
 
+        @Query("SELECT b FROM BlogEntity b JOIN b.film f JOIN b.insertBy r " +
+                        "WHERE b.status = BlogStatus.APPROVE " +
+                        "AND b.insertBy.status = UserStatus.ACTIVE " +
+                        "AND f = :filmEntity " +
+                        "AND b.deleteFlag = false ORDER BY b.postTime DESC")
+        Page<BlogEntity> findAllBlogsByFilmGuest(
+                        @Param("filmEntity") FilmEntity filmEntity,
+                        Pageable pageable);
 }

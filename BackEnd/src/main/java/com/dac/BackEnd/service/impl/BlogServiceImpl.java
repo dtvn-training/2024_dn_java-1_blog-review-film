@@ -41,9 +41,8 @@ import com.dac.BackEnd.service.BlogService;
 import com.dac.BackEnd.service.ImageService;
 import com.dac.BackEnd.validation.BlogStatusValidation;
 
-
 @Service
-public class BlogServiceImpl implements BlogService{
+public class BlogServiceImpl implements BlogService {
 
     @Autowired
     private BlogRepository blogRepository;
@@ -61,24 +60,27 @@ public class BlogServiceImpl implements BlogService{
     private ImageService imageService;
 
     private static final int PER_PAGE = 10;
+    private static final int PER_PAGE_GUEST = 6;
 
-    public ResponsePage getPageInfo(Page<BlogEntity> blog, int page) {
+    public ResponsePage getPageInfo(Page<BlogEntity> blog, int page, int per_page) {
         ResponsePage responsePage = new ResponsePage();
         responsePage.setPage(page);
-        responsePage.setPer_page(PER_PAGE);
+        responsePage.setPer_page(per_page);
         responsePage.setTotal(blog.getTotalElements());
         responsePage.setTotal_pages(blog.getTotalPages());
         return responsePage;
     }
 
     @Override
-    public PagedResponse<Blog> getAllBlogs(String status, String searchText, LocalDateTime startTime, LocalDateTime endTime, int page) {
+    public PagedResponse<Blog> getAllBlogs(String status, String searchText, LocalDateTime startTime,
+            LocalDateTime endTime, int page) {
         Authentication authentication = getAuthentication();
         UserEntity userEntity = getUserEntity(authentication);
-        Page<BlogEntity> blog = getBlogEntities(status, searchText, startTime, endTime, userEntity, PageRequest.of(page - 1, PER_PAGE));
+        Page<BlogEntity> blog = getBlogEntities(status, searchText, startTime, endTime, userEntity,
+                PageRequest.of(page - 1, PER_PAGE));
         PagedResponse<Blog> pagedResponse = new PagedResponse<>();
         pagedResponse.setContent(blog.getContent().stream().map(BlogConvertor::toModel).toList());
-        pagedResponse.setResponsePage(getPageInfo(blog, page));
+        pagedResponse.setResponsePage(getPageInfo(blog, page, PER_PAGE));
         return pagedResponse;
     }
 
@@ -87,7 +89,7 @@ public class BlogServiceImpl implements BlogService{
         Authentication authentication = getAuthentication();
         UserEntity userEntity = getUserEntity(authentication);
         BlogEntity blogEntity = getBlogEntityById(blogId);
-        
+
         checkOwnershipAndRole(blogEntity, userEntity);
 
         return BlogConvertor.toModel(blogEntity);
@@ -111,12 +113,14 @@ public class BlogServiceImpl implements BlogService{
         return roles.contains(UserRole.ROLE_REVIEWER.name());
     }
 
-    private Page<BlogEntity> getBlogEntities(String status, String searchText, LocalDateTime startTime, LocalDateTime endTime, UserEntity userEntity, Pageable pageable) {
-        return rolesContainReviewer() ?
-                blogRepository.findAllBlogs(userEntity, BlogStatusValidation.checkValidStatus(status), searchText, startTime, endTime, pageable) :
-                blogRepository.findAllBlogs(null, BlogStatusValidation.checkValidStatus(status), searchText, startTime, endTime, pageable);
+    private Page<BlogEntity> getBlogEntities(String status, String searchText, LocalDateTime startTime,
+            LocalDateTime endTime, UserEntity userEntity, Pageable pageable) {
+        return rolesContainReviewer()
+                ? blogRepository.findAllBlogs(userEntity, BlogStatusValidation.checkValidStatus(status), searchText,
+                        startTime, endTime, pageable)
+                : blogRepository.findAllBlogs(null, BlogStatusValidation.checkValidStatus(status), searchText,
+                        startTime, endTime, pageable);
     }
-
 
     private BlogEntity getBlogEntityById(Long blogId) {
         return blogRepository.findById(blogId)
@@ -128,7 +132,6 @@ public class BlogServiceImpl implements BlogService{
             throwForbiddenException();
         }
     }
-
 
     @Override
     public void updateStatusBlog(StatusRequest status) {
@@ -165,14 +168,17 @@ public class BlogServiceImpl implements BlogService{
         entity.setSummary(blogInput.getSummary());
         entity.setPoint(blogInput.getPoint());
         entity.setImage(imageService.upload(blogInput.getBlogImage(), TypeImageConstants.BLOG_IMAGE));
+        entity.setImageIntroduce(imageService.upload(blogInput.getBlogImageIntroduce(), TypeImageConstants.BLOG_IMAGE));
+        UserEntity userEntity = getUserEntity(authentication);
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-        if (roles.contains(UserRole.ROLE_ADMIN)) {
+        if (roles.contains(UserRole.ROLE_ADMIN.name())) {
             entity.setPostTime(now);
             entity.setStatus(BlogStatus.APPROVE);
+        } else {
+            entity.setStatus(BlogStatus.WAITING);
         }
-        entity.setStatus(BlogStatus.WAITING);
         entity.setInsertDateTime(now);
-        UserEntity userEntity = getUserEntity(authentication);
+
         entity.setInsertBy(userEntity);
         entity.setUpdateDateTime(now);
         entity.setUpdateBy(userEntity);
@@ -209,7 +215,8 @@ public class BlogServiceImpl implements BlogService{
                     ContentEntity contentEntity = contentRepository.findById(contentInput.getId())
                             .orElseThrow(() -> notFoundException());
                     if (!contentEntity.getBlog().getId().equals(blogId)) {
-                        throw new MessageException(ErrorConstants.INVALID_DATA_MESSAGE, ErrorConstants.INVALID_DATA_CODE);
+                        throw new MessageException(ErrorConstants.INVALID_DATA_MESSAGE,
+                                ErrorConstants.INVALID_DATA_CODE);
                     }
                     contentEntity.setContent(contentInput.getContent());
                     return contentRepository.save(contentEntity);
@@ -226,7 +233,8 @@ public class BlogServiceImpl implements BlogService{
         entity.setImage(imageService.upload(file, TypeImageConstants.BLOG_IMAGE));
         entity.setUpdateDateTime(LocalDateTime.now());
         entity.setUpdateBy(userRepository.findByEmailAndRole(authentication.getName(), UserRole.ROLE_ADMIN)
-                .orElseThrow(() -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE)));
+                .orElseThrow(
+                        () -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE)));
         return BlogConvertor.toModel(blogRepository.save(entity));
     }
 
@@ -237,7 +245,8 @@ public class BlogServiceImpl implements BlogService{
                     ContentEntity entity = contentRepository.findById(blogId)
                             .orElseThrow(() -> notFoundException());
                     if (!entity.getBlog().getId().equals(blogId)) {
-                        throw new MessageException(ErrorConstants.INVALID_DATA_MESSAGE, ErrorConstants.INVALID_DATA_CODE);
+                        throw new MessageException(ErrorConstants.INVALID_DATA_MESSAGE,
+                                ErrorConstants.INVALID_DATA_CODE);
                     }
                     entity.setImageUrl(imageService.upload(contentInput.getImage(), TypeImageConstants.CONTENT_IMAGE));
                     return contentRepository.save(entity);
@@ -267,11 +276,11 @@ public class BlogServiceImpl implements BlogService{
     private void throwUnauthorizedException() {
         throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
     }
-    
+
     private void throwForbiddenException() {
         throw new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE);
     }
-    
+
     private MessageException notFoundException() {
         return new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE);
     }
@@ -279,5 +288,23 @@ public class BlogServiceImpl implements BlogService{
     @Override
     public Blog getBlogByIdGuest(Long blogId) {
         return BlogConvertor.toModel(blogRepository.findBlogByIdGuest(blogId).orElseThrow(() -> notFoundException()));
+    }
+
+    @Override
+    public PagedResponse<Blog> getAllBlogsGuest(String searchText, int page) {
+        Page<BlogEntity> blog = blogRepository.findAllBlogsGuest(searchText, PageRequest.of(page - 1, PER_PAGE_GUEST));
+        PagedResponse<Blog> pagedResponse = new PagedResponse<>();
+        pagedResponse.setContent(blog.getContent().stream().map(BlogConvertor::toModel).toList());
+        pagedResponse.setResponsePage(getPageInfo(blog, page, PER_PAGE_GUEST));
+        return pagedResponse;
+    }
+
+    @Override
+    public PagedResponse<Blog> getAllBlogsByFilmGuest(Long filmId, int page) {
+        Page<BlogEntity> blog = blogRepository.findAllBlogsByFilmGuest(filmRepository.findById(filmId).orElseThrow(() -> notFoundException()), PageRequest.of(page - 1, PER_PAGE_GUEST));
+        PagedResponse<Blog> pagedResponse = new PagedResponse<>();
+        pagedResponse.setContent(blog.getContent().stream().map(BlogConvertor::toModel).toList());
+        pagedResponse.setResponsePage(getPageInfo(blog, page, PER_PAGE_GUEST));
+        return pagedResponse;
     }
 }

@@ -8,6 +8,7 @@ const Film = () => {
   const [searchText, setSearchText] = useState("");
   const [currentSearchText, setCurrentSearchText] = useState("");
 
+
   useEffect(() => {
     const timer = setTimeout(() => {
       handleSearchChange(currentSearchText);
@@ -26,21 +27,24 @@ const Film = () => {
         <i className="uil uil-bars sidebar-toggle"></i>
         <div className="search-box">
           <i className="uil uil-search"></i>
-          <input
-            type="text"
-            placeholder="Search here..."
-            value={currentSearchText}
-            onChange={(e) => setCurrentSearchText(e.target.value)}
-          />
+          <input type="text" placeholder="Search here..." />
         </div>
         <img src="images/3.jpg" alt="" />
       </div>
       <div className="dash-content">
-        <TableFilm searchText={searchText} />
-        {isAdmin && <CreateFilm />}
+        <div className="activity">
+          <div className="title" style={{ backgroundColor: '#f0f0f0', padding: '10px', borderRadius: '5px' }}>
+            <i className="uil uil-clock-three"></i>
+            <span className="text">Film List</span>
+          </div>
+          <div className="activity-data">
+            <TableFilm />
+            {isAdmin && <CreateFilm />}
+          </div>
+        </div>
       </div>
     </section>
   );
-};
+}
 
 export default Film;

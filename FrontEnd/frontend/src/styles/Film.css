@@ -28,40 +28,13 @@ img{
 
 /* header */
 header{
-    min-height: 100vh;
+    min-height: 30vh;
     background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(https://blogreviewfilm.s3.ap-southeast-1.amazonaws.com/FilmImage/1709542360430-1.jpg) center/cover no-repeat fixed;
     display: flex;
     flex-direction: column;
     justify-content: stretch;
     padding-bottom: 100px;
 }
-
-.search {
-    background-color: #fff;
-    text-align: left;
-    width: 50%;
-    margin: 0 auto;
-    border-radius: 10px;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 65%;
-    z-index: 1;
-}
-
-.item-search {
-    color: #000;
-    text-align: left;
-    padding: 10px ;
-    border-bottom: 1px solid grey;
-
-}
-
-.link-blog {
-    text-decoration: none;
-    color: #000;
-}
-
 .navbar{
     background: rgba(0, 0, 0, 0.6);
     padding: 1.2rem;
@@ -78,7 +51,6 @@ header{
 .navbar-nav{
     padding: 0.8rem 0 0.2rem 0;
     text-align: center;
-    flex-direction: row;
 }
 .navbar-nav a{
     text-transform: uppercase;
@@ -126,7 +98,6 @@ header{
     padding: 0.6rem 1rem;
     display: flex;
     justify-content: space-between;
-    position: relative;
 }
 .search-input{
     font-family: var(--Roboto);
@@ -152,7 +123,6 @@ header{
 /* design */
 .design{
     padding: 4.5rem 0;
-    background-color: #fff;
 }
 .title{
     text-align: center;
@@ -232,10 +202,21 @@ header{
 .blog-content{
     margin: 2rem 0;
 }
-.blog-img{
+.film-img{
     position: relative;
 }
-.blog-img span{
+
+.description {
+    max-height: 4em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+
+.film-img span{
     position: absolute;
     bottom: 10px;
     right: 10px;
@@ -244,7 +225,7 @@ header{
     font-size: 1.4rem;
     padding: 0.3rem 0.6rem;
 }
-.blog-img img{
+.film-img img{
     height: 596px;
     object-fit: cover;
 }

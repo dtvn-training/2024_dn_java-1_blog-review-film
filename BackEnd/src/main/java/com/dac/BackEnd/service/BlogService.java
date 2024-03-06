@@ -36,4 +36,8 @@ public interface BlogService {
     void deleteBlogs(DeleteRequest deletes);
 
     Blog getBlogByIdGuest(Long blogId);
+
+    PagedResponse<Blog> getAllBlogsGuest(String searchText, int page);
+
+    PagedResponse<Blog> getAllBlogsByFilmGuest(Long filmId, int page);
 }

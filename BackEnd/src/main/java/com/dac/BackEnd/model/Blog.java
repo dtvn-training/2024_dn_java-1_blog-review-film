@@ -31,10 +31,11 @@ public class Blog {
 
     private String image;
 
+    private String imageIntroduce;
+
     @NotNull
     private double point;
 
-    @NotNull
     private LocalDateTime postTime;
 
     @NotBlank
