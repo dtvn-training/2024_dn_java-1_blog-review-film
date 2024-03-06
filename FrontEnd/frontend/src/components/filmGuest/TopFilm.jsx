@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchDataHome } from "../../services/GuestService";
 
 function TopFilm() {
@@ -14,7 +14,6 @@ function TopFilm() {
         try {
             const res = await fetchDataHome();
             if (res && res.data) {
-                console.log(res.data);
                 setTopFilms(res.data.data.topFilms)
               }
         } catch (error) {
@@ -34,7 +33,7 @@ function TopFilm() {
                     <div class="blog-content">
                         {topFilms.map((film, index) => (
                             <div key={index} class="blog-item">
-                                <div class="blog-img">
+                                <div class="film-img">
                                     <img src={film.image} alt=""/>
                                         <span><i class="far fa-heart"></i></span>
                                 </div>
@@ -42,7 +41,7 @@ function TopFilm() {
                                     <span>{film.startDate}</span>
                                     <h2>{film.nameFilm}</h2>
                                     <p>{film.description}</p>
-                                    <a href="">Read More</a>
+                                    <Link to="#">Read More</Link>
                                 </div>
                             </div>
                         ))}

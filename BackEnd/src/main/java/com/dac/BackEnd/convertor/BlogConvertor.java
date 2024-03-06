@@ -18,6 +18,7 @@ public class BlogConvertor {
         blog.setPoint(entity.getPoint());
         blog.setPostTime(entity.getPostTime());
         blog.setImage(entity.getImage());
+        blog.setImageIntroduce(entity.getImageIntroduce());
         blog.setStatus(entity.getStatus());
         blog.setInsertDateTime(entity.getInsertDateTime());
         blog.setInsertBy(UserConvertor.toModel(entity.getInsertBy()));

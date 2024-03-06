@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +22,6 @@ import com.dac.BackEnd.entity.CategoryEntity;
 import com.dac.BackEnd.entity.FilmEntity;
 import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.entity.UserEntity.UserEntity;
-import com.dac.BackEnd.entity.UserEntity.UserRole;
 import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.Film;
@@ -55,10 +53,12 @@ public class FilmServiceImpl implements FilmService {
 
     private static final int PER_PAGE = 10;
 
-    public ResponsePage getPageInfo(Page<FilmEntity> film, int page) {
+    private static final int PER_PAGE_GUEST = 6;
+
+    public ResponsePage getPageInfo(Page<FilmEntity> film, int page, int per_page) {
         ResponsePage responsePage = new ResponsePage();
         responsePage.setPage(page);
-        responsePage.setPer_page(PER_PAGE);
+        responsePage.setPer_page(per_page);
         responsePage.setTotal(film.getTotalElements());
         responsePage.setTotal_pages(film.getTotalPages());
         return responsePage;
@@ -69,7 +69,7 @@ public class FilmServiceImpl implements FilmService {
         Page<FilmEntity> filmEntities = getFilmEntities(category, searchText, startTime, endTime, PageRequest.of(page - 1, PER_PAGE));
         PagedResponse<Film> pagedResponse = new PagedResponse<>();
         pagedResponse.setContent(filmEntities.getContent().stream().map(FilmConvertor::toModel).toList());
-        pagedResponse.setResponsePage(getPageInfo(filmEntities, page));
+        pagedResponse.setResponsePage(getPageInfo(filmEntities, page, PER_PAGE));
         return pagedResponse;
     }
 
@@ -193,6 +193,20 @@ public class FilmServiceImpl implements FilmService {
 
     private MessageException notFoundException() {
         return new MessageException(ErrorConstants.NOT_FOUND_MESSAGE, ErrorConstants.NOT_FOUND_CODE);
+    }
+
+    @Override
+    public List<Film> getAllFilmSelect() {
+        return filmRepository.findByDeleteFlagFalse().stream().map(FilmConvertor::toModel).toList();
+    }
+
+    @Override
+    public PagedResponse<Film> getAllFilmGuest(int page, String searchText) {
+        Page<FilmEntity> blog = filmRepository.findAllFilmsGuest(searchText, LocalDate.now(), PageRequest.of(page - 1, PER_PAGE_GUEST));
+        PagedResponse<Film> pagedResponse = new PagedResponse<>();
+        pagedResponse.setContent(blog.getContent().stream().map(FilmConvertor::toModel).toList());
+        pagedResponse.setResponsePage(getPageInfo(blog, page, PER_PAGE_GUEST));
+        return pagedResponse;
     }
 }
 

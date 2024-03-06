@@ -28,7 +28,7 @@ img{
 
 /* header */
 header{
-    min-height: 100vh;
+    min-height: 30vh;
     background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(https://blogreviewfilm.s3.ap-southeast-1.amazonaws.com/FilmImage/1709542360430-1.jpg) center/cover no-repeat fixed;
     display: flex;
     flex-direction: column;
@@ -45,7 +45,7 @@ header{
     position: absolute;
     left: 0;
     right: 0;
-    top: 65%;
+    top: 37%;
     z-index: 1;
 }
 
@@ -57,14 +57,11 @@ header{
 
 }
 
-.link-blog {
-    text-decoration: none;
-    color: #000;
-}
 
 .navbar{
     background: rgba(0, 0, 0, 0.6);
     padding: 1.2rem;
+    width: 100%;
 }
 .navbar-brand{
     color: #fff;
@@ -78,7 +75,6 @@ header{
 .navbar-nav{
     padding: 0.8rem 0 0.2rem 0;
     text-align: center;
-    flex-direction: row;
 }
 .navbar-nav a{
     text-transform: uppercase;
@@ -126,7 +122,6 @@ header{
     padding: 0.6rem 1rem;
     display: flex;
     justify-content: space-between;
-    position: relative;
 }
 .search-input{
     font-family: var(--Roboto);
@@ -147,81 +142,6 @@ header{
     background: transparent;
     outline: 0;
     cursor: pointer;
-}
-
-/* design */
-.design{
-    padding: 4.5rem 0;
-    background-color: #fff;
-}
-.title{
-    text-align: center;
-    padding: 1rem 0;
-}
-.title h2{
-    font-family: var(--Playfair);
-    font-size: 2.4rem;
-}
-.title p{
-    text-transform: uppercase;
-    padding: 0.6rem 0;
-}
-.design-content{
-    margin: 2rem 0;
-}
-.design-item{
-    cursor: pointer;
-    margin: 1.5rem 0;
-}
-.design-img{
-    position: relative;
-    overflow: hidden;
-}
-.design-img::after{
-    position: absolute;
-    content: "";
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-}
-.design-img img{
-    transition:  all 0.5s ease;
-}
-.design-item:hover img{
-    transform: scale(1.2);
-}
-.design-img span:first-of-type{
-    position: absolute;
-    z-index: 1;
-    top: 10px;
-    left: 10px;
-    background: var(--exDark);
-    color: #fff;
-    padding: 0.25rem 1rem;
-}
-.design-img span:last-of-type{
-    position: absolute;
-    z-index: 1;
-    bottom: 10px;
-    right: 10px;
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-.design-title{
-    padding: 1rem;
-    font-size: 1.2rem;
-    text-align: center;
-    width: 70%;
-    margin: 0 auto;
-}
-.design-title a{
-    color: var(--dark);
-    text-decoration: none;
-    text-transform: capitalize;
-    font-family: var(--Playfair);
 }
 
 /* blog */
@@ -245,12 +165,14 @@ header{
     padding: 0.3rem 0.6rem;
 }
 .blog-img img{
-    height: 596px;
+    height: 261px;
+    width: 420px;
     object-fit: cover;
 }
 .blog-text{
     margin: 2.2rem 0;
     padding: 0 1rem;
+    color: #000;
 }
 .blog-text span{
     font-weight: 300;
