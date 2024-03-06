@@ -190,7 +190,9 @@ public class BlogServiceImpl implements BlogService {
         ContentEntity entity = new ContentEntity();
         entity.setBlog(blog);
         entity.setContent(content.getContent());
-        entity.setImageUrl(imageService.upload(content.getImage(), TypeImageConstants.CONTENT_IMAGE));
+        if (content.getImage() != null) {
+            entity.setImageUrl(imageService.upload(content.getImage(), TypeImageConstants.CONTENT_IMAGE));
+        }
         entity.setInsertDateTime(blog.getInsertDateTime());
         entity.setInsertBy(blog.getInsertBy());
         entity.setUpdateDateTime(blog.getUpdateDateTime());
