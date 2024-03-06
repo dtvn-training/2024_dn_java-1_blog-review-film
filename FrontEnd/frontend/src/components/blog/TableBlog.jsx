@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlogDetail from "../blogDetail/BlogDetail";
 import "../../styles/BlogDetail.css"
 import { updateStatusBlog } from "../../services/AdminService";
-
+import {CreateBlog} from "../blog/CreateBlog";
 
 
 const TableBlog = ({ searchText }) => {
@@ -253,6 +253,7 @@ const TableBlog = ({ searchText }) => {
       >
         <i className="uil uil-clock-three"></i>
         <span className="text">Blog List</span>
+        {/* < CreateBlog /> */}
         {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
         {selectedItems.length > 0 &&
           (console.log(selectedItems),

@@ -74,6 +74,7 @@ const fetchSummaryData = (accessToken) => {
   };
 
   const fetchAllFilm = (selectedPage, accessToken, category, searchText) => {
+    console.log("a", accessToken);
     let query = `/api/films?page=${selectedPage}`;
     
     if (category) {
@@ -90,6 +91,14 @@ const fetchSummaryData = (accessToken) => {
     
 }
 
+const fetchAllFilmList = (accessToken) => {
+  return axios.get(`/api/films/all`, {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+}
+
 const fetchCategories = (accessToken) => {
   const query = `/api/categories`; // Đường dẫn API để lấy danh sách các categories
   return axios.get(query, {
@@ -104,6 +113,31 @@ const postCreateUser = (name, job) => {
     return axios.post("/api/users", { name, job });
 }
 
+const postCreateBlog = async (filmId, title, blogImage, summary, point, contents, jwtToken) => {
+    try {
+      const formData = new FormData();
+      formData.append('filmId', filmId);
+      formData.append('title', title);
+      formData.append('blogImage', blogImage);
+      formData.append('summary', summary);
+      formData.append('point', point);
+      contents.forEach((content, index) => {
+        formData.append(`contents[${index}].image`, content.image);
+        formData.append(`contents[${index}].content`, content.content); 
+      });
+      console.log("formData", ...formData.entries());
+      const response = await axios.post("/api/reviewer/blogs", formData, {
+        headers: {
+          'Authorization': `Bearer ${jwtToken}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+  
 const updateUser = (userId, name, job) => {
     return axios.put(`/api/users/${userId}`, { name, job });
 }
@@ -199,10 +233,6 @@ const deleteFilm = async (filmIds, jwtToken) => {
       formData.append('startDate', startDate);
       formData.append('description', description);
       formData.append('filmImage', filmImage); // Assuming filmImage is a File object
-      
-      console.log(jwtToken);
-
-
       const response = await axios.post("/api/admin/films", formData, {
         headers: {
           'Authorization': `Bearer ${jwtToken}`,
@@ -280,6 +310,6 @@ const deleteFilm = async (filmIds, jwtToken) => {
     }
   }
   
-  export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, postCreateUser, updateUser, putUpdateAccount, fetchAllBlog, deleteAccount, deleteFilm, deleteBlog, postCreateFilm, postCreateAccount, updateStatusBlog, updateStatusAccount, fetchBlogById };
+  export { fetchAccount, fetchSummaryData, fetchCategories, fetchDashBoard, fetchAllFilm, fetchAllFilmList ,postCreateUser, postCreateBlog, updateUser, putUpdateAccount, fetchAllBlog, deleteAccount, deleteFilm, deleteBlog, postCreateFilm, postCreateAccount, updateStatusBlog, updateStatusAccount, fetchBlogById };
 
 
