@@ -29,13 +29,13 @@ const BlogWaiting = ( {searchText} ) => {
   const [showRefuseModal, setShowRefuseModal] = useState(false);
   const [showBlogDetail, setShowBlogDetail] = useState(false);
   const [selectedBlogId, setSelectedBlogId] = useState(null);
+  const [blogToRemove, setBlogToRemove] = useState(null);
 
 
 
   const user = JSON.parse(localStorage.getItem('user'));
   const isAdmin = user.role === 'ROLE_ADMIN';
 
-  console.log(searchText);
   // Fetch data from API
   useEffect(() => {
     const savedListUsers = JSON.parse(localStorage.getItem("listUsers"));
@@ -48,7 +48,9 @@ const BlogWaiting = ( {searchText} ) => {
       getBlogs(currentPage);
     }, [currentPage, statusFilter, searchText]);
 
-
+    const handleRemoveBlog = (blogId) => {
+      setBlogToRemove(blogId);
+    };
 
     const getBlogs = async (selectedPage) => {
       try {
@@ -134,6 +136,7 @@ const BlogWaiting = ( {searchText} ) => {
 const handleCloseBlogDetail = () => {
     setSelectedBlogId(null);
     setShowBlogDetail(false);
+    getBlogs(currentPage)
 };
 
   const handleSelectItem = (id) => {
@@ -261,6 +264,8 @@ const handleCloseBlogDetail = () => {
       </td>
     </tr>
   );
+
+  
 
   return (
     <div className="activity" style={{ position: "relative" }}>
@@ -411,7 +416,7 @@ const handleCloseBlogDetail = () => {
             </div>
             <Modal show={showBlogDetail} onHide={handleCloseBlogDetail} dialogClassName="custom-modal-width">
                 <Modal.Body>
-                    <BlogDetail blogId={selectedBlogId}/>
+                    <BlogDetail blogId={selectedBlogId} onCloseModal={handleCloseBlogDetail}/>
                 </Modal.Body>
             </Modal>
           </div>

@@ -1,32 +1,114 @@
 import React, { useEffect, useState } from "react";
 import "./BlogDetail.css"
-import { fetchBlogById, fetchBlogByIdGuest } from "../../services/AdminService";
+import { fetchBlogById, fetchBlogByIdGuest, updateStatusBlog } from "../../services/AdminService";
+import { Button, Modal } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const BlogDetail = ({ blogId }) => {
-
+const BlogDetail = ({ blogId, onCloseModal }) => {
 
     const authenticated = JSON.parse(localStorage.getItem('authenticated'));
     const [blogDetail, setBlogDetail] = useState(null);
     const [id, setId] = useState(blogId);
+    const [showApproveModal, setShowApproveModal] = useState(false);
+    const [showRefuseModal, setShowRefuseModal] = useState(false);
+    const [selectedItems, setSelectedItems] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("1")
+        setSelectedItems([id]);
         fetchBlogDetail(blogId);
     }, [id]);
 
     const fetchBlogDetail = async (blogId) => {
         try {
-            const res = await fetchBlogByIdGuest(blogId, localStorage.getItem("jwtToken"));
-            if (res && res.data) {
-                console.log(res.data)
-                setBlogDetail(res.data.data);
+            if (authenticated) {
+                const res = await fetchBlogById(blogId, localStorage.getItem("jwtToken"));
+                if (res && res.data) {
+                    console.log(res.data)
+                    setBlogDetail(res.data.data);
+                }
+            } else {
+                const res = await fetchBlogByIdGuest(blogId);
+                if (res && res.data) {
+                    console.log(res.data)
+                    setBlogDetail(res.data.data);
+                }
             }
+
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
 
-    console.log(blogDetail);
+    const handleShowApproveModal = () => {
+        setShowApproveModal(true);
+    };
+
+    const handleCloseApproveModal = () => {
+        setShowApproveModal(false);
+    };
+
+    const handleShowRefuseModal = (itemId) => {
+        setShowRefuseModal(true);
+    };
+
+    const handleCloseRefuseModal = () => {
+        setShowRefuseModal(false);
+    };
+
+    const handleApproveBlogs = async () => {
+        try {
+
+            // Gọi hàm updateStatusBlog để gửi yêu cầu PATCH đến API
+            try {
+                console.log(selectedItems)
+                await updateStatusBlog(selectedItems, localStorage.getItem("jwtToken"), "APPROVE");
+                console.log("Approve selected blogs successfully");
+                handleCloseApproveModal();
+
+                if (onCloseModal) {
+                    onCloseModal();
+                }
+            } catch (error) {
+                // Xử lý lỗi nếu có
+                console.error(`Error approving blog with ids ${selectedItems}:`, error);
+                throw error;
+            }
+        } catch (error) {
+            // Xử lý lỗi nếu có
+            console.error("Error approving selected blogs:", error);
+            // Hiển thị thông báo lỗi cho người dùng
+            toast.error("An error occurred while approving selected blogs");
+        }
+    };
+
+    const handleRefuseBlogs = async () => {
+        try {
+            // Gọi hàm updateStatusBlog để gửi yêu cầu PATCH đến API
+            try {
+                await updateStatusBlog(selectedItems, localStorage.getItem("jwtToken"), "REFUSE");
+                handleCloseRefuseModal();
+
+                if (onCloseModal) {
+                    onCloseModal();
+                }
+            } catch (error) {
+                // Xử lý lỗi nếu có
+                console.error(`Error refuse blog with ids ${selectedItems}:`, error);
+                throw error;
+            }
+
+            // Hiển thị thông báo thành công
+            toast.success("Refuse selected blogs successfully");
+        } catch (error) {
+            // Xử lý lỗi nếu có
+            console.error("Error refuse selected blogs:", error);
+            // Hiển thị thông báo lỗi cho người dùng
+            toast.error("An error occurred while refuse selected blogs");
+        }
+    };
+
 
     return (
         (blogDetail ? (
@@ -77,14 +159,67 @@ const BlogDetail = ({ blogId }) => {
                                     </div>
                                     <div className="div-27">{blogDetail.summary}</div>
                                 </div>
+                                <div className="btn-updateBlog">
+                                    <button
+                                        className="btn btn-primary mr-2"
+                                        onClick={handleShowApproveModal}
+                                        style={{ marginRight: "10px" }}
+                                    >
+                                        Approve
+                                    </button>
+                                    <Modal show={showApproveModal} onHide={handleCloseApproveModal}>
+                                        <Modal.Header closeButton>
+                                            <Modal.Title>Confirm Approve</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            Are you sure you want to approve all this blog?
+                                        </Modal.Body>
+                                        <Modal.Footer>
+                                            <Button variant="secondary" onClick={handleCloseApproveModal}>
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                variant="primary"
+                                                onClick={handleApproveBlogs}
+                                            >
+                                                Confirm
+                                            </Button>
+                                        </Modal.Footer>
+                                    </Modal>
+                                    <Button
+                                        variant="secondary"
+                                        onClick={handleShowRefuseModal}
+                                    >
+                                        Refuse
+                                    </Button>
+                                    <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
+                                        <Modal.Header closeButton>
+                                            <Modal.Title>Confirm Refusal</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            Are you sure you want to refuse this blog?
+                                        </Modal.Body>
+                                        <Modal.Footer>
+                                            <Button variant="secondary" onClick={handleCloseRefuseModal}>
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                variant="primary"
+                                                onClick={handleRefuseBlogs}
+                                            >
+                                                Confirm
+                                            </Button>
+                                        </Modal.Footer>
+                                    </Modal>
+                                </div>
                             </div>
                         </div>
                         {blogDetail.contents.map((content, index) => (
-                                    <div key={index} className="content-container">
-                                        <p>{content.content}</p>
-                                        {content.imageUrl && <img src={content.imageUrl} alt={`Content ${index + 1}`} />}
-                                    </div>
-                                ))}
+                            <div key={index} className="content-container">
+                                <p>{content.content}</p>
+                                {content.imageUrl && <img src={content.imageUrl} alt={`Content ${index + 1}`} />}
+                            </div>
+                        ))}
                     </div>
                     {!authenticated && (
                         <div className="div-29">
