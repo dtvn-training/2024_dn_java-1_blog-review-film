@@ -374,6 +374,14 @@ nav.close ~ .dashboard .top{
 }
 
 @media (max-width: 1000px) {
+    .dashboard {
+        left: 60px;
+        width: 90%;
+    }
+
+    .dashboard .top {
+        left: 100px;
+    }
     nav{
         width: 73px;
     }
@@ -422,6 +430,10 @@ nav.close ~ .dashboard .top{
         width: calc(100% / 2 - 15px);
         margin-top: 15px;
     }
+    .dashboard .top {
+        left: 60px;
+        width: 95%;
+    }
 }
 @media (max-width: 560px) {
     .dash-content .boxes .box{
@@ -429,9 +441,6 @@ nav.close ~ .dashboard .top{
     }
 }
 @media (max-width: 400px) {
-    nav{
-        width: 0px;
-    }
     nav.close{
         width: 73px;
     }
