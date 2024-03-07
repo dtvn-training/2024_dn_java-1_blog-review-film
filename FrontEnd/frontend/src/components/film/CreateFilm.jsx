@@ -221,6 +221,7 @@ const CreateFilm = ({ show, createFilm }) => {
                 </Modal>
             </>
         </>
+        
     );
 }
 

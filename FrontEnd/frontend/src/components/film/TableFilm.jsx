@@ -6,7 +6,9 @@ import {
   fetchAllFilm,
   fetchCategories,
 } from "../../services/AdminService";
+import EditFilm from "./EditFilm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 
 const TableFilm = ({ searchText }) => {
   const [pageCount, setPageCount] = useState(0);
@@ -25,6 +27,8 @@ const TableFilm = ({ searchText }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user.role === "ROLE_ADMIN";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [key, setKey] = useState(0);
+  const [editFilm, setEditFilm] = useState({});
 
   useEffect(() => {
     getFilms(currentPage);
@@ -86,7 +90,9 @@ const TableFilm = ({ searchText }) => {
   };
 
   const handleEditUser = (user) => {
-    console.log("Edit user:", user);
+    setEditFilm(user);
+    console.log("editFilm", editFilm);
+    setKey(prevKey => prevKey + 1); 
   };
 
   const getCategories = async () => {
@@ -313,7 +319,9 @@ const TableFilm = ({ searchText }) => {
           </div>
         </div>
       </div>
+      <EditFilm key={key} editFilmData={editFilm}  />
     </div>
+    
   );
 };
 
