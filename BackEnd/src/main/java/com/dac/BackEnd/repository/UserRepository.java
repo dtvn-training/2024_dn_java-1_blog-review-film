@@ -25,6 +25,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
     @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role = UserRole.ROLE_REVIEWER AND u.deleteFlag = false")
     long countAllReviewer();
 
+    Optional<UserEntity> findByEmailAndDeleteFlagFalse(String email);
+
     Optional<UserEntity> findByEmailAndRole(String email, UserRole role);
 
     Optional<UserEntity> findByEmail(String email);

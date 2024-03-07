@@ -40,4 +40,6 @@ public interface BlogService {
     PagedResponse<Blog> getAllBlogsGuest(String searchText, int page);
 
     PagedResponse<Blog> getAllBlogsByFilmGuest(Long filmId, int page);
+
+    Blog updateImageIntroduceBlog(MultipartFile file, Long blogId);
 }

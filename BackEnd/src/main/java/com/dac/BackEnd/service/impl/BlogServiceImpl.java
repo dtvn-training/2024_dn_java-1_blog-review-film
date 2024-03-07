@@ -95,44 +95,6 @@ public class BlogServiceImpl implements BlogService {
         return BlogConvertor.toModel(blogEntity);
     }
 
-    private Authentication getAuthentication() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            throwUnauthorizedException();
-        }
-        return authentication;
-    }
-
-    private UserEntity getUserEntity(Authentication authentication) {
-        return userRepository.findUserByDeleteFlagFalseAndEmail(authentication.getName())
-                .orElseThrow(() -> notFoundException());
-    }
-
-    private boolean rolesContainReviewer() {
-        Set<String> roles = AuthorityUtils.authorityListToSet(getAuthentication().getAuthorities());
-        return roles.contains(UserRole.ROLE_REVIEWER.name());
-    }
-
-    private Page<BlogEntity> getBlogEntities(String status, String searchText, LocalDateTime startTime,
-            LocalDateTime endTime, UserEntity userEntity, Pageable pageable) {
-        return rolesContainReviewer()
-                ? blogRepository.findAllBlogs(userEntity, BlogStatusValidation.checkValidStatus(status), searchText,
-                        startTime, endTime, pageable)
-                : blogRepository.findAllBlogs(null, BlogStatusValidation.checkValidStatus(status), searchText,
-                        startTime, endTime, pageable);
-    }
-
-    private BlogEntity getBlogEntityById(Long blogId) {
-        return blogRepository.findById(blogId)
-                .orElseThrow(() -> notFoundException());
-    }
-
-    private void checkOwnershipAndRole(BlogEntity blogEntity, UserEntity userEntity) {
-        if (rolesContainReviewer() && blogEntity.getInsertBy() != userEntity) {
-            throwForbiddenException();
-        }
-    }
-
     @Override
     public void updateStatusBlog(StatusRequest status) {
         BlogStatus blogStatus = BlogStatusValidation.checkValidStatus(status.getStatus());
@@ -155,47 +117,6 @@ public class BlogServiceImpl implements BlogService {
                 .collect(Collectors.toList());
         blogEntity.setContents(contentEntities);
         return BlogConvertor.toModel(blogEntity);
-    }
-
-    public BlogEntity saveBlogEntity(BlogInput blogInput) {
-        Authentication authentication = getAuthentication();
-        LocalDateTime now = LocalDateTime.now();
-
-        BlogEntity entity = new BlogEntity();
-        entity.setFilm(filmRepository.findById(blogInput.getFilmId())
-                .orElseThrow(() -> notFoundException()));
-        entity.setTitle(blogInput.getTitle());
-        entity.setSummary(blogInput.getSummary());
-        entity.setPoint(blogInput.getPoint());
-        entity.setImage(imageService.upload(blogInput.getBlogImage(), TypeImageConstants.BLOG_IMAGE));
-        entity.setImageIntroduce(imageService.upload(blogInput.getBlogImageIntroduce(), TypeImageConstants.BLOG_IMAGE));
-        UserEntity userEntity = getUserEntity(authentication);
-        Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-        if (roles.contains(UserRole.ROLE_ADMIN.name())) {
-            entity.setPostTime(now);
-            entity.setStatus(BlogStatus.APPROVE);
-        } else {
-            entity.setStatus(BlogStatus.WAITING);
-        }
-        entity.setInsertDateTime(now);
-
-        entity.setInsertBy(userEntity);
-        entity.setUpdateDateTime(now);
-        entity.setUpdateBy(userEntity);
-        entity.setDeleteFlag(false);
-        return blogRepository.save(entity);
-    }
-
-    private ContentEntity saveContentEntity(BlogEntity blog, ContentInput content) {
-        ContentEntity entity = new ContentEntity();
-        entity.setBlog(blog);
-        entity.setContent(content.getContent());
-        entity.setImageUrl(imageService.upload(content.getImage(), TypeImageConstants.CONTENT_IMAGE));
-        entity.setInsertDateTime(blog.getInsertDateTime());
-        entity.setInsertBy(blog.getInsertBy());
-        entity.setUpdateDateTime(blog.getUpdateDateTime());
-        entity.setUpdateBy(blog.getUpdateBy());
-        return contentRepository.save(entity);
     }
 
     @Override
@@ -227,12 +148,12 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public Object updateImageBlog(MultipartFile file, Long blogId) {
-        Authentication authentication = getAuthentication();
+        Authentication authentication = getAuthentication(); 
         BlogEntity entity = blogRepository.findById(blogId)
                 .orElseThrow(() -> notFoundException());
         entity.setImage(imageService.upload(file, TypeImageConstants.BLOG_IMAGE));
         entity.setUpdateDateTime(LocalDateTime.now());
-        entity.setUpdateBy(userRepository.findByEmailAndRole(authentication.getName(), UserRole.ROLE_ADMIN)
+        entity.setUpdateBy(userRepository.findByEmailAndDeleteFlagFalse(authentication.getName())
                 .orElseThrow(
                         () -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE)));
         return BlogConvertor.toModel(blogRepository.save(entity));
@@ -273,6 +194,87 @@ public class BlogServiceImpl implements BlogService {
         deletes.getIds().forEach(this::deleteBlog);
     }
 
+    public BlogEntity saveBlogEntity(BlogInput blogInput) {
+        Authentication authentication = getAuthentication();
+        LocalDateTime now = LocalDateTime.now();
+
+        BlogEntity entity = new BlogEntity();
+        entity.setFilm(filmRepository.findById(blogInput.getFilmId())
+                .orElseThrow(() -> notFoundException()));
+        entity.setTitle(blogInput.getTitle());
+        entity.setSummary(blogInput.getSummary());
+        entity.setPoint(blogInput.getPoint());
+        entity.setImage(imageService.upload(blogInput.getBlogImage(), TypeImageConstants.BLOG_IMAGE));
+        entity.setImageIntroduce(imageService.upload(blogInput.getBlogImageIntroduce(), TypeImageConstants.BLOG_IMAGE));
+        UserEntity userEntity = getUserEntity(authentication);
+        Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+        if (roles.contains(UserRole.ROLE_ADMIN.name())) {
+            entity.setPostTime(now);
+            entity.setStatus(BlogStatus.APPROVE);
+        } else {
+            entity.setStatus(BlogStatus.WAITING);
+        }
+        entity.setInsertDateTime(now);
+
+        entity.setInsertBy(userEntity);
+        entity.setUpdateDateTime(now);
+        entity.setUpdateBy(userEntity);
+        entity.setDeleteFlag(false);
+        return blogRepository.save(entity);
+    }
+
+    private ContentEntity saveContentEntity(BlogEntity blog, ContentInput content) {
+        ContentEntity entity = new ContentEntity();
+        entity.setBlog(blog);
+        entity.setContent(content.getContent());
+        if (content.getImage() != null) {
+            entity.setImageUrl(imageService.upload(content.getImage(), TypeImageConstants.CONTENT_IMAGE));
+        }
+        entity.setInsertDateTime(blog.getInsertDateTime());
+        entity.setInsertBy(blog.getInsertBy());
+        entity.setUpdateDateTime(blog.getUpdateDateTime());
+        entity.setUpdateBy(blog.getUpdateBy());
+        return contentRepository.save(entity);
+    }
+
+    private Authentication getAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throwUnauthorizedException();
+        }
+        return authentication;
+    }
+
+    private UserEntity getUserEntity(Authentication authentication) {
+        return userRepository.findUserByDeleteFlagFalseAndEmail(authentication.getName())
+                .orElseThrow(() -> notFoundException());
+    }
+
+    private boolean rolesContainReviewer() {
+        Set<String> roles = AuthorityUtils.authorityListToSet(getAuthentication().getAuthorities());
+        return roles.contains(UserRole.ROLE_REVIEWER.name());
+    }
+
+    private Page<BlogEntity> getBlogEntities(String status, String searchText, LocalDateTime startTime,
+            LocalDateTime endTime, UserEntity userEntity, Pageable pageable) {
+        return rolesContainReviewer()
+                ? blogRepository.findAllBlogs(userEntity, BlogStatusValidation.checkValidStatus(status), searchText,
+                        startTime, endTime, pageable)
+                : blogRepository.findAllBlogs(null, BlogStatusValidation.checkValidStatus(status), searchText,
+                        startTime, endTime, pageable);
+    }
+
+    private BlogEntity getBlogEntityById(Long blogId) {
+        return blogRepository.findById(blogId)
+                .orElseThrow(() -> notFoundException());
+    }
+
+    private void checkOwnershipAndRole(BlogEntity blogEntity, UserEntity userEntity) {
+        if (rolesContainReviewer() && blogEntity.getInsertBy() != userEntity) {
+            throwForbiddenException();
+        }
+    }
+
     private void throwUnauthorizedException() {
         throw new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE);
     }
@@ -306,5 +308,18 @@ public class BlogServiceImpl implements BlogService {
         pagedResponse.setContent(blog.getContent().stream().map(BlogConvertor::toModel).toList());
         pagedResponse.setResponsePage(getPageInfo(blog, page, PER_PAGE_GUEST));
         return pagedResponse;
+    }
+
+    @Override
+    public Blog updateImageIntroduceBlog(MultipartFile file, Long blogId) {
+        Authentication authentication = getAuthentication();
+        BlogEntity entity = blogRepository.findById(blogId)
+                .orElseThrow(() -> notFoundException());
+        entity.setImageIntroduce(imageService.upload(file, TypeImageConstants.BLOG_IMAGE));
+        entity.setUpdateDateTime(LocalDateTime.now());
+        entity.setUpdateBy(userRepository.findByEmailAndDeleteFlagFalse(authentication.getName())
+                .orElseThrow(
+                        () -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE)));
+        return BlogConvertor.toModel(blogRepository.save(entity));
     }
 }

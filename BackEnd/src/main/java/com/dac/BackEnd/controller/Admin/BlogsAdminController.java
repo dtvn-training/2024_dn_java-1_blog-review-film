@@ -43,34 +43,6 @@ public class BlogsAdminController {
         }
     }
 
-    @DeleteMapping("{blogId}")
-    public ResponseEntity<Response> deleteBlog(@PathVariable Long blogId) {
-        try {
-            blogService.deleteBlog(blogId);
-            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
-        } catch (MessageException e) {
-            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
-        }
-    }
-
-    @DeleteMapping()
-    public ResponseEntity<Response> deleteBlogs(@RequestBody DeleteRequest deletes) {
-        try {
-            blogService.deleteBlogs(deletes);
-            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
-        } catch (MessageException e) {
-            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
-        }
-    }
-
-    private ResponseBody createSuccessResponse(Object data) {
-        ResponseBody responseBody = new ResponseBody();
-        responseBody.setCode(SuccessConstants.OK_CODE);
-        responseBody.setMessage(Arrays.asList(SuccessConstants.OK_MESSAGE, SuccessConstants.OK_CODE));
-        responseBody.setData(data);
-        return responseBody;
-    }
-
     private Response createSuccessResponse() {
         Response response = new Response();
         response.setCode(SuccessConstants.OK_CODE);

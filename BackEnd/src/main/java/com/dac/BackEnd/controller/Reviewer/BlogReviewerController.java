@@ -21,6 +21,7 @@ import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.request.BlogInput;
 import com.dac.BackEnd.model.request.ContentInput;
+import com.dac.BackEnd.model.request.DeleteRequest;
 import com.dac.BackEnd.model.response.PagedResponse;
 import com.dac.BackEnd.model.response.Response;
 import com.dac.BackEnd.model.response.ResponseBody;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -113,6 +115,15 @@ public class BlogReviewerController {
         }
     }
 
+    @PatchMapping("imageIntroduce/{blogId}")
+    public ResponseEntity<?> updateImageIntroduceBlog(@RequestPart("file") MultipartFile file, @PathVariable Long blogId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(blogService.updateImageIntroduceBlog(file, blogId)));
+        } catch (MessageException e) {
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
+        }
+    }
+
     @PutMapping("{blogId}/content")
     public ResponseEntity<?> updateContent(@Valid @RequestBody List<ContentInput> contentInputs, @PathVariable Long blogId) {
         try {
@@ -126,6 +137,26 @@ public class BlogReviewerController {
     public ResponseEntity<?> updateImageContent(@RequestPart("files") List<ContentInput> contents, @PathVariable Long blogId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(blogService.updateImageContent(contents, blogId)));
+        } catch (MessageException e) {
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
+        }
+    }
+
+    @DeleteMapping("{blogId}")
+    public ResponseEntity<Response> deleteBlog(@PathVariable Long blogId) {
+        try {
+            blogService.deleteBlog(blogId);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
+        } catch (MessageException e) {
+            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
+        }
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<Response> deleteBlogs(@RequestBody DeleteRequest deletes) {
+        try {
+            blogService.deleteBlogs(deletes);
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
         } catch (MessageException e) {
             return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
