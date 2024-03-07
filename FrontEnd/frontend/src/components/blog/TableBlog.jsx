@@ -239,7 +239,7 @@ const TableBlog = ({ searchText }) => {
             className="btn btn-primary"
             onClick={() => handleEditItem(item)}
           >
-            Edit
+            <FontAwesomeIcon icon="fa-solid fa-pen" />
           </button>
         </div>
       </td>

@@ -10,6 +10,7 @@ import {
 } from "../../services/AdminService";
 import CreateReviewer from "./CreateReviewer";
 import EditBlog from "../blog/EditBlog";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const TableReviewer = ({ searchText }) => {
   const [listUsers, setListUsers] = useState([]);
@@ -280,7 +281,7 @@ const TableReviewer = ({ searchText }) => {
             className="btn btn-primary"
             onClick={() => handleEditUser(item)}
           >
-            Edit
+            <FontAwesomeIcon icon="fa-solid fa-pen" />
           </button>
         </div>
       </td>

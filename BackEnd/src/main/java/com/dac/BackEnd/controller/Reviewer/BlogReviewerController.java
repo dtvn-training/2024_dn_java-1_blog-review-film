@@ -21,6 +21,7 @@ import com.dac.BackEnd.exception.MessageException;
 import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.request.BlogInput;
 import com.dac.BackEnd.model.request.ContentInput;
+import com.dac.BackEnd.model.request.ContentsInput;
 import com.dac.BackEnd.model.request.DeleteRequest;
 import com.dac.BackEnd.model.response.PagedResponse;
 import com.dac.BackEnd.model.response.Response;
@@ -125,18 +126,9 @@ public class BlogReviewerController {
     }
 
     @PutMapping("{blogId}/content")
-    public ResponseEntity<?> updateContent(@Valid @RequestBody List<ContentInput> contentInputs, @PathVariable Long blogId) {
+    public ResponseEntity<?> updateContent(@Valid ContentsInput contentInputs, @PathVariable Long blogId) { 
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(blogService.updateContent(contentInputs, blogId)));
-        } catch (MessageException e) {
-            return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
-        }
-    }
-
-    @PatchMapping("{blogId}/content")
-    public ResponseEntity<?> updateImageContent(@RequestPart("files") List<ContentInput> contents, @PathVariable Long blogId) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(blogService.updateImageContent(contents, blogId)));
+            return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(blogService.updateContent(contentInputs.getContents(), blogId)));
         } catch (MessageException e) {
             return ResponseEntity.status(e.getErrorCode()).body(createErrorResponse(e));
         }
