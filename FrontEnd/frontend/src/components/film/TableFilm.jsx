@@ -6,6 +6,7 @@ import {
   fetchAllFilm,
   fetchCategories,
 } from "../../services/AdminService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const TableFilm = ({ searchText }) => {
   const [pageCount, setPageCount] = useState(0);
@@ -175,7 +176,7 @@ const TableFilm = ({ searchText }) => {
               className="btn btn-primary"
               onClick={() => handleEditUser(item)}
             >
-              Edit
+              <FontAwesomeIcon icon="fa-solid fa-pen" />
             </button>
           </>
         )}

@@ -13,7 +13,7 @@ public class ContentInput {
 
     private Long id;
 
-    private MultipartFile image;
+    private MultipartFile imageContent;
 
     @NotBlank
     @Size(min = 1)
