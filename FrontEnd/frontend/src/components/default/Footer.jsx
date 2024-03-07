@@ -1,11 +1,13 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 function Footer() {
     return ( 
         <footer>
                 <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-pinterest"></i></a>
+                    <a href="#"><FontAwesomeIcon icon="fa-brands fa-facebook-f" /></a>
+                    <a href="#"><FontAwesomeIcon icon="fa-brands fa-twitter" /></a>
+                    <a href="#"><FontAwesomeIcon icon="fa-brands fa-instagram" /></a>
+                    <a href="#"><FontAwesomeIcon icon="fa-brands fa-pinterest" /></a>
                 </div>
                 <span>Review Film</span>
             </footer>

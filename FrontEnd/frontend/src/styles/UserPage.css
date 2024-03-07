@@ -373,6 +373,15 @@ nav.close ~ .dashboard .top{
     color: var(--text-color);
 }
 
+.d-flex {
+    justify-content: space-between;
+    margin: 0 auto;
+}
+
+.d-flex button {
+    margin: 0 auto;
+}
+
 @media (max-width: 1000px) {
     .dashboard {
         left: 60px;
