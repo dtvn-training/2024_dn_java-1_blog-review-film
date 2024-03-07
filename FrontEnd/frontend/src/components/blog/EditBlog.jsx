@@ -5,10 +5,10 @@ import "react-quill/dist/quill.snow.css";
 import { fetchAllFilmList, postEditBlog } from "../../services/AdminService";
 import { toast } from "react-toastify";
 
-const EditBlog = ({ editBlogData }) => {
+const EditBlog = ({ key, editBlogData }) => {
   const [formData, setFormData] = useState({
     filmId: "",
-    blogImageIntroduce: null,
+    blogImageIntroduce: "",
     title: "",
     blogImage: null,
     summary: "",
@@ -16,27 +16,42 @@ const EditBlog = ({ editBlogData }) => {
     contents: [{ id: null, image: null, content: "" }],
   });
   const [show, setShow] = useState(false);
-    const [filmList, setFilmList] = useState([]);
-
-  console.log("edit: ",editBlogData);
+  const [filmList, setFilmList] = useState([]);
+  const [blogIntroduceImageUrl, setBlogIntroduceImageUrl] = useState(null); // Thêm state blogImageUrl
+  const [blogImageUrl, setBlogImageUrl] = useState("");
+  const [contentImageUrls, setContentImageUrls] = useState([]);
 
   useEffect(() => {
     if (editBlogData) {
-      setFormData(editBlogData);
-      setShow(true);
+      setFormData({
+        ...formData,
+        filmId: editBlogData.film.id,
+        blogImageIntroduce: editBlogData.imageIntroduce,
+        title: editBlogData.title,
+        blogImage: editBlogData.image,
+        summary: editBlogData.summary,
+        point: editBlogData.point,
+        contents: editBlogData.contents.map((content) => ({
+          id: content.id,
+          imageUrl: content.imageUrl,
+          content: content.content,
+        })),
+      });
+      handleShow();
     } else {
+      // Clear form data when there's no editBlogData
       setFormData({
         filmId: "",
-        blogImageIntroduce: null,
+        blogImageIntroduce: "",
         title: "",
         blogImage: null,
         summary: "",
         point: "",
-        contents: [{ id: null, image: null, content: "" }],
+        contents: [{ id: "", imageUrl: "", content: "" }],
       });
-      setShow(false);
+      handleClose();
     }
-  }, [editBlogData]);
+  }, [editBlogData, key]); // Thêm key vào dependency array của useEffect
 
   useEffect(() => {
     const fetchFilms = async () => {
@@ -50,7 +65,17 @@ const EditBlog = ({ editBlogData }) => {
     fetchFilms();
   }, []);
 
+  useEffect(() => {
+    if (editBlogData && editBlogData.image) {
+      setBlogImageUrl(editBlogData.image);
+      setBlogIntroduceImageUrl(editBlogData.imageIntroduce);
+      setContentImageUrls(editBlogData.contents.map((content) => content.imageUrl));
+
+    }
+  }, [editBlogData]);
+
   const handleClose = () => {
+    // Clear form data and hide modal
     setFormData({
       filmId: "",
       blogImageIntroduce: null,
@@ -58,14 +83,71 @@ const EditBlog = ({ editBlogData }) => {
       blogImage: null,
       summary: "",
       point: "",
-      contents: [{ id: null, image: null, content: "" }],
+      contents: [{ id: null, imageUrl: null, content: "" }],
     });
     setShow(false);
+  
   };
-
+  const handleShow = () => {
+    console.log("Edit Blog Data", editBlogData);
+    setShow(true);
+  }
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+
+    // Kiểm tra tên trường để xác định cách xử lý
+    switch (name) {
+      case "filmId":
+      case "title":
+      case "summary":
+      case "point":
+        // Các trường thông tin chính của biểu mẫu, cập nhật giá trị vào state `formData`
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+        break;
+      case "blogImageIntroduce":
+        // Xử lý tải lên hình ảnh giới thiệu
+        const introImageFile = event.target.files[0];
+        setFormData({
+          ...formData,
+          blogImageIntroduce: introImageFile,
+        });
+        break;
+
+      case "blogImage":
+        // Xử lý tải lên hình ảnh của blog
+        const imageFile = event.target.files[0];
+        setFormData({
+          ...formData,
+          blogImage: imageFile,
+        });
+        break;
+      default:
+        // Xử lý các trường cho nội dung bài viết
+        if (name.startsWith("content-")) {
+          const index = parseInt(name.split("-")[1]); // Lấy chỉ số của nội dung từ tên trường
+          const updatedContents = [...formData.contents];
+          updatedContents[index].content = value; // Cập nhật nội dung tương ứng
+          setFormData({
+            ...formData,
+            contents: updatedContents,
+          });
+        } else if (name.startsWith("image-")) {
+          // Xử lý khi thay đổi hình ảnh trong nội dung bài viết
+          const contentIndex = parseInt(name.split("-")[1]); // Lấy chỉ số của nội dung từ tên trường
+          const imageFile = event.target.files[0];
+          const updatedContents = [...formData.contents];
+          // Lưu đường dẫn hình ảnh vào trường image của nội dung tương ứng
+          updatedContents[contentIndex].image = imageFile;
+          setFormData({
+            ...formData,
+            contents: updatedContents,
+          });
+        }
+        break;
+    }
   };
 
   const handleContentChange = (index, value) => {
@@ -89,16 +171,24 @@ const EditBlog = ({ editBlogData }) => {
 
   const handleSubmit = async () => {
     const jwtToken = localStorage.getItem("jwtToken");
-    const { filmId, blogImageIntroduce, title, blogImage, summary, point, contents } = formData;
+    const {
+      filmId,
+      blogImageIntroduce,
+      title,
+      blogImage,
+      summary,
+      point,
+      contents,
+    } = formData;
 
     const contentData = [];
 
     contents.forEach((content) => {
       if (content.content) {
-        contentData.push({ content: content.content, image: content.image });
+        contentData.push({id : content.id , content: content.content, image: content.image });
       }
     });
-
+    console.log("Content Data", contentData);
     try {
       const response = await postEditBlog(
         editBlogData.id,
@@ -113,6 +203,7 @@ const EditBlog = ({ editBlogData }) => {
       );
       if (response.status === 200) {
         toast.success("Edit blog successfully");
+        console.log("Edit blog successfully", response.data);
         handleClose();
       } else {
         toast.error("Edit blog failed");
@@ -123,6 +214,8 @@ const EditBlog = ({ editBlogData }) => {
       console.error("Edit blog failed", error.message);
     }
   };
+
+
 
   return (
     <>
@@ -141,19 +234,32 @@ const EditBlog = ({ editBlogData }) => {
                 onChange={handleChange}
               >
                 <option value="">Select Film</option>
-                {/* Thêm code hiển thị danh sách phim tương tự như trong component CreateBlog */}
+                {filmList.map((film) => (
+                  <option key={film.id} value={film.id}>
+                    {" "}
+                    {film.nameFilm}
+                  </option>
+                ))}
               </Form.Control>
             </Form.Group>
-            <Form.Group controlId="blogImageIntroduce">
-              <Form.Label>Introduction Image</Form.Label>
-              <Form.Control
-                type="file"
-                name="blogImageIntroduce"
-                onChange={handleChange}
-              />
-            </Form.Group>
+            <Form.Group>
+                <Form.Label>Blog Image Introduce</Form.Label>
+                {blogImageUrl && (
+                  <img
+                    src={formData.blogIntroduceImage ? URL.createObjectURL(formData.blogIntroduceImageUrl) : editBlogData.image}
+                    alt="Blog Image"
+                    style={{ maxWidth: "100%" }}
+                  />
+                )}
+                <Form.Control
+                  id="blogImageIntroInput"
+                  type="file"
+                  name="blogImageIntroduce"
+                  onChange={handleChange}
+                />
+              </Form.Group>
 
-            <Form.Group controlId="title">
+            <Form.Group>
               <Form.Label>Title</Form.Label>
               <Form.Control
                 type="text"
@@ -161,16 +267,24 @@ const EditBlog = ({ editBlogData }) => {
                 value={formData.title}
                 onChange={handleChange}
               />
+              <Form.Group>
+                <Form.Label>Blog Image</Form.Label>
+                {blogImageUrl && (
+                  <img
+                    src={blogImageUrl}
+                    alt="Blog Image"
+                    style={{ maxWidth: "100%" }}
+                  />
+                )}
+                <Form.Control
+                  id="blogImageInput"
+                  type="file"
+                  name="blogImage"
+                  onChange={handleChange}
+                />
+              </Form.Group>
             </Form.Group>
-            <Form.Group controlId="blogImage">
-              <Form.Label>Blog Image</Form.Label>
-              <Form.Control
-                type="file"
-                name="blogImage"
-                onChange={handleChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="summary">
+            <Form.Group>
               <Form.Label>Summary</Form.Label>
               <Form.Control
                 as="textarea"
@@ -180,7 +294,7 @@ const EditBlog = ({ editBlogData }) => {
                 onChange={handleChange}
               />
             </Form.Group>
-            <Form.Group controlId="point">
+            <Form.Group>
               <Form.Label>Point</Form.Label>
               <Form.Control
                 type="number"
@@ -200,6 +314,10 @@ const EditBlog = ({ editBlogData }) => {
                 </Form.Group>
                 <Form.Group controlId={`image-${index}`}>
                   <Form.Label>Image</Form.Label>
+                  <img 
+                  src={contentImageUrls[index]}
+                  style={{ maxWidth: "100%" }}
+                  />
                   <Form.Control
                     type="file"
                     name={`image-${index}`}

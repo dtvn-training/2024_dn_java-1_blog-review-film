@@ -11,7 +11,7 @@ import {
 import CreateReviewer from "./CreateReviewer";
 import EditBlog from "../blog/EditBlog";
 
-const TableReviewer = ({  searchText  }) => {
+const TableReviewer = ({ searchText }) => {
   const [listUsers, setListUsers] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -28,9 +28,6 @@ const TableReviewer = ({  searchText  }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showActiveModal, setShowActiveModal] = useState(false);
   const [showInActiveModal, setShowInActiveModal] = useState(false);
-
-
-
 
   useEffect(() => {
     getAccount(currentPage);
@@ -75,7 +72,7 @@ const TableReviewer = ({  searchText  }) => {
   const handleCloseDeleteModal = () => {
     setSelectedItemId(null);
     setShowDeleteModal(false);
-   setSelectedItems([]);
+    setSelectedItems([]);
   };
 
   const handleEditUser = (user) => {
@@ -101,6 +98,7 @@ const TableReviewer = ({  searchText  }) => {
     if (activeFilter === status) {
       setActiveFilter(null); // Đặt lại activeFilter về null
       setStatusFilter({ filter: false, status: "" }); // Đặt lại statusFilter về giá trị mặc định
+      setSelectedItems([]);
     } else {
       // Nếu không, thực hiện như bình thường
       setActiveFilter(status);
@@ -108,7 +106,7 @@ const TableReviewer = ({  searchText  }) => {
       setStatusFilter({ filter: true, status: status });
     }
   };
-  
+
   const handleShowActiveModal = () => {
     setShowActiveModal(true);
   };
@@ -121,7 +119,7 @@ const TableReviewer = ({  searchText  }) => {
   const handleShowInActiveModal = () => {
     setShowInActiveModal(true);
   };
-  
+
   const handleCloseInActiveModal = () => {
     setShowInActiveModal(false);
     setSelectedItems([]);
@@ -133,7 +131,7 @@ const TableReviewer = ({  searchText  }) => {
         selectedItems,
         localStorage.getItem("jwtToken"),
         "ACTIVE"
-      )
+      );
       console.log(res);
       if (res.code === 200) {
         updateUserList();
@@ -147,7 +145,7 @@ const TableReviewer = ({  searchText  }) => {
       toast.error("An error occurred while active account.");
     }
   };
-  
+
   const handleInActiveSelectedBlogs = async () => {
     try {
       const res = await updateStatusAccount(
@@ -168,11 +166,13 @@ const TableReviewer = ({  searchText  }) => {
     }
   };
 
-
   const handleDeleteAccount = async () => {
     try {
       // Gửi yêu cầu DELETE đến API endpoint để xóa tài khoản
-      const res = await deleteAccount(selectedItems, localStorage.getItem("jwtToken"));
+      const res = await deleteAccount(
+        selectedItems,
+        localStorage.getItem("jwtToken")
+      );
       console.log(res.data.code);
       // Kiểm tra xem yêu cầu đã thành công hay không
       if (res.data.code === 200) {
@@ -266,16 +266,16 @@ const TableReviewer = ({  searchText  }) => {
           onChange={() => handleSelectItem(item.id)}
         />
       </td>
-      <td  style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
+      <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
       <td>{item.name}</td>
-      <td  style={{ textAlign: "right", height: "10px" }}>{item.phone}</td>
+      <td style={{ textAlign: "right", height: "10px" }}>{item.phone}</td>
       <td style={{ textAlign: "left" }}>{item.email}</td>
       <td style={{ minWidth: "150px" }}>{item.insertDateTime}</td>
       <td>{item.status}</td>
       <td>
         <div className="d-flex flex-column flex-md-row align-items-md-center">
           <button
-          style = {{  display: 'block', margin: 'auto'  }}
+            style={{ display: "block", margin: "auto" }}
             type="button"
             className="btn btn-primary"
             onClick={() => handleEditUser(item)}
@@ -299,13 +299,18 @@ const TableReviewer = ({  searchText  }) => {
       >
         <i className="uil uil-clock-three"></i>
         <span className="text">Account</span>
-       
+
         {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
         {selectedItems.length > 0 &&
           (console.log(selectedItems),
           (
             <div
-              style={{ position: "absolute", top: 0, right: '210px', margin: "10px" }}
+              style={{
+                position: "absolute",
+                top: 0,
+                right: "210px",
+                margin: "10px",
+              }}
             >
               <button
                 className="btn btn-danger mb-2 mb-md-0 me-md-2"
@@ -318,7 +323,9 @@ const TableReviewer = ({  searchText  }) => {
                 <Modal.Header closeButton>
                   <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to delete all this account?</Modal.Body>
+                <Modal.Body>
+                  Are you sure you want to delete all this account?
+                </Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" onClick={handleCloseDeleteModal}>
                     Cancel
@@ -328,69 +335,75 @@ const TableReviewer = ({  searchText  }) => {
                   </Button>
                 </Modal.Footer>
               </Modal>
+              {activeFilter !== "ACTIVE" && (
+                <Button
+                  variant="success"
+                  onClick={handleShowActiveModal}
+                  style={{ marginRight: "10px" }}
+                >
+                  Active
+                </Button>
+              )}
+              <Modal show={showActiveModal} onHide={handleCloseActiveModal}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Confirm Active</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  Are you sure you want to active all this account?
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseActiveModal}>
+                    Cancel
+                  </Button>
+                  <Button variant="primary" onClick={handleActiveSelectedBlogs}>
+                    Confirm
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              {activeFilter !== "INACTIVE" && (
               <Button
-              variant="success"
-              onClick={handleShowActiveModal}
-              style = {{marginRight: "10px"}}
-            >
-              Active 
-            </Button>
-            <Modal show={showActiveModal} onHide={handleCloseActiveModal}>
-              <Modal.Header closeButton>
-                <Modal.Title>Confirm Active</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                Are you sure you want to active all this account?
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseActiveModal}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                onClick={ handleActiveSelectedBlogs}
-                >
-                  Confirm
-                </Button>
-              </Modal.Footer>
-            </Modal>
-            <Button
-              style = {{marginRight: "10px"}}
-              variant="warning"
-              onClick={handleShowInActiveModal}
-            >
-              InActive
-            </Button>
-            <Modal show={showInActiveModal} onHide={handleCloseInActiveModal}>
-              <Modal.Header closeButton>
-                <Modal.Title>Confirm InActive</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                Are you sure you want to inactive this account?
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseInActiveModal}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleInActiveSelectedBlogs}
-                >
-                  Confirm
-                </Button>
-              </Modal.Footer>
-            </Modal>
+                style={{ marginRight: "10px" }}
+                variant="warning"
+                onClick={handleShowInActiveModal}
+              >
+                InActive
+              </Button>
+              )}
+              <Modal show={showInActiveModal} onHide={handleCloseInActiveModal}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Confirm InActive</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  Are you sure you want to inactive this account?
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    variant="secondary"
+                    onClick={handleCloseInActiveModal}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={handleInActiveSelectedBlogs}
+                  >
+                    Confirm
+                  </Button>
+                </Modal.Footer>
+              </Modal>
             </div>
           ))}
       </div>
-      <div style={{ overflowX: "auto"}}><CreateReviewer/></div>
+      <div style={{ overflowX: "auto" }}>
+        <CreateReviewer />
+      </div>
 
       <div className="activity-data">
         <div style={{ overflowX: "auto" }}>
           <div style={{ marginBottom: "15px" }}>
             <Button
               variant={
-                activeFilter === "ACTIVE" ? "success" : "outline-success"
+                activeFilter === "ACTIVE" || !statusFilter.filter ? "success" : "outline-success"
               }
               onClick={() => handleFilter("ACTIVE")}
             >
@@ -398,7 +411,7 @@ const TableReviewer = ({  searchText  }) => {
             </Button>{" "}
             <Button
               variant={
-                activeFilter === "SUSPENDED" ? "secondary" : "outline-secondary"
+                activeFilter === "SUSPENDED" || !statusFilter.filter ? "secondary" : "outline-secondary"
               }
               onClick={() => handleFilter("SUSPENDED")}
             >
@@ -406,7 +419,7 @@ const TableReviewer = ({  searchText  }) => {
             </Button>{" "}
             <Button
               variant={
-                activeFilter === "INACTIVE" ? "warning" : "outline-warning"
+                activeFilter === "INACTIVE" || !statusFilter.filter ? "warning" : "outline-warning"
               }
               onClick={() => handleFilter("INACTIVE")}
             >

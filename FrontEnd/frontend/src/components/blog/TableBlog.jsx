@@ -35,6 +35,7 @@ const TableBlog = ({ searchText }) => {
         setSelectedBlogId(id);
         setShowBlogDetail(true);
     };
+    const [key, setKey] = useState(0);
     
 
     const handleCloseBlogDetail = () => {
@@ -114,6 +115,10 @@ const TableBlog = ({ searchText }) => {
     setSelectedItemId(null);
     setSelectedItems([]);
   };
+  useEffect(() => {
+    updateUserList();
+  }, [selectedItems]);
+  
 
   const updateUserList = () => {
     fetchData(currentPage);
@@ -156,6 +161,7 @@ const TableBlog = ({ searchText }) => {
   const handleEditItem = (item) => {
     console.log("Edit item:", item);
     setEditBlogData(item);
+    setKey(prevKey => prevKey + 1); // Sử dụng setKey để cập nhật giá trị mới cho key
   };
 
   const handleApproveBlog = async () => {
@@ -399,7 +405,8 @@ const TableBlog = ({ searchText }) => {
                 </Modal.Body>
             </Modal>
       </div>
-      <EditBlog editBlogData={editBlogData} />
+      <EditBlog key={key} editBlogData={editBlogData}  />
+
 
     </div>
   );

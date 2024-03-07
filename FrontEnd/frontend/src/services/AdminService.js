@@ -93,28 +93,121 @@ const postEditBlog = async (
   jwtToken
 ) => {
   try {
-    const formData = new FormData();
-    formData.append("filmId", filmId);
-    formData.append("blogImageIntroduce", blogImageIntroduce);
-    formData.append("title", title);
-    formData.append("blogImage", blogImage);
-    formData.append("summary", summary);
-    formData.append("point", point);
-    contents.forEach((content, index) => {
-      formData.append(`contents[${index}].image`, content.image);
-      formData.append(`contents[${index}].content`, content.content);
-    });
-    const response = await axios.put(`/api/blogs/${blogId}`, formData, {
+    if (typeof blogImage !== "string") {
+      try {
+        const formData = new FormData();
+        formData.append("file", blogImage);
+        const response = await axios.patch(`/api/reviewer/blogs/${blogId}`, formData, {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    if (typeof blogImageIntroduce !== "string") {
+      try {
+        const formData = new FormData();
+        formData.append("file", blogImageIntroduce);
+        const response = await axios.patch(`/api/reviewer/blogs/imageIntroduce/${blogId}`, formData, {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    if (contents.length > 0) {
+      try {
+        const formData = new FormData();
+        contents.forEach((content, index) => {
+          if (content.id !== null) {
+            formData.append(`contents[${index}].id`, content.id);
+          }
+          if (content.image !== undefined) {
+            formData.append(`contents[${index}].imageContent`, content.image);
+          }
+          formData.append(`contents[${index}].content`, content.content);
+        });
+        const response = await axios.put(`/api/reviewer/blogs/${blogId}/content`, formData, {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } catch (error) {
+        throw error;
+      }
+
+    }
+    const data = {
+      filmId: filmId,
+      title: title,
+      summary: summary,
+      point: point,
+    }
+    const response = await axios.put(`/api/reviewer/blogs/${blogId}`, data, {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json"
       },
     });
     return response;
   } catch (error) {
     throw error;
+  };
+};
+const postEditFilm = async (
+  filmId,
+  categoryId,
+  name,
+  director,
+  country,
+  startDate,
+  description,
+  filmImage,
+  jwtToken
+) => {
+  try {
+    const formData = new FormData();  
+    formData.append("categoryId", categoryId);
+    formData.append("nameFilm", name);
+    formData.append("director", director);
+    formData.append("country", country);
+    formData.append("startDate", startDate);
+    formData.append("description", description);
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
+    if (filmImage !== null) {
+      formData.append("file", filmImage);
+      const response = await axios.patch(`/api/admin/films/${filmId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    }
+    const response = await axios.put(`/api/admin/films/${filmId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+    
+    return response;
+  } catch (error) {
+    throw error;
   }
 };
+
 
 const fetchAllFilm = (selectedPage, accessToken, category, searchText) => {
   let query = `/api/reviewer/films?page=${selectedPage}`;
@@ -300,6 +393,7 @@ const postCreateFilm = async (
   }
 };
 
+
 const putUpdateAccount = async (userData, jwtToken) => {
   try {
     const response = await axios.put(
@@ -365,6 +459,7 @@ const updateStatusBlog = async (ids, jwtToken, status) => {
   }
 };
 
+
 export {
   fetchAccount,
   fetchSummaryData,
@@ -374,6 +469,7 @@ export {
   fetchAllFilmList,
   postCreateUser,
   postCreateBlog,
+  postEditFilm,
   putUpdateAccount,
   fetchAllBlog,
   deleteAccount,
