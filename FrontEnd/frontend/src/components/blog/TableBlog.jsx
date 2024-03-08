@@ -6,67 +6,66 @@ import { deleteBlog, fetchAllBlog } from "../../services/AdminService";
 import DateTimePicker from "react-datetime-picker";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlogDetail from "../blogDetail/BlogDetail";
-import "../../styles/BlogDetail.css"
+import "../../styles/BlogDetail.css";
 import { updateStatusBlog } from "../../services/AdminService";
 import CreateBlog from "./CreateBlog";
 import EditBlog from "./EditBlog";
 
-
-
 const TableBlog = ({ searchText }) => {
-    const [listItems, setListItems] = useState([]);
-    const [pageCount, setPageCount] = useState(0);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [showModalAddNew, setShowModal] = useState(false);
-    const [statusFilter, setStatusFilter] = useState({ filter: false, status: "" });
-    const [activeFilter, setActiveFilter] = useState(null);
-    const [show, setShow] = useState(false);
-    const [selectedItemId, setSelectedItemId] = useState(null);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [showBlogDetail, setShowBlogDetail] = useState(false);
-    const [selectedBlogId, setSelectedBlogId] = useState(null);
-    const [selectedItems, setSelectedItems] = useState([]);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [showApproveModal, setShowApproveModal] = useState(false);
-    const [showRefuseModal, setShowRefuseModal] = useState(false);
-    const [editBlogData, setEditBlogData] = useState(null);
-    const handleShowBlogDetail = (id) => {
-        setSelectedBlogId(id);
-        setShowBlogDetail(true);
-    };
-    const [key, setKey] = useState(0);
-    
+  const [listItems, setListItems] = useState([]);
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [showModalAddNew, setShowModal] = useState(false);
+  const [statusFilter, setStatusFilter] = useState({
+    filter: false,
+    status: "",
+  });
+  const [activeFilter, setActiveFilter] = useState(null);
+  const [show, setShow] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [showBlogDetail, setShowBlogDetail] = useState(false);
+  const [selectedBlogId, setSelectedBlogId] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showRefuseModal, setShowRefuseModal] = useState(false);
+  const [editBlogData, setEditBlogData] = useState(null);
+  const handleShowBlogDetail = (id) => {
+    setSelectedBlogId(id);
+    setShowBlogDetail(true);
+  };
+  const [key, setKey] = useState(0);
 
-    const handleCloseBlogDetail = () => {
-        setShowBlogDetail(false);
-    };
+  const handleCloseBlogDetail = () => {
+    setShowBlogDetail(false);
+  };
 
-    useEffect(() => {
-      fetchData(currentPage);
-    }, [currentPage, statusFilter, searchText]);
-  
-    const fetchData = async (selectedPage, status) => {
-      try {
-        if (statusFilter.filter) {
-          status = statusFilter.status;
-        }
-        const res = await fetchAllBlog(
-          selectedPage + 1,
-          localStorage.getItem("jwtToken"),
-          status,
-          searchText
-        );
-        if (res && res.data) {
-          const { data, pageInfo } = res.data;
-          setListItems(data);
-          setPageCount(pageInfo.total_pages);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [currentPage, statusFilter, searchText]);
+
+  const fetchData = async (selectedPage, status) => {
+    try {
+      if (statusFilter.filter) {
+        status = statusFilter.status;
       }
-    };
-
+      const res = await fetchAllBlog(
+        selectedPage + 1,
+        localStorage.getItem("jwtToken"),
+        status,
+        searchText
+      );
+      if (res && res.data) {
+        const { data, pageInfo } = res.data;
+        setListItems(data);
+        setPageCount(pageInfo.total_pages);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const handlePageClick = (selectedPage) => {
     setCurrentPage(selectedPage.selected);
@@ -93,7 +92,7 @@ const TableBlog = ({ searchText }) => {
     setShowDeleteModal(false);
     setSelectedItemId(null);
     setSelectedItemId([]);
-    setSelectedItems([])
+    setSelectedItems([]);
   };
 
   const handleShowApproveModal = () => {
@@ -118,7 +117,6 @@ const TableBlog = ({ searchText }) => {
   useEffect(() => {
     updateUserList();
   }, [selectedItems]);
-  
 
   const updateUserList = () => {
     fetchData(currentPage);
@@ -161,7 +159,7 @@ const TableBlog = ({ searchText }) => {
   const handleEditItem = (item) => {
     console.log("Edit item:", item);
     setEditBlogData(item);
-    setKey(prevKey => prevKey + 1); // Sử dụng setKey để cập nhật giá trị mới cho key
+    setKey((prevKey) => prevKey + 1); // Sử dụng setKey để cập nhật giá trị mới cho key
   };
 
   const handleApproveBlog = async () => {
@@ -170,8 +168,7 @@ const TableBlog = ({ searchText }) => {
         selectedItems,
         localStorage.getItem("jwtToken"),
         "APPROVE"
-      )
-      console.log(res);
+      );
       if (res.code === 200) {
         updateUserList();
         handleCloseApproveModal();
@@ -191,7 +188,7 @@ const TableBlog = ({ searchText }) => {
         selectedItems,
         localStorage.getItem("jwtToken"),
         "REFUSE"
-      )
+      );
       console.log(res);
       if (res.code === 200) {
         updateUserList();
@@ -226,20 +223,23 @@ const TableBlog = ({ searchText }) => {
       </td>
       <td style={{ textAlign: "center" }}>{item.status}</td>
       <td>
-        <div className="d-flex flex-column flex-md-row align-items-md-center">
+        <div className="d-flex flex-column flex-md-row align-items-md-center"
+          style={{ justifyContent: "center" }}
+        >
           <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => handleShowBlogDetail(item.id)}
-           >
-              <FontAwesomeIcon icon="fa-solid fa-eye" />
-           </button>
+            type="button"
+            className="btn btn-primary"
+            onClick={() => handleShowBlogDetail(item.id)}
+            style={{ marginRight: "10px" }}
+          >
+            <FontAwesomeIcon icon="fa-solid fa-eye" />
+          </button>
           <button
             type="button"
             className="btn btn-primary"
             onClick={() => handleEditItem(item)}
           >
-            Edit
+            <FontAwesomeIcon icon="fa-solid fa-edit" />
           </button>
         </div>
       </td>
@@ -260,11 +260,16 @@ const TableBlog = ({ searchText }) => {
         <span className="text">Blog List</span>
         {/* < CreateBlog /> */}
         {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
-        {selectedItems.length > 0 &&
-          (console.log(selectedItems),
-          (
+        {selectedItems.length > 0 ? (
+          <>
+            {console.log(selectedItems)}
             <div
-              style={{ position: "absolute", top: 0, right: '210px', margin: "10px" }}
+              style={{
+                position: "absolute",
+                top: 0,
+                right: "210px",
+                margin: "10px",
+              }}
             >
               <button
                 className="btn btn-danger mb-2 mb-md-0 me-md-2"
@@ -277,7 +282,9 @@ const TableBlog = ({ searchText }) => {
                 <Modal.Header closeButton>
                   <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to delete all this blog?</Modal.Body>
+                <Modal.Body>
+                  Are you sure you want to delete all this blog?
+                </Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" onClick={handleCloseDeleteModal}>
                     Cancel
@@ -287,16 +294,26 @@ const TableBlog = ({ searchText }) => {
                   </Button>
                 </Modal.Footer>
               </Modal>
-              <Button variant= "success" onClick={handleShowApproveModal} style={{ marginRight: "10px" }}>
+              <Button
+                variant="success"
+                onClick={handleShowApproveModal}
+                style={{ marginRight: "10px" }}
+              >
                 Approve
               </Button>
               <Modal show={showApproveModal} onHide={handleCloseApproveModal}>
                 <Modal.Header closeButton>
                   <Modal.Title>Confirm Approve</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to approve all this blog?</Modal.Body>
+                <Modal.Body>
+                  Are you sure you want to approve all this blog?
+                </Modal.Body>
                 <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseApproveModal} style={{ marginRight: "10px" }}>
+                  <Button
+                    variant="secondary"
+                    onClick={handleCloseApproveModal}
+                    style={{ marginRight: "10px" }}
+                  >
                     Cancel
                   </Button>
                   <Button variant="primary" onClick={handleApproveBlog}>
@@ -304,14 +321,20 @@ const TableBlog = ({ searchText }) => {
                   </Button>
                 </Modal.Footer>
               </Modal>
-              <Button variant= "secondary" onClick={handleShowRefuseModal} style = {{ marginRight: "10px"}}>
+              <Button
+                variant="secondary"
+                onClick={handleShowRefuseModal}
+                style={{ marginRight: "10px" }}
+              >
                 Refuse
               </Button>
               <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
                 <Modal.Header closeButton>
                   <Modal.Title>Confirm Refuse</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to refuse all this blog?</Modal.Body>
+                <Modal.Body>
+                  Are you sure you want to refuse all this blog?
+                </Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" onClick={handleCloseRefuseModal}>
                     Cancel
@@ -322,32 +345,74 @@ const TableBlog = ({ searchText }) => {
                 </Modal.Footer>
               </Modal>
             </div>
-          ))}
+          </>
+        ) : (
+          <>
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                right: "210px",
+                margin: "10px",
+              }}
+            >
+              <button
+                className="btn btn-danger mb-2 mb-md-0 me-md-2"
+                style={{ marginRight: "10px", opacity: 0.5 }}
+              >
+                Delete
+              </button>
+              <Button
+                variant="success"
+                style={{ marginRight: "10px", opacity: 0.5 }}
+              >
+                Approve
+              </Button>
+              <Button
+                variant="secondary"
+                style={{ marginRight: "10px", opacity: 0.5 }}
+              >
+                Refuse
+              </Button>
+            </div>
+          </>
+        )}
       </div>
       <div className="activity-data"></div>
       <div style={{ overflowX: "auto" }}>
         <div style={{ marginBottom: "15px" }}>
           <Button
-            variant={activeFilter === "APPROVE" ? "success" : "outline-success"}
+            variant={
+              activeFilter === "APPROVE" || !statusFilter.filter
+                ? "success"
+                : "outline-success"
+            }
             onClick={() => handleFilter("APPROVE")}
           >
             Approve
           </Button>{" "}
           <Button
             variant={
-              activeFilter === "REFUSE" ? "secondary" : "outline-secondary"
+              activeFilter === "REFUSE" || !statusFilter.filter
+                ? "secondary"
+                : "outline-secondary"
             }
             onClick={() => handleFilter("REFUSE")}
           >
             Refuse
           </Button>{" "}
           <Button
-            variant={activeFilter === "WAITING" ? "warning" : "outline-warning"}
+            variant={
+              activeFilter === "WAITING" || !statusFilter.filter
+                ? "warning"
+                : "outline-warning"
+            }
             onClick={() => handleFilter("WAITING")}
           >
             Waiting
           </Button>{" "}
         </div>
+
         <div
           className="table-responsive"
           style={{ maxWidth: "1600px", minWidth: "1600px" }}
@@ -399,15 +464,17 @@ const TableBlog = ({ searchText }) => {
             nextLinkClassName="page-link"
           />
         </div>
-        <Modal show={showBlogDetail} onHide={handleCloseBlogDetail} dialogClassName="custom-modal-width">
-                <Modal.Body>
-                    <BlogDetail blogId={selectedBlogId}/>
-                </Modal.Body>
-            </Modal>
+        <Modal
+          show={showBlogDetail}
+          onHide={handleCloseBlogDetail}
+          dialogClassName="custom-modal-width"
+        >
+          <Modal.Body>
+            <BlogDetail blogId={selectedBlogId} />
+          </Modal.Body>
+        </Modal>
       </div>
-      <EditBlog key={key} editBlogData={editBlogData}  />
-
-
+      <EditBlog key={key} editBlogData={editBlogData} />
     </div>
   );
 };

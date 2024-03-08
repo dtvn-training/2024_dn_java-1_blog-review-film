@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Modal, Table } from "react-bootstrap";
 import ReactPaginate from "react-paginate";
+import moment from "moment";
 import {
   deleteFilm,
   fetchAllFilm,
@@ -171,14 +172,16 @@ const TableFilm = ({ searchText }) => {
       <td>{item.nameFilm}</td>
       <td>{item.director}</td>
       <td>{item.country}</td>
-      <td style={{ minWidth: "150px" }}>{item.startDate}</td>
-      <td className="d-flex flex-column flex-md-row align-items-md-center">
+      <td style={{ minWidth: "150px", textAlign: "center" }} >{item.startDate}</td>
+      <td className="d-flex flex-column flex-md-row align-items-md-center"
+      style={{justifyContent:"center"}}>
         {isAdmin && (
           <>
             <button
               type="button"
               className="btn btn-primary"
               onClick={() => handleEditUser(item)}
+              style = {{justifyContent: "center"}}
             >
               Edit
             </button>
@@ -196,7 +199,6 @@ const TableFilm = ({ searchText }) => {
       </td>
     </tr>
   );
-
   return (
     <div className="activity">
       <div

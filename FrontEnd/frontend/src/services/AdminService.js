@@ -313,7 +313,7 @@ const deleteBlog = async (accountIds, jwtToken) => {
       },
     };
 
-    const query = `/api/admin/blogs`;
+    const query = `/api/reviewer/blogs`;
     // Make the DELETE request using axios with the config object
     return axios.delete(query, config);
   } catch (error) {
