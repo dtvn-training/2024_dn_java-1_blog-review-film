@@ -166,12 +166,18 @@ const CreateFilm = ({ show, createFilm }) => {
                                 <Form.Label>Category</Form.Label>
                                 <Form.Control as="select" name="categoryId" value={filmData.categoryId} onChange={handleChange}>
                                     <option value="">Select category</option>
-                                    <option value="13">Action</option>
-                                    <option value="14">Adventure</option>
-                                    <option value="15">Horror</option>
-                                    <option value="16">Comedy</option>
-                                    <option value="17">Romance</option>
-                                    <option value="18">Science Fiction</option>
+                                    <option value="1">Action</option>
+                                    <option value="2">Comedy</option>
+                                    <option value="3">Drama</option>
+                                    <option value="4">Science Fiction</option>
+                                    <option value="5">Romance</option>
+                                    <option value="6">Horror</option>
+                                    <option value="7">Thriller</option>
+                                    <option value="8">Animation</option>
+                                    <option value="9">Adventure</option>
+                                    <option value="10">Fantasy</option>
+                                    <option value="11">Mystery</option>
+                                    <option value="12">Documentary</option>
                                 </Form.Control>
                                 {filmData.errorMessageCategory && <Alert variant="danger">{filmData.errorMessageCategory}</Alert>}
                             </Form.Group>
