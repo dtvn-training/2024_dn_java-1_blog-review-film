@@ -9,7 +9,6 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const validateEmail = (email) => {
@@ -53,13 +52,11 @@ const Login = () => {
     
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          setError('Invalid username or password. Please try again.'); // Set thông báo lỗi cho người dùng
           for (let i = 0; i < error.response.data.message.length; i++) {
-            alert(error.response.data.message[i].defaultMessage + '. Please try again.');
+            toast.error(error.response.data.message[i].defaultMessage + '. Please try again.');
           }
         } else {
-          setError('An error occurred. Please try again later.');
-          alert('An error occurred. Please try again later.');
+          toast.error('An error occurred. Please try again later.');
         }
       } finally {
         setIsLoading(false);
