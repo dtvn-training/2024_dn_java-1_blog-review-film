@@ -160,7 +160,7 @@ const BlogDetail = ({ blogId, onCloseModal }) => {
                                     </div>
                                     <div className="div-27">{blogDetail.summary}</div>
                                 </div>
-                                {authenticated !== null && user.role ==="ROLE_ADMIN" && (
+                                {authenticated !== null && user.role === "ROLE_ADMIN" && (
                                     <div className="btn-updateBlog">
                                         <button
                                             className="btn btn-primary mr-2"
@@ -219,8 +219,8 @@ const BlogDetail = ({ blogId, onCloseModal }) => {
                         </div>
                         {blogDetail.contents.map((content, index) => (
                             <div key={index} className="content-container">
-                                <p>{content.content}</p>
-                                {content.imageUrl && <img src={content.imageUrl} alt={`Content ${index + 1}`} />}
+                                <div dangerouslySetInnerHTML={{ __html: content.content }} />
+                                {content.imageUrl && <img key={`image-${index}`} src={content.imageUrl} alt={`Content ${index + 1}`} />}
                             </div>
                         ))}
                     </div>

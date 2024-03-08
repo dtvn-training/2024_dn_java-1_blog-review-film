@@ -258,13 +258,14 @@ const TableBlog = ({ searchText }) => {
       >
         <i className="uil uil-clock-three"></i>
         <span className="text">Blog List</span>
+        <CreateBlog />
         {/* < CreateBlog /> */}
         {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
         {selectedItems.length > 0 &&
           (console.log(selectedItems),
           (
             <div
-              style={{ position: "absolute", top: 0, right: '210px', margin: "10px" }}
+              style={{ position: "absolute", top: 0, right: '220px', margin: "10px" }}
             >
               <button
                 className="btn btn-danger mb-2 mb-md-0 me-md-2"
