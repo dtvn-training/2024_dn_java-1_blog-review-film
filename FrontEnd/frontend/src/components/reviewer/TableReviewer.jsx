@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, Button, Form, Modal, Table } from "react-bootstrap";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
+import moment from "moment";
 import {
   deleteAccount,
   fetchAccount,
@@ -258,35 +259,39 @@ const TableReviewer = ({ searchText }) => {
     }
   };
 
-  const renderTableRow = (item, index) => (
-    <tr key={index} style={{ textAlign: "center", verticalAlign: "middle" }}>
-      <td style={{ textAlign: "center" }}>
-        <input
-          type="checkbox"
-          checked={selectedItems.includes(item.id)}
-          onChange={() => handleSelectItem(item.id)}
-        />
-      </td>
-      <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
-      <td>{item.name}</td>
-      <td style={{ textAlign: "right", height: "10px" }}>{item.phone}</td>
-      <td style={{ textAlign: "left" }}>{item.email}</td>
-      <td style={{ minWidth: "150px" }}>{item.insertDateTime}</td>
-      <td>{item.status}</td>
-      <td>
-        <div className="d-flex flex-column flex-md-row align-items-md-center">
-          <button
-            style={{ display: "block", margin: "auto" }}
-            type="button"
-            className="btn btn-primary"
-            onClick={() => handleEditUser(item)}
-          >
-            <FontAwesomeIcon icon="fa-solid fa-pen" />
-          </button>
-        </div>
-      </td>
-    </tr>
-  );
+  const renderTableRow = (item, index) => {
+    const formattedStartDate = moment(item.insertDateTime).format("DD/MM/YYYY HH:mm:ss");
+  
+    return (
+      <tr key={index} style={{ textAlign: "center" }}>
+        <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+          <input
+            type="checkbox"
+            checked={selectedItems.includes(item.id)}
+            onChange={() => handleSelectItem(item.id)}
+          />
+        </td>
+        <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
+        <td>{item.name}</td>
+        <td style={{ textAlign: "right", height: "10px" }}>{item.phone}</td>
+        <td style={{ textAlign: "left" }}>{item.email}</td>
+        <td style={{ minWidth: "150px" }}>{formattedStartDate}</td> {/* Use formattedStartDate instead of item.insertDateTime */}
+        <td>{item.status}</td>
+        <td>
+          <div className="d-flex flex-column flex-md-row align-items-md-center">
+            <button
+              style={{ display: "block", margin: "auto" }}
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleEditUser(item)}
+            >
+              <FontAwesomeIcon icon={["fas", "pen"]} /> {/* Correct usage of FontAwesomeIcon component */}
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  };
   return (
     <div className="activity">
       <div
@@ -302,98 +307,130 @@ const TableReviewer = ({ searchText }) => {
         <span className="text">Account</span>
 
         {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
-        {selectedItems.length > 0 &&
-          (console.log(selectedItems),
-          (
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                right: "210px",
-                margin: "10px",
-              }}
-            >
-              <button
-                className="btn btn-danger mb-2 mb-md-0 me-md-2"
-                onClick={handleShowDeleteModal}
-                style={{ marginRight: "10px" }}
-              >
-                Delete
-              </button>
-              <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Confirm Delete</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  Are you sure you want to delete all this account?
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                    Cancel
-                  </Button>
-                  <Button variant="primary" onClick={handleDeleteAccount}>
-                    Confirm
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-              {activeFilter !== "ACTIVE" && (
-                <Button
-                  variant="success"
-                  onClick={handleShowActiveModal}
-                  style={{ marginRight: "10px" }}
-                >
-                  Active
-                </Button>
-              )}
-              <Modal show={showActiveModal} onHide={handleCloseActiveModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Confirm Active</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  Are you sure you want to active all this account?
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseActiveModal}>
-                    Cancel
-                  </Button>
-                  <Button variant="primary" onClick={handleActiveSelectedBlogs}>
-                    Confirm
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-              {activeFilter !== "INACTIVE" && (
-              <Button
-                style={{ marginRight: "10px" }}
-                variant="warning"
-                onClick={handleShowInActiveModal}
-              >
-                InActive
-              </Button>
-              )}
-              <Modal show={showInActiveModal} onHide={handleCloseInActiveModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Confirm InActive</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  Are you sure you want to inactive this account?
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button
-                    variant="secondary"
-                    onClick={handleCloseInActiveModal}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={handleInActiveSelectedBlogs}
-                  >
-                    Confirm
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-            </div>
-          ))}
+        {selectedItems.length > 0 ? (
+  <>
+    {console.log(selectedItems)}
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        right: "210px",
+        margin: "10px",
+      }}
+    >
+      <button
+        className="btn btn-danger mb-2 mb-md-0 me-md-2"
+        onClick={handleShowDeleteModal}
+        style={{ marginRight: "10px" }}
+      >
+        Delete
+      </button>
+      <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete all this account?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseDeleteModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleDeleteAccount}>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {activeFilter !== "ACTIVE" && (
+        <Button
+          variant="success"
+          onClick={handleShowActiveModal}
+          style={{ marginRight: "10px" }}
+        >
+          Active
+        </Button>
+      )}
+      <Modal show={showActiveModal} onHide={handleCloseActiveModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Active</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to active all this account?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseActiveModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleActiveSelectedBlogs}>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {activeFilter !== "INACTIVE" && (
+        <Button
+          style={{ marginRight: "10px" }}
+          variant="warning"
+          onClick={handleShowInActiveModal}
+        >
+          InActive
+        </Button>
+      )}
+      <Modal show={showInActiveModal} onHide={handleCloseInActiveModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm InActive</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to inactive this account?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={handleCloseInActiveModal}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleInActiveSelectedBlogs}
+          >
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
+  </>
+) : (
+  <>
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        right: "210px",
+        margin: "10px",
+      }}
+    >
+      <button
+        className="btn btn-danger mb-2 mb-md-0 me-md-2"
+        style={{ marginRight: "10px", opacity: 0.5 }} // Thêm thuộc tính opacity để làm cho nút mờ đi khi không được chọn
+      >
+        Delete
+      </button>
+      <Button
+        variant="success"
+        style={{ marginRight: "10px", opacity: 0.5 }}
+      >
+        Active
+      </Button>
+      <Button
+        style={{ marginRight: "10px", opacity: 0.5 }}
+        variant="warning"
+      >
+        InActive
+      </Button>
+    </div>
+  </>
+)}
+
       </div>
       <div style={{ overflowX: "auto" }}>
         <CreateReviewer />

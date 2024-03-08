@@ -7,11 +7,12 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import "../../styles/UserPage.css";
 import { deleteBlog } from "../../services/AdminService";
+import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchDashBoard, updateStatusBlog } from "../../services/AdminService";
 import BlogDetail from "../blogDetail/BlogDetail";
 
-const BlogWaiting = ( {searchText} ) => {
+const BlogWaiting = ({ searchText }) => {
   // Define state variables
   const [listUsers, setListUsers] = useState([]);
   const [pageCount, setPageCount] = useState(0);
@@ -31,10 +32,8 @@ const BlogWaiting = ( {searchText} ) => {
   const [selectedBlogId, setSelectedBlogId] = useState(null);
   const [blogToRemove, setBlogToRemove] = useState(null);
 
-
-
-  const user = JSON.parse(localStorage.getItem('user'));
-  const isAdmin = user.role === 'ROLE_ADMIN';
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = user.role === "ROLE_ADMIN";
 
   // Fetch data from API
   useEffect(() => {
@@ -45,29 +44,29 @@ const BlogWaiting = ( {searchText} ) => {
   }, []);
 
   useEffect(() => {
-      getBlogs(currentPage);
-    }, [currentPage, statusFilter, searchText]);
+    getBlogs(currentPage);
+  }, [currentPage, statusFilter, searchText]);
 
-    const handleRemoveBlog = (blogId) => {
-      setBlogToRemove(blogId);
-    };
+  const handleRemoveBlog = (blogId) => {
+    setBlogToRemove(blogId);
+  };
 
-    const getBlogs = async (selectedPage) => {
-      try {
-        const res = await fetchDashBoard(
-          selectedPage + 1,
-          localStorage.getItem("jwtToken"),
-          "WAITING",
-          searchText
-        );
-        if (res && res.data) {
-          const { data, pageInfo } = res.data;
-          setListUsers(data);
-          setPageCount(pageInfo.total_pages);
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
+  const getBlogs = async (selectedPage) => {
+    try {
+      const res = await fetchDashBoard(
+        selectedPage + 1,
+        localStorage.getItem("jwtToken"),
+        "WAITING",
+        searchText
+      );
+      if (res && res.data) {
+        const { data, pageInfo } = res.data;
+        setListUsers(data);
+        setPageCount(pageInfo.total_pages);
       }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
   };
 
   const handlePageClick = (selectedPage) => {
@@ -131,13 +130,13 @@ const BlogWaiting = ( {searchText} ) => {
   const handleShowBlogDetail = (id) => {
     setSelectedBlogId(id);
     setShowBlogDetail(true);
-};
+  };
 
-const handleCloseBlogDetail = () => {
+  const handleCloseBlogDetail = () => {
     setSelectedBlogId(null);
     setShowBlogDetail(false);
-    getBlogs(currentPage)
-};
+    getBlogs(currentPage);
+  };
 
   const handleSelectItem = (id) => {
     const selectedIndex = selectedItems.indexOf(id);
@@ -159,57 +158,49 @@ const handleCloseBlogDetail = () => {
     }
   };
 
-  const handleApproveSelectedBlogs = async () => {
+  const handleApproveBlog = async () => {
     try {
-      // Gọi hàm updateStatusBlog để gửi yêu cầu PATCH đến API
-      try {
-        await updateStatusBlog(selectedItems, localStorage.getItem("jwtToken"), "APPROVE");
-        console.log("Approve selected blogs successfully");
+      const res = await updateStatusBlog(
+        selectedItems,
+        localStorage.getItem("jwtToken"),
+        "APPROVE"
+      );
+      if (res.code === 200) {
+        updateUserList();
         handleCloseApproveModal();
-      } catch (error) {
-        // Xử lý lỗi nếu có
-        console.error(`Error approving blog with ids ${selectedItems}:`, error);
-        throw error;
+        toast.success("Approve blog successfully");
+        setSelectedItems([]);
+      } else {
+        toast.error("Failed to approve blog. Please try again later.");
       }
-  
-      // Cập nhật danh sách blog sau khi duyệt
-      getBlogs(currentPage);
-  
-      // Hiển thị thông báo thành công
-      toast.success("Approve selected blogs successfully");
     } catch (error) {
-      // Xử lý lỗi nếu có
-      console.error("Error approving selected blogs:", error);
-      // Hiển thị thông báo lỗi cho người dùng
-      toast.error("An error occurred while approving selected blogs");
+      console.error("Error active blog:", error);
+      toast.error("An error occurred while approve blog.");
     }
   };
-  
-  const handleRefuseSelectedBlogs = async () => {
+
+  const handleRefuseBlog = async () => {
     try {
-      // Gọi hàm updateStatusBlog để gửi yêu cầu PATCH đến API
-      try {
-        await updateStatusBlog(selectedItems, localStorage.getItem("jwtToken"), "REFUSE");
+      const res = await updateStatusBlog(
+        selectedItems,
+        localStorage.getItem("jwtToken"),
+        "REFUSE"
+      );
+      console.log(res);
+      if (res.code === 200) {
+        updateUserList();
         handleCloseRefuseModal();
-      } catch (error) {
-        // Xử lý lỗi nếu có
-        console.error(`Error refuse blog with ids ${selectedItems}:`, error);
-        throw error;
+        toast.success("Refuse blog successfully");
+        setSelectedItems([]);
+      } else {
+        toast.error("Failed to refuse blog. Please try again later.");
       }
-  
-      // Cập nhật danh sách blog sau khi duyệt
-      getBlogs(currentPage);
-  
-      // Hiển thị thông báo thành công
-      toast.success("Refuse selected blogs successfully");
     } catch (error) {
-      // Xử lý lỗi nếu có
-      console.error("Error refuse selected blogs:", error);
-      // Hiển thị thông báo lỗi cho người dùng
-      toast.error("An error occurred while refuse selected blogs");
+      console.error("Error refuse blog:", error);
+      toast.error("An error occurred while refuse blog.");
     }
   };
-  
+
   const handleDeleteBlog = async () => {
     try {
       const res = await deleteBlog(
@@ -220,6 +211,7 @@ const handleCloseBlogDetail = () => {
         updateUserList();
         handleCloseDeleteModal();
         toast.success("Delete blog successfully");
+        setSelectedItems([]);
       } else {
         toast.error("Failed to delete blog. Please try again later.");
       }
@@ -229,43 +221,44 @@ const handleCloseBlogDetail = () => {
     }
   };
 
+  const renderTableRow = (item, index) => {
+    const formattedStartDate = moment(item.postTime).format("DD/MM/YYYY HH:mm:ss");
   
-
-  const renderTableRow = (item, index) => (
-    <tr key={index} style={{ textAlign: "center", height: "30px" }}>
-      <td style={{ textAlign: "center" }}>
-        <input
-          type="checkbox"
-          checked={selectedItems.includes(item.id)}
-          onChange={() => handleSelectItem(item.id)}
-        />
-      </td>
-      <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
-      <td style={{ minWidth: "200px", textAlign: "left" }}>{item.title}</td>
-      <td style={{ textAlign: "left" }}>{item.film.nameFilm}</td>
-      <td style={{ minWidth: "200px", textAlign: "center" }}>
-        {item.postTime}
-      </td>
-      <td style={{ minWidth: "150px", textAlign: "center" }}>
-        {item.updateBy.name}
-      </td>
-      <td style={{ textAlign: "center" }}>{item.status}</td>
-      <td>
-        <div className="d-flex flex-column flex-md-row align-items-md-center">
-          <button
-              style={{ display: 'block', margin: 'auto' }}
+    return (
+      <tr key={index} style={{ textAlign: "center", height: "30px" }}>
+        <td style={{ textAlign: "center" }}>
+          <input
+            type="checkbox"
+            checked={selectedItems.includes(item.id)}
+            onChange={() => handleSelectItem(item.id)}
+          />
+        </td>
+        <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
+        <td style={{ minWidth: "200px", textAlign: "left" }}>{item.title}</td>
+        <td style={{ textAlign: "left" }}>{item.film.nameFilm}</td>
+        <td style={{ minWidth: "200px", textAlign: "center" }}>
+          {formattedStartDate}
+        </td>
+        <td style={{ minWidth: "150px", textAlign: "center" }}>
+          {item.updateBy.name}
+        </td>
+        <td style={{ textAlign: "center" }}>{item.status}</td>
+        <td>
+          <div className="d-flex flex-column flex-md-row align-items-md-center">
+            <button
+              style={{ display: "block", margin: "auto" }}
               type="button"
               className="btn btn-primary"
               onClick={() => handleShowBlogDetail(item.id)}
-           >
-              <FontAwesomeIcon icon="fa-solid fa-eye" />
-           </button>
-        </div>
-      </td>
-    </tr>
-  );
-
-  
+            >
+              {/* Correct usage of FontAwesomeIcon component */}
+              <FontAwesomeIcon icon={["fas", "eye"]} />
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  };
 
   return (
     <div className="activity" style={{ position: "relative" }}>
@@ -279,39 +272,41 @@ const handleCloseBlogDetail = () => {
         }}
       >
         <i className="uil uil-clock-three"></i>
-        <span class="text">{isAdmin ? 'Blog Waiting List' : 'Blog List'}</span>
+        <span class="text">{isAdmin ? "Blog Waiting List" : "Blog List"}</span>
         {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
-        {selectedItems.length > 0 && (
+        {selectedItems.length > 0 ? (
           <div
-            style={{ position: "absolute", top: 0, right: 0, margin: "10px" }}
+            style={{ position: "absolute", top: 0, right: '10px', margin: "10px" }}
           >
             <button
-                className="btn btn-danger mb-2 mb-md-0 me-md-2"
-                onClick={handleShowDeleteModal}
-                style={{ marginRight: "10px" }}
-              >
-                Delete
-              </button>
-              <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Confirm Delete</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Are you sure you want to delete all this blog?</Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                    Cancel
-                  </Button>
-                  <Button variant="primary" onClick={handleDeleteBlog}>
-                    Confirm
-                  </Button>
-                </Modal.Footer>
-              </Modal>
+              className="btn btn-danger mb-2 mb-md-0 me-md-2"
+              onClick={handleShowDeleteModal}
+              style={{ marginRight: "10px" }}
+            >
+              Delete
+            </button>
+            <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirm Delete</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                Are you sure you want to delete all this blog?
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseDeleteModal}>
+                  Cancel
+                </Button>
+                <Button variant="primary" onClick={handleDeleteBlog}>
+                  Confirm
+                </Button>
+              </Modal.Footer>
+            </Modal>
             <button
               className="btn btn-primary mr-2"
               onClick={handleShowApproveModal}
-              style = {{marginRight: "10px"}}
+              style={{ marginRight: "10px" }}
             >
-              Approve 
+              Approve
             </button>
             <Modal show={showApproveModal} onHide={handleCloseApproveModal}>
               <Modal.Header closeButton>
@@ -324,18 +319,12 @@ const handleCloseBlogDetail = () => {
                 <Button variant="secondary" onClick={handleCloseApproveModal}>
                   Cancel
                 </Button>
-                <Button
-                  variant="primary"
-                onClick={ handleApproveSelectedBlogs}
-                >
+                <Button variant="primary" onClick={handleApproveBlog}>
                   Confirm
                 </Button>
               </Modal.Footer>
             </Modal>
-            <Button
-              variant= "secondary" 
-              onClick={handleShowRefuseModal}
-            >
+            <Button variant="secondary" onClick={handleShowRefuseModal}>
               Refuse
             </Button>
             <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
@@ -349,14 +338,35 @@ const handleCloseBlogDetail = () => {
                 <Button variant="secondary" onClick={handleCloseRefuseModal}>
                   Cancel
                 </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleRefuseSelectedBlogs}
-                >
+                <Button variant="primary" onClick={handleRefuseBlog}>
                   Confirm
                 </Button>
               </Modal.Footer>
             </Modal>
+          </div>
+        ) : (
+          <div
+            style={{ position: "absolute", top: 0, right: '10px', margin: "10px" }}
+          >
+            <button
+              className="btn btn-danger mb-2 mb-md-0 me-md-2"
+              style={{ marginRight: "10px", opacity: 0.5 }}
+            >
+              Delete
+            </button>
+            <button
+              className="btn btn-primary mr-2"
+              style={{ marginRight: "10px", opacity: 0.5 }}
+            >
+              Approve
+            </button>
+            <Button
+              variant="secondary"
+              style={{ opacity: 0.5 }}
+              onClick={handleShowRefuseModal}
+            >
+              Refuse
+            </Button>
           </div>
         )}
       </div>
@@ -414,10 +424,17 @@ const handleCloseBlogDetail = () => {
                 nextLinkClassName="page-link"
               />
             </div>
-            <Modal show={showBlogDetail} onHide={handleCloseBlogDetail} dialogClassName="custom-modal-width">
-                <Modal.Body>
-                    <BlogDetail blogId={selectedBlogId} onCloseModal={handleCloseBlogDetail}/>
-                </Modal.Body>
+            <Modal
+              show={showBlogDetail}
+              onHide={handleCloseBlogDetail}
+              dialogClassName="custom-modal-width"
+            >
+              <Modal.Body>
+                <BlogDetail
+                  blogId={selectedBlogId}
+                  onCloseModal={handleCloseBlogDetail}
+                />
+              </Modal.Body>
             </Modal>
           </div>
         </div>

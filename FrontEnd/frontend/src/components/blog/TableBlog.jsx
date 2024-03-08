@@ -6,67 +6,71 @@ import { deleteBlog, fetchAllBlog } from "../../services/AdminService";
 import DateTimePicker from "react-datetime-picker";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlogDetail from "../blogDetail/BlogDetail";
-import "../../styles/BlogDetail.css"
+import moment from "moment";
+import "../../styles/BlogDetail.css";
 import { updateStatusBlog } from "../../services/AdminService";
 import CreateBlog from "./CreateBlog";
 import EditBlog from "./EditBlog";
 
-
-
 const TableBlog = ({ searchText }) => {
-    const [listItems, setListItems] = useState([]);
-    const [pageCount, setPageCount] = useState(0);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [showModalAddNew, setShowModal] = useState(false);
-    const [statusFilter, setStatusFilter] = useState({ filter: false, status: "" });
-    const [activeFilter, setActiveFilter] = useState(null);
-    const [show, setShow] = useState(false);
-    const [selectedItemId, setSelectedItemId] = useState(null);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [showBlogDetail, setShowBlogDetail] = useState(false);
-    const [selectedBlogId, setSelectedBlogId] = useState(null);
-    const [selectedItems, setSelectedItems] = useState([]);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [showApproveModal, setShowApproveModal] = useState(false);
-    const [showRefuseModal, setShowRefuseModal] = useState(false);
-    const [editBlogData, setEditBlogData] = useState(null);
-    const handleShowBlogDetail = (id) => {
-        setSelectedBlogId(id);
-        setShowBlogDetail(true);
-    };
-    const [key, setKey] = useState(0);
-    
+  const [listItems, setListItems] = useState([]);
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [showModalAddNew, setShowModal] = useState(false);
+  const [statusFilter, setStatusFilter] = useState({
+    filter: false,
+    status: "",
+  });
+  const [activeFilter, setActiveFilter] = useState(null);
+  const [show, setShow] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [showBlogDetail, setShowBlogDetail] = useState(false);
+  const [selectedBlogId, setSelectedBlogId] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showRefuseModal, setShowRefuseModal] = useState(false);
+  const [editBlogData, setEditBlogData] = useState(null);
+  const authentication = localStorage.getItem("jwtToken");
+  const user = JSON.parse(localStorage.getItem("user"));
 
-    const handleCloseBlogDetail = () => {
-        setShowBlogDetail(false);
-    };
-
-    useEffect(() => {
-      fetchData(currentPage);
-    }, [currentPage, statusFilter, searchText]);
   
-    const fetchData = async (selectedPage, status) => {
-      try {
-        if (statusFilter.filter) {
-          status = statusFilter.status;
-        }
-        const res = await fetchAllBlog(
-          selectedPage + 1,
-          localStorage.getItem("jwtToken"),
-          status,
-          searchText
-        );
-        if (res && res.data) {
-          const { data, pageInfo } = res.data;
-          setListItems(data);
-          setPageCount(pageInfo.total_pages);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  const handleShowBlogDetail = (id) => {
+    setSelectedBlogId(id);
+    setShowBlogDetail(true);
+  };
+  const [key, setKey] = useState(0);
 
+  const handleCloseBlogDetail = () => {
+    setShowBlogDetail(false);
+  };
+
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [currentPage, statusFilter, searchText]);
+
+  const fetchData = async (selectedPage, status) => {
+    try {
+      if (statusFilter.filter) {
+        status = statusFilter.status;
+      }
+      const res = await fetchAllBlog(
+        selectedPage + 1,
+        localStorage.getItem("jwtToken"),
+        status,
+        searchText
+      );
+      if (res && res.data) {
+        const { data, pageInfo } = res.data;
+        setListItems(data);
+        setPageCount(pageInfo.total_pages);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const handlePageClick = (selectedPage) => {
     setCurrentPage(selectedPage.selected);
@@ -93,7 +97,7 @@ const TableBlog = ({ searchText }) => {
     setShowDeleteModal(false);
     setSelectedItemId(null);
     setSelectedItemId([]);
-    setSelectedItems([])
+    setSelectedItems([]);
   };
 
   const handleShowApproveModal = () => {
@@ -118,7 +122,6 @@ const TableBlog = ({ searchText }) => {
   useEffect(() => {
     updateUserList();
   }, [selectedItems]);
-  
 
   const updateUserList = () => {
     fetchData(currentPage);
@@ -161,7 +164,7 @@ const TableBlog = ({ searchText }) => {
   const handleEditItem = (item) => {
     console.log("Edit item:", item);
     setEditBlogData(item);
-    setKey(prevKey => prevKey + 1); // Sử dụng setKey để cập nhật giá trị mới cho key
+    setKey((prevKey) => prevKey + 1); // Sử dụng setKey để cập nhật giá trị mới cho key
   };
 
   const handleApproveBlog = async () => {
@@ -170,8 +173,7 @@ const TableBlog = ({ searchText }) => {
         selectedItems,
         localStorage.getItem("jwtToken"),
         "APPROVE"
-      )
-      console.log(res);
+      );
       if (res.code === 200) {
         updateUserList();
         handleCloseApproveModal();
@@ -191,7 +193,7 @@ const TableBlog = ({ searchText }) => {
         selectedItems,
         localStorage.getItem("jwtToken"),
         "REFUSE"
-      )
+      );
       console.log(res);
       if (res.code === 200) {
         updateUserList();
@@ -205,46 +207,53 @@ const TableBlog = ({ searchText }) => {
       toast.error("An error occurred while refuse blog.");
     }
   };
-  const renderTableRow = (item, index) => (
-    <tr key={index} style={{ textAlign: "center", verticalAlign: "middle" }}>
-      <td style={{ textAlign: "center" }}>
-        <input
-          type="checkbox"
-          checked={selectedItems.includes(item.id)}
-          onChange={() => handleSelectItem(item.id)}
-        />
-      </td>
-      <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
-      <td style={{ minWidth: "200px", textAlign: "left" }}>{item.title}</td>
-      <td style={{ minWidth: "200px", textAlign: "left" }}>
-        {item.film.nameFilm}
-      </td>
-      <td>{item.postTime}</td>
-      <td style={{ minWidth: "150px", textAlign: "center" }}>
-        {" "}
-        {item.updateBy.name}
-      </td>
-      <td style={{ textAlign: "center" }}>{item.status}</td>
-      <td>
-        <div className="d-flex flex-column flex-md-row align-items-md-center">
-          <button
+  const renderTableRow = (item, index) => {
+    const formattedStartDate = moment(item.postTime).format("DD/MM/YYYY HH:mm:ss");
+  
+    return (
+      <tr key={index} style={{ textAlign: "center", verticalAlign: "middle" }}>
+        <td style={{ textAlign: "center" }}>
+          <input
+            type="checkbox"
+            checked={selectedItems.includes(item.id)}
+            onChange={() => handleSelectItem(item.id)}
+          />
+        </td>
+        <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
+        <td style={{ minWidth: "200px", textAlign: "left" }}>{item.title}</td>
+        <td style={{ minWidth: "200px", textAlign: "left" }}>
+          {item.film.nameFilm}
+        </td>
+        <td>{formattedStartDate}</td>
+        <td style={{ minWidth: "150px", textAlign: "center" }}>
+          {item.updateBy.name}
+        </td>
+        <td style={{ textAlign: "center" }}>{item.status}</td>
+        <td>
+          <div
+            className="d-flex flex-column flex-md-row align-items-md-center"
+            style={{ justifyContent: "center" }}
+          >
+            <button
               type="button"
               className="btn btn-primary"
               onClick={() => handleShowBlogDetail(item.id)}
-           >
-              <FontAwesomeIcon icon="fa-solid fa-eye" />
-           </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => handleEditItem(item)}
-          >
-            <FontAwesomeIcon icon="fa-solid fa-pen" />
-          </button>
-        </div>
-      </td>
-    </tr>
-  );
+              style={{ marginRight: "10px" }}
+            >
+              <FontAwesomeIcon icon={["fas", "eye"]} /> {/* Correct usage of FontAwesomeIcon component */}
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleEditItem(item)}
+            >
+              <FontAwesomeIcon icon={["fas", "edit"]} /> {/* Correct usage of FontAwesomeIcon component */}
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  };
   return (
     <div className="activity">
       <div
@@ -261,11 +270,16 @@ const TableBlog = ({ searchText }) => {
         <CreateBlog />
         {/* < CreateBlog /> */}
         {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
-        {selectedItems.length > 0 &&
-          (console.log(selectedItems),
-          (
+        {selectedItems.length > 0 ? (
+          <>
+            {console.log(selectedItems)}
             <div
-              style={{ position: "absolute", top: 0, right: '220px', margin: "10px" }}
+              style={{
+                position: "absolute",
+                top: 0,
+                right: "220px",
+                margin: "10px",
+              }}
             >
               <button
                 className="btn btn-danger mb-2 mb-md-0 me-md-2"
@@ -274,81 +288,158 @@ const TableBlog = ({ searchText }) => {
               >
                 Delete
               </button>
-              <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Confirm Delete</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Are you sure you want to delete all this blog?</Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                    Cancel
+              {authentication !== null && user.role === "ROLE_ADMIN" && (
+                <>
+                  <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Confirm Delete</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      Are you sure you want to delete all this blog?
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={handleCloseDeleteModal}
+                      >
+                        Cancel
+                      </Button>
+                      <Button variant="primary" onClick={handleDeleteBlog}>
+                        Confirm
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Button
+                    variant="success"
+                    onClick={handleShowApproveModal}
+                    style={{ marginRight: "10px" }}
+                  >
+                    Approve
                   </Button>
-                  <Button variant="primary" onClick={handleDeleteBlog}>
-                    Confirm
+                  <Modal
+                    show={showApproveModal}
+                    onHide={handleCloseApproveModal}
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Confirm Approve</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      Are you sure you want to approve all this blog?
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={handleCloseApproveModal}
+                        style={{ marginRight: "10px" }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button variant="primary" onClick={handleApproveBlog}>
+                        Confirm
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Button
+                    variant="secondary"
+                    onClick={handleShowRefuseModal}
+                    style={{ marginRight: "10px" }}
+                  >
+                    Refuse
                   </Button>
-                </Modal.Footer>
-              </Modal>
-              <Button variant= "success" onClick={handleShowApproveModal} style={{ marginRight: "10px" }}>
-                Approve
-              </Button>
-              <Modal show={showApproveModal} onHide={handleCloseApproveModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Confirm Approve</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Are you sure you want to approve all this blog?</Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseApproveModal} style={{ marginRight: "10px" }}>
-                    Cancel
-                  </Button>
-                  <Button variant="primary" onClick={handleApproveBlog}>
-                    Confirm
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-              <Button variant= "secondary" onClick={handleShowRefuseModal} style = {{ marginRight: "10px"}}>
-                Refuse
-              </Button>
-              <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Confirm Refuse</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Are you sure you want to refuse all this blog?</Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseRefuseModal}>
-                    Cancel
-                  </Button>
-                  <Button variant="primary" onClick={handleRefuseBlog}>
-                    Confirm
-                  </Button>
-                </Modal.Footer>
-              </Modal>
+                  <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Confirm Refuse</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      Are you sure you want to refuse all this blog?
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={handleCloseRefuseModal}
+                      >
+                        Cancel
+                      </Button>
+                      <Button variant="primary" onClick={handleRefuseBlog}>
+                        Confirm
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                </>
+              )}
             </div>
-          ))}
+          </>
+        ) : (
+          <>
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                right: "220px",
+                margin: "10px",
+              }}
+            >
+              <button
+                className="btn btn-danger mb-2 mb-md-0 me-md-2"
+                style={{ marginRight: "10px", opacity: 0.5 }}
+              >
+                Delete
+              </button>
+              {authentication !== null && user.role === "ROLE_ADMIN" && (
+                <>
+                  <Button
+                    variant="success"
+                    style={{ marginRight: "10px", opacity: 0.5 }}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    style={{ marginRight: "10px", opacity: 0.5 }}
+                  >
+                    Refuse
+                  </Button>
+                </>
+              )}
+            </div>
+          </>
+        )}
       </div>
       <div className="activity-data"></div>
       <div style={{ overflowX: "auto" }}>
         <div style={{ marginBottom: "15px" }}>
           <Button
-            variant={activeFilter === "APPROVE" ? "success" : "outline-success"}
+            variant={
+              activeFilter === "APPROVE" || !statusFilter.filter
+                ? "success"
+                : "outline-success"
+            }
             onClick={() => handleFilter("APPROVE")}
           >
             Approve
           </Button>{" "}
           <Button
             variant={
-              activeFilter === "REFUSE" ? "secondary" : "outline-secondary"
+              activeFilter === "REFUSE" || !statusFilter.filter
+                ? "secondary"
+                : "outline-secondary"
             }
             onClick={() => handleFilter("REFUSE")}
           >
             Refuse
           </Button>{" "}
           <Button
-            variant={activeFilter === "WAITING" ? "warning" : "outline-warning"}
+            variant={
+              activeFilter === "WAITING" || !statusFilter.filter
+                ? "warning"
+                : "outline-warning"
+            }
             onClick={() => handleFilter("WAITING")}
           >
             Waiting
           </Button>{" "}
         </div>
+
         <div
           className="table-responsive"
           style={{ maxWidth: "1600px", minWidth: "1600px" }}
@@ -400,15 +491,17 @@ const TableBlog = ({ searchText }) => {
             nextLinkClassName="page-link"
           />
         </div>
-        <Modal show={showBlogDetail} onHide={handleCloseBlogDetail} dialogClassName="custom-modal-width">
-                <Modal.Body>
-                    <BlogDetail blogId={selectedBlogId}/>
-                </Modal.Body>
-            </Modal>
+        <Modal
+          show={showBlogDetail}
+          onHide={handleCloseBlogDetail}
+          dialogClassName="custom-modal-width"
+        >
+          <Modal.Body>
+            <BlogDetail blogId={selectedBlogId} />
+          </Modal.Body>
+        </Modal>
       </div>
-      <EditBlog key={key} editBlogData={editBlogData}  />
-
-
+      <EditBlog key={key} editBlogData={editBlogData} />
     </div>
   );
 };

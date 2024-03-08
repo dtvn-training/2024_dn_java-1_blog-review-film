@@ -5,7 +5,7 @@ import { Button, Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-const BlogDetail = ({ blogId, onCloseModal }) => {
+const BlogDetail = ({ blogId, onCloseModal, guest }) => {
 
     const authenticated = JSON.parse(localStorage.getItem('authenticated'));
     const [blogDetail, setBlogDetail] = useState(null);
@@ -23,10 +23,9 @@ const BlogDetail = ({ blogId, onCloseModal }) => {
 
     const fetchBlogDetail = async (blogId) => {
         try {
-            if (authenticated) {
+            if (authenticated && !guest) {
                 const res = await fetchBlogById(blogId, localStorage.getItem("jwtToken"));
                 if (res && res.data) {
-                    console.log(res.data)
                     setBlogDetail(res.data.data);
                 }
             } else {
@@ -115,7 +114,7 @@ const BlogDetail = ({ blogId, onCloseModal }) => {
         (blogDetail ? (
             <div className="blogdetail_container">
                 <div className="div">
-                    {authenticated == null ? (
+                    {guest ? (
                         <div className="div-2">
                             <div className="div-3">
                                 <div className="div-4">Blog Review Film</div>
@@ -224,7 +223,7 @@ const BlogDetail = ({ blogId, onCloseModal }) => {
                             </div>
                         ))}
                     </div>
-                    {!authenticated && (
+                    {guest && (
                         <div className="div-29">
                             <div className="div-30">
                                 <div className="div-31">Home</div>

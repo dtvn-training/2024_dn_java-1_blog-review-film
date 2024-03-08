@@ -6,7 +6,7 @@ function BlogDetailPage() {
     const { blogId } = useParams();
     
     return (  
-        <BlogDetail blogId={blogId} />
+        <BlogDetail blogId={blogId} guest={true} />
     );
 }
 
