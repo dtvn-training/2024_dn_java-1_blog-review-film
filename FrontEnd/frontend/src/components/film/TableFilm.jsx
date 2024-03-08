@@ -8,6 +8,9 @@ import {
   fetchCategories,
 } from "../../services/AdminService";
 import EditFilm from "./EditFilm";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { toast } from "react-toastify";
+
 
 const TableFilm = ({ searchText }) => {
   const [pageCount, setPageCount] = useState(0);
@@ -132,11 +135,13 @@ const TableFilm = ({ searchText }) => {
       );
       console.log(res);
       if (res && res.data) {
+        toast.success("Delete film successfully");
         updateUserList();
         setSelectedItems([]);
         setShowDeleteModal(false);
       }
     } catch (error) {
+      toast.error("Error deleting film");
       console.error("Error deleting film:", error);
     }
   };
@@ -161,21 +166,24 @@ const TableFilm = ({ searchText }) => {
 
   const renderTableRow = (item, index) => (
     <tr key={index} style={{ verticalAlign: "middle" }}>
-      <td style={{ textAlign: "center" }}>
+      {isAdmin && (
+        <td style={{ textAlign: "center" }}>
         <input
           type="checkbox"
           checked={selectedItems.includes(item.id)}
           onChange={() => handleSelectItem(item.id)}
         />
       </td>
+      )}
       <td style={{ textAlign: "right" }}>{index + 1}</td>
       <td>{item.nameFilm}</td>
       <td>{item.director}</td>
       <td>{item.country}</td>
       <td style={{ minWidth: "150px", textAlign: "center" }} >{item.startDate}</td>
+      {isAdmin && (
       <td className="d-flex flex-column flex-md-row align-items-md-center"
       style={{justifyContent:"center"}}>
-        {isAdmin && (
+        
           <>
             <button
               type="button"
@@ -183,22 +191,14 @@ const TableFilm = ({ searchText }) => {
               onClick={() => handleEditUser(item)}
               style = {{justifyContent: "center"}}
             >
-              Edit
+              <FontAwesomeIcon icon="fa-solid fa-pen" />
             </button>
           </>
-        )}
-        {!isAdmin && (
-          <button
-            type="button"
-            className="btn btn-success"
-            onClick={() => handleCreateBlog(item)}
-          >
-            Create Blog
-          </button>
-        )}
       </td>
+      )}
     </tr>
   );
+  console.log("editFilm", isAdmin);
   return (
     <div className="activity">
       <div
@@ -274,19 +274,20 @@ const TableFilm = ({ searchText }) => {
             <Table striped bordered hover>
               <thead>
                 <tr style={{ textAlign: "center", verticalAlign: "middle" }}>
-                  <th>
+                  {isAdmin && (
+                    <th>
                     <input
                       type="checkbox"
                       checked={selectedItems.length === listUsers.length}
                       onChange={handleSelectAll}
                     />
                   </th>
+                  )}
                   <th>STT</th>
                   <th>Name</th>
                   <th>Director</th>
                   <th>Country</th>
                   <th>Start Date</th>
-                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>

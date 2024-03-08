@@ -131,16 +131,36 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public List<Content> updateContent(List<ContentInput> contentInputs, Long blogId) {
+        LocalDateTime now = LocalDateTime.now();
+        Authentication authentication = getAuthentication();
+        UserEntity userEntity = userRepository.findByEmailAndDeleteFlagFalse(authentication.getName()).orElseThrow(
+                () -> new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE, ErrorConstants.UNAUTHORIZED_CODE));
         List<ContentEntity> contentEntities = contentInputs.stream()
                 .map(contentInput -> {
-                    ContentEntity contentEntity = contentRepository.findById(contentInput.getId())
-                            .orElseThrow(() -> notFoundException());
-                    if (!contentEntity.getBlog().getId().equals(blogId)) {
-                        throw new MessageException(ErrorConstants.INVALID_DATA_MESSAGE,
-                                ErrorConstants.INVALID_DATA_CODE);
+                    if (contentInput.getId() == null) {
+                        ContentEntity contentEntity = new ContentEntity();
+                        contentEntity.setBlog(blogRepository.findById(blogId).orElseThrow(() -> notFoundException()));
+                        contentEntity.setContent(contentInput.getContent());
+                        contentEntity.setImageUrl(
+                                imageService.upload(contentInput.getImageContent(), TypeImageConstants.CONTENT_IMAGE));
+                        contentEntity.setInsertDateTime(now);
+                        contentEntity.setInsertBy(userEntity);
+                        contentEntity.setUpdateDateTime(now);
+                        contentEntity.setUpdateBy(userEntity);
+                        return contentRepository.save(contentEntity);
+                    } else {
+                        ContentEntity contentEntity = contentRepository.findById(contentInput.getId())
+                                .orElseThrow(() -> notFoundException());
+                        if (!contentEntity.getBlog().getId().equals(blogId)) {
+                            throw new MessageException(ErrorConstants.INVALID_DATA_MESSAGE,
+                                    ErrorConstants.INVALID_DATA_CODE);
+                        }
+                        contentEntity.setContent(contentInput.getContent());
+                        if (contentInput.getImageContent() != null) {
+                            contentEntity.setImageUrl(imageService.upload(contentInput.getImageContent(), TypeImageConstants.CONTENT_IMAGE));
+                        }
+                        return contentRepository.save(contentEntity);
                     }
-                    contentEntity.setContent(contentInput.getContent());
-                    return contentRepository.save(contentEntity);
                 })
                 .collect(Collectors.toList());
         return contentEntities.stream().map(ContentConvertor::toModel).toList();
@@ -148,33 +168,16 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public Object updateImageBlog(MultipartFile file, Long blogId) {
-        Authentication authentication = getAuthentication(); 
+        Authentication authentication = getAuthentication();
         BlogEntity entity = blogRepository.findById(blogId)
                 .orElseThrow(() -> notFoundException());
         entity.setImage(imageService.upload(file, TypeImageConstants.BLOG_IMAGE));
         entity.setUpdateDateTime(LocalDateTime.now());
         entity.setUpdateBy(userRepository.findByEmailAndDeleteFlagFalse(authentication.getName())
                 .orElseThrow(
-                        () -> new MessageException(ErrorConstants.FORBIDDEN_MESSAGE, ErrorConstants.FORBIDDEN_CODE)));
+                        () -> new MessageException(ErrorConstants.UNAUTHORIZED_MESSAGE,
+                                ErrorConstants.UNAUTHORIZED_CODE)));
         return BlogConvertor.toModel(blogRepository.save(entity));
-    }
-
-    @Override
-    public Object updateImageContent(List<ContentInput> contents, Long blogId) {
-        List<ContentEntity> contentEntities = contents.stream()
-                .map(contentInput -> {
-                    ContentEntity entity = contentRepository.findById(blogId)
-                            .orElseThrow(() -> notFoundException());
-                    if (!entity.getBlog().getId().equals(blogId)) {
-                        throw new MessageException(ErrorConstants.INVALID_DATA_MESSAGE,
-                                ErrorConstants.INVALID_DATA_CODE);
-                    }
-                    entity.setImageUrl(imageService.upload(contentInput.getImage(), TypeImageConstants.CONTENT_IMAGE));
-                    return contentRepository.save(entity);
-                })
-                .collect(Collectors.toList());
-
-        return contentEntities.stream().map(ContentConvertor::toModel).toList();
     }
 
     @Override
@@ -227,8 +230,8 @@ public class BlogServiceImpl implements BlogService {
         ContentEntity entity = new ContentEntity();
         entity.setBlog(blog);
         entity.setContent(content.getContent());
-        if (content.getImage() != null) {
-            entity.setImageUrl(imageService.upload(content.getImage(), TypeImageConstants.CONTENT_IMAGE));
+        if (content.getImageContent() != null) {
+            entity.setImageUrl(imageService.upload(content.getImageContent(), TypeImageConstants.CONTENT_IMAGE));
         }
         entity.setInsertDateTime(blog.getInsertDateTime());
         entity.setInsertBy(blog.getInsertBy());
@@ -303,7 +306,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public PagedResponse<Blog> getAllBlogsByFilmGuest(Long filmId, int page) {
-        Page<BlogEntity> blog = blogRepository.findAllBlogsByFilmGuest(filmRepository.findById(filmId).orElseThrow(() -> notFoundException()), PageRequest.of(page - 1, PER_PAGE_GUEST));
+        Page<BlogEntity> blog = blogRepository.findAllBlogsByFilmGuest(
+                filmRepository.findById(filmId).orElseThrow(() -> notFoundException()),
+                PageRequest.of(page - 1, PER_PAGE_GUEST));
         PagedResponse<Blog> pagedResponse = new PagedResponse<>();
         pagedResponse.setContent(blog.getContent().stream().map(BlogConvertor::toModel).toList());
         pagedResponse.setResponsePage(getPageInfo(blog, page, PER_PAGE_GUEST));

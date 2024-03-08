@@ -6,6 +6,7 @@ import { deleteBlog, fetchAllBlog } from "../../services/AdminService";
 import DateTimePicker from "react-datetime-picker";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlogDetail from "../blogDetail/BlogDetail";
+import moment from "moment";
 import "../../styles/BlogDetail.css";
 import { updateStatusBlog } from "../../services/AdminService";
 import CreateBlog from "./CreateBlog";
@@ -32,6 +33,10 @@ const TableBlog = ({ searchText }) => {
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [showRefuseModal, setShowRefuseModal] = useState(false);
   const [editBlogData, setEditBlogData] = useState(null);
+  const authentication = localStorage.getItem("jwtToken");
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  
   const handleShowBlogDetail = (id) => {
     setSelectedBlogId(id);
     setShowBlogDetail(true);
@@ -202,49 +207,53 @@ const TableBlog = ({ searchText }) => {
       toast.error("An error occurred while refuse blog.");
     }
   };
-  const renderTableRow = (item, index) => (
-    <tr key={index} style={{ textAlign: "center", verticalAlign: "middle" }}>
-      <td style={{ textAlign: "center" }}>
-        <input
-          type="checkbox"
-          checked={selectedItems.includes(item.id)}
-          onChange={() => handleSelectItem(item.id)}
-        />
-      </td>
-      <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
-      <td style={{ minWidth: "200px", textAlign: "left" }}>{item.title}</td>
-      <td style={{ minWidth: "200px", textAlign: "left" }}>
-        {item.film.nameFilm}
-      </td>
-      <td>{item.postTime}</td>
-      <td style={{ minWidth: "150px", textAlign: "center" }}>
-        {" "}
-        {item.updateBy.name}
-      </td>
-      <td style={{ textAlign: "center" }}>{item.status}</td>
-      <td>
-        <div className="d-flex flex-column flex-md-row align-items-md-center"
-          style={{ justifyContent: "center" }}
-        >
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => handleShowBlogDetail(item.id)}
-            style={{ marginRight: "10px" }}
+  const renderTableRow = (item, index) => {
+    const formattedStartDate = moment(item.postTime).format("DD/MM/YYYY HH:mm:ss");
+  
+    return (
+      <tr key={index} style={{ textAlign: "center", verticalAlign: "middle" }}>
+        <td style={{ textAlign: "center" }}>
+          <input
+            type="checkbox"
+            checked={selectedItems.includes(item.id)}
+            onChange={() => handleSelectItem(item.id)}
+          />
+        </td>
+        <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
+        <td style={{ minWidth: "200px", textAlign: "left" }}>{item.title}</td>
+        <td style={{ minWidth: "200px", textAlign: "left" }}>
+          {item.film.nameFilm}
+        </td>
+        <td>{formattedStartDate}</td>
+        <td style={{ minWidth: "150px", textAlign: "center" }}>
+          {item.updateBy.name}
+        </td>
+        <td style={{ textAlign: "center" }}>{item.status}</td>
+        <td>
+          <div
+            className="d-flex flex-column flex-md-row align-items-md-center"
+            style={{ justifyContent: "center" }}
           >
-            <FontAwesomeIcon icon="fa-solid fa-eye" />
-          </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => handleEditItem(item)}
-          >
-            <FontAwesomeIcon icon="fa-solid fa-edit" />
-          </button>
-        </div>
-      </td>
-    </tr>
-  );
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleShowBlogDetail(item.id)}
+              style={{ marginRight: "10px" }}
+            >
+              <FontAwesomeIcon icon={["fas", "eye"]} /> {/* Correct usage of FontAwesomeIcon component */}
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleEditItem(item)}
+            >
+              <FontAwesomeIcon icon={["fas", "edit"]} /> {/* Correct usage of FontAwesomeIcon component */}
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  };
   return (
     <div className="activity">
       <div
@@ -258,6 +267,7 @@ const TableBlog = ({ searchText }) => {
       >
         <i className="uil uil-clock-three"></i>
         <span className="text">Blog List</span>
+        <CreateBlog />
         {/* < CreateBlog /> */}
         {/* Chỉ hiển thị nút khi có các mục đã được chọn */}
         {selectedItems.length > 0 ? (
@@ -267,7 +277,7 @@ const TableBlog = ({ searchText }) => {
               style={{
                 position: "absolute",
                 top: 0,
-                right: "210px",
+                right: "220px",
                 margin: "10px",
               }}
             >
@@ -278,72 +288,85 @@ const TableBlog = ({ searchText }) => {
               >
                 Delete
               </button>
-              <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Confirm Delete</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  Are you sure you want to delete all this blog?
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                    Cancel
-                  </Button>
-                  <Button variant="primary" onClick={handleDeleteBlog}>
-                    Confirm
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-              <Button
-                variant="success"
-                onClick={handleShowApproveModal}
-                style={{ marginRight: "10px" }}
-              >
-                Approve
-              </Button>
-              <Modal show={showApproveModal} onHide={handleCloseApproveModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Confirm Approve</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  Are you sure you want to approve all this blog?
-                </Modal.Body>
-                <Modal.Footer>
+              {authentication !== null && user.role === "ROLE_ADMIN" && (
+                <>
+                  <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Confirm Delete</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      Are you sure you want to delete all this blog?
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={handleCloseDeleteModal}
+                      >
+                        Cancel
+                      </Button>
+                      <Button variant="primary" onClick={handleDeleteBlog}>
+                        Confirm
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
                   <Button
-                    variant="secondary"
-                    onClick={handleCloseApproveModal}
+                    variant="success"
+                    onClick={handleShowApproveModal}
                     style={{ marginRight: "10px" }}
                   >
-                    Cancel
+                    Approve
                   </Button>
-                  <Button variant="primary" onClick={handleApproveBlog}>
-                    Confirm
+                  <Modal
+                    show={showApproveModal}
+                    onHide={handleCloseApproveModal}
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Confirm Approve</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      Are you sure you want to approve all this blog?
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={handleCloseApproveModal}
+                        style={{ marginRight: "10px" }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button variant="primary" onClick={handleApproveBlog}>
+                        Confirm
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Button
+                    variant="secondary"
+                    onClick={handleShowRefuseModal}
+                    style={{ marginRight: "10px" }}
+                  >
+                    Refuse
                   </Button>
-                </Modal.Footer>
-              </Modal>
-              <Button
-                variant="secondary"
-                onClick={handleShowRefuseModal}
-                style={{ marginRight: "10px" }}
-              >
-                Refuse
-              </Button>
-              <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Confirm Refuse</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  Are you sure you want to refuse all this blog?
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseRefuseModal}>
-                    Cancel
-                  </Button>
-                  <Button variant="primary" onClick={handleRefuseBlog}>
-                    Confirm
-                  </Button>
-                </Modal.Footer>
-              </Modal>
+                  <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Confirm Refuse</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      Are you sure you want to refuse all this blog?
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={handleCloseRefuseModal}
+                      >
+                        Cancel
+                      </Button>
+                      <Button variant="primary" onClick={handleRefuseBlog}>
+                        Confirm
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                </>
+              )}
             </div>
           </>
         ) : (
@@ -352,7 +375,7 @@ const TableBlog = ({ searchText }) => {
               style={{
                 position: "absolute",
                 top: 0,
-                right: "210px",
+                right: "220px",
                 margin: "10px",
               }}
             >
@@ -362,18 +385,22 @@ const TableBlog = ({ searchText }) => {
               >
                 Delete
               </button>
-              <Button
-                variant="success"
-                style={{ marginRight: "10px", opacity: 0.5 }}
-              >
-                Approve
-              </Button>
-              <Button
-                variant="secondary"
-                style={{ marginRight: "10px", opacity: 0.5 }}
-              >
-                Refuse
-              </Button>
+              {authentication !== null && user.role === "ROLE_ADMIN" && (
+                <>
+                  <Button
+                    variant="success"
+                    style={{ marginRight: "10px", opacity: 0.5 }}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    style={{ marginRight: "10px", opacity: 0.5 }}
+                  >
+                    Refuse
+                  </Button>
+                </>
+              )}
             </div>
           </>
         )}

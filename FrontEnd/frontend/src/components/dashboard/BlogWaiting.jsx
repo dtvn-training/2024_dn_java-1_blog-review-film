@@ -7,6 +7,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import "../../styles/UserPage.css";
 import { deleteBlog } from "../../services/AdminService";
+import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchDashBoard, updateStatusBlog } from "../../services/AdminService";
 import BlogDetail from "../blogDetail/BlogDetail";
@@ -220,39 +221,44 @@ const BlogWaiting = ({ searchText }) => {
     }
   };
 
-  const renderTableRow = (item, index) => (
-    <tr key={index} style={{ textAlign: "center", height: "30px" }}>
-      <td style={{ textAlign: "center" }}>
-        <input
-          type="checkbox"
-          checked={selectedItems.includes(item.id)}
-          onChange={() => handleSelectItem(item.id)}
-        />
-      </td>
-      <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
-      <td style={{ minWidth: "200px", textAlign: "left" }}>{item.title}</td>
-      <td style={{ textAlign: "left" }}>{item.film.nameFilm}</td>
-      <td style={{ minWidth: "200px", textAlign: "center" }}>
-        {item.postTime}
-      </td>
-      <td style={{ minWidth: "150px", textAlign: "center" }}>
-        {item.updateBy.name}
-      </td>
-      <td style={{ textAlign: "center" }}>{item.status}</td>
-      <td>
-        <div className="d-flex flex-column flex-md-row align-items-md-center">
-          <button
-            style={{ display: "block", margin: "auto" }}
-            type="button"
-            className="btn btn-primary"
-            onClick={() => handleShowBlogDetail(item.id)}
-          >
-            <FontAwesomeIcon icon="fa-solid fa-eye" />
-          </button>
-        </div>
-      </td>
-    </tr>
-  );
+  const renderTableRow = (item, index) => {
+    const formattedStartDate = moment(item.postTime).format("DD/MM/YYYY HH:mm:ss");
+  
+    return (
+      <tr key={index} style={{ textAlign: "center", height: "30px" }}>
+        <td style={{ textAlign: "center" }}>
+          <input
+            type="checkbox"
+            checked={selectedItems.includes(item.id)}
+            onChange={() => handleSelectItem(item.id)}
+          />
+        </td>
+        <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
+        <td style={{ minWidth: "200px", textAlign: "left" }}>{item.title}</td>
+        <td style={{ textAlign: "left" }}>{item.film.nameFilm}</td>
+        <td style={{ minWidth: "200px", textAlign: "center" }}>
+          {formattedStartDate}
+        </td>
+        <td style={{ minWidth: "150px", textAlign: "center" }}>
+          {item.updateBy.name}
+        </td>
+        <td style={{ textAlign: "center" }}>{item.status}</td>
+        <td>
+          <div className="d-flex flex-column flex-md-row align-items-md-center">
+            <button
+              style={{ display: "block", margin: "auto" }}
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleShowBlogDetail(item.id)}
+            >
+              {/* Correct usage of FontAwesomeIcon component */}
+              <FontAwesomeIcon icon={["fas", "eye"]} />
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  };
 
   return (
     <div className="activity" style={{ position: "relative" }}>

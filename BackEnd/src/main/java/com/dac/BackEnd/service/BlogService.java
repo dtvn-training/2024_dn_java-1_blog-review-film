@@ -31,8 +31,6 @@ public interface BlogService {
 
     Object updateImageBlog(MultipartFile file, Long blogId);
 
-    Object updateImageContent(List<ContentInput> contents, Long blogId);
-
     void deleteBlogs(DeleteRequest deletes);
 
     Blog getBlogByIdGuest(Long blogId);

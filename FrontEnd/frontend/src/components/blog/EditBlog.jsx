@@ -42,7 +42,7 @@ const EditBlog = ({ key, editBlogData }) => {
       // Clear form data when there's no editBlogData
       setFormData({
         filmId: "",
-        blogImageIntroduce: "",
+        blogImageIntroduce: null,
         title: "",
         blogImage: null,
         summary: "",
@@ -325,16 +325,10 @@ const EditBlog = ({ key, editBlogData }) => {
                   />
                 </Form.Group>
 
-                <Button
-                  variant="danger"
-                  style={{ marginTop: "20px", marginBottom: "20px" }}
-                  onClick={() => handleRemoveContent(index)}
-                >
-                  Remove Content
-                </Button>
+        
               </div>
             ))}
-            <Button variant="primary" onClick={handleAddContent}>
+            <Button variant="primary" onClick={handleAddContent} style={{marginTop: '10px'}}>
               Add Content
             </Button>
           </Form>

@@ -5,7 +5,7 @@ import { Button, Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-const BlogDetail = ({ blogId, onCloseModal }) => {
+const BlogDetail = ({ blogId, onCloseModal, guest }) => {
 
     const authenticated = JSON.parse(localStorage.getItem('authenticated'));
     const [blogDetail, setBlogDetail] = useState(null);
@@ -13,6 +13,7 @@ const BlogDetail = ({ blogId, onCloseModal }) => {
     const [showApproveModal, setShowApproveModal] = useState(false);
     const [showRefuseModal, setShowRefuseModal] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
+    const user = JSON.parse(localStorage.getItem("user"));
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,10 +23,9 @@ const BlogDetail = ({ blogId, onCloseModal }) => {
 
     const fetchBlogDetail = async (blogId) => {
         try {
-            if (authenticated) {
+            if (authenticated && !guest) {
                 const res = await fetchBlogById(blogId, localStorage.getItem("jwtToken"));
                 if (res && res.data) {
-                    console.log(res.data)
                     setBlogDetail(res.data.data);
                 }
             } else {
@@ -114,7 +114,7 @@ const BlogDetail = ({ blogId, onCloseModal }) => {
         (blogDetail ? (
             <div className="blogdetail_container">
                 <div className="div">
-                    {authenticated == null ? (
+                    {guest ? (
                         <div className="div-2">
                             <div className="div-3">
                                 <div className="div-4">Blog Review Film</div>
@@ -159,69 +159,71 @@ const BlogDetail = ({ blogId, onCloseModal }) => {
                                     </div>
                                     <div className="div-27">{blogDetail.summary}</div>
                                 </div>
-                                <div className="btn-updateBlog">
-                                    <button
-                                        className="btn btn-primary mr-2"
-                                        onClick={handleShowApproveModal}
-                                        style={{ marginRight: "10px" }}
-                                    >
-                                        Approve
-                                    </button>
-                                    <Modal show={showApproveModal} onHide={handleCloseApproveModal}>
-                                        <Modal.Header closeButton>
-                                            <Modal.Title>Confirm Approve</Modal.Title>
-                                        </Modal.Header>
-                                        <Modal.Body>
-                                            Are you sure you want to approve all this blog?
-                                        </Modal.Body>
-                                        <Modal.Footer>
-                                            <Button variant="secondary" onClick={handleCloseApproveModal}>
-                                                Cancel
-                                            </Button>
-                                            <Button
-                                                variant="primary"
-                                                onClick={handleApproveBlogs}
-                                            >
-                                                Confirm
-                                            </Button>
-                                        </Modal.Footer>
-                                    </Modal>
-                                    <Button
-                                        variant="secondary"
-                                        onClick={handleShowRefuseModal}
-                                    >
-                                        Refuse
-                                    </Button>
-                                    <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
-                                        <Modal.Header closeButton>
-                                            <Modal.Title>Confirm Refusal</Modal.Title>
-                                        </Modal.Header>
-                                        <Modal.Body>
-                                            Are you sure you want to refuse this blog?
-                                        </Modal.Body>
-                                        <Modal.Footer>
-                                            <Button variant="secondary" onClick={handleCloseRefuseModal}>
-                                                Cancel
-                                            </Button>
-                                            <Button
-                                                variant="primary"
-                                                onClick={handleRefuseBlogs}
-                                            >
-                                                Confirm
-                                            </Button>
-                                        </Modal.Footer>
-                                    </Modal>
-                                </div>
+                                {authenticated !== null && user.role === "ROLE_ADMIN" && (
+                                    <div className="btn-updateBlog">
+                                        <button
+                                            className="btn btn-primary mr-2"
+                                            onClick={handleShowApproveModal}
+                                            style={{ marginRight: "10px" }}
+                                        >
+                                            Approve
+                                        </button>
+                                        <Modal show={showApproveModal} onHide={handleCloseApproveModal}>
+                                            <Modal.Header closeButton>
+                                                <Modal.Title>Confirm Approve</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body>
+                                                Are you sure you want to approve all this blog?
+                                            </Modal.Body>
+                                            <Modal.Footer>
+                                                <Button variant="secondary" onClick={handleCloseApproveModal}>
+                                                    Cancel
+                                                </Button>
+                                                <Button
+                                                    variant="primary"
+                                                    onClick={handleApproveBlogs}
+                                                >
+                                                    Confirm
+                                                </Button>
+                                            </Modal.Footer>
+                                        </Modal>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={handleShowRefuseModal}
+                                        >
+                                            Refuse
+                                        </Button>
+                                        <Modal show={showRefuseModal} onHide={handleCloseRefuseModal}>
+                                            <Modal.Header closeButton>
+                                                <Modal.Title>Confirm Refusal</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body>
+                                                Are you sure you want to refuse this blog?
+                                            </Modal.Body>
+                                            <Modal.Footer>
+                                                <Button variant="secondary" onClick={handleCloseRefuseModal}>
+                                                    Cancel
+                                                </Button>
+                                                <Button
+                                                    variant="primary"
+                                                    onClick={handleRefuseBlogs}
+                                                >
+                                                    Confirm
+                                                </Button>
+                                            </Modal.Footer>
+                                        </Modal>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         {blogDetail.contents.map((content, index) => (
                             <div key={index} className="content-container">
-                                <p>{content.content}</p>
-                                {content.imageUrl && <img src={content.imageUrl} alt={`Content ${index + 1}`} />}
+                                <div dangerouslySetInnerHTML={{ __html: content.content }} />
+                                {content.imageUrl && <img key={`image-${index}`} src={content.imageUrl} alt={`Content ${index + 1}`} />}
                             </div>
                         ))}
                     </div>
-                    {!authenticated && (
+                    {guest && (
                         <div className="div-29">
                             <div className="div-30">
                                 <div className="div-31">Home</div>

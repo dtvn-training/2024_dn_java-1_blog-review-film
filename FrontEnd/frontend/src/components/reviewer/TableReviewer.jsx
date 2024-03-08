@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, Button, Form, Modal, Table } from "react-bootstrap";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
+import moment from "moment";
 import {
   deleteAccount,
   fetchAccount,
@@ -10,6 +11,7 @@ import {
 } from "../../services/AdminService";
 import CreateReviewer from "./CreateReviewer";
 import EditBlog from "../blog/EditBlog";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const TableReviewer = ({ searchText }) => {
   const [listUsers, setListUsers] = useState([]);
@@ -257,35 +259,39 @@ const TableReviewer = ({ searchText }) => {
     }
   };
 
-  const renderTableRow = (item, index) => (
-    <tr key={index} style={{ textAlign: "center", verticalAlign: "middle" }}>
-      <td style={{ textAlign: "center" }}>
-        <input
-          type="checkbox"
-          checked={selectedItems.includes(item.id)}
-          onChange={() => handleSelectItem(item.id)}
-        />
-      </td>
-      <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
-      <td>{item.name}</td>
-      <td style={{ textAlign: "right", height: "10px" }}>{item.phone}</td>
-      <td style={{ textAlign: "left" }}>{item.email}</td>
-      <td style={{ minWidth: "150px" }}>{item.insertDateTime}</td>
-      <td>{item.status}</td>
-      <td>
-        <div className="d-flex flex-column flex-md-row align-items-md-center">
-          <button
-            style={{ display: "block", margin: "auto" }}
-            type="button"
-            className="btn btn-primary"
-            onClick={() => handleEditUser(item)}
-          >
-            Edit
-          </button>
-        </div>
-      </td>
-    </tr>
-  );
+  const renderTableRow = (item, index) => {
+    const formattedStartDate = moment(item.insertDateTime).format("DD/MM/YYYY HH:mm:ss");
+  
+    return (
+      <tr key={index} style={{ textAlign: "center" }}>
+        <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+          <input
+            type="checkbox"
+            checked={selectedItems.includes(item.id)}
+            onChange={() => handleSelectItem(item.id)}
+          />
+        </td>
+        <td style={{ textAlign: "right", height: "10px" }}>{index + 1}</td>
+        <td>{item.name}</td>
+        <td style={{ textAlign: "right", height: "10px" }}>{item.phone}</td>
+        <td style={{ textAlign: "left" }}>{item.email}</td>
+        <td style={{ minWidth: "150px" }}>{formattedStartDate}</td> {/* Use formattedStartDate instead of item.insertDateTime */}
+        <td>{item.status}</td>
+        <td>
+          <div className="d-flex flex-column flex-md-row align-items-md-center">
+            <button
+              style={{ display: "block", margin: "auto" }}
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleEditUser(item)}
+            >
+              <FontAwesomeIcon icon={["fas", "pen"]} /> {/* Correct usage of FontAwesomeIcon component */}
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  };
   return (
     <div className="activity">
       <div
