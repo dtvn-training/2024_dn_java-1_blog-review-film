@@ -57,7 +57,7 @@ const SignUp = () => {
             try {
                 const response = await signup(name, phone, email, password);
                 console.log(response)
-                if (response.code == 201) {
+                if (response.code === 201) {
                     toast.success('Successfully signed up!')
 
                     setTimeout(() => {

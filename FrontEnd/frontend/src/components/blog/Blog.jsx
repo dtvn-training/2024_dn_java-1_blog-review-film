@@ -35,7 +35,6 @@ const Blog = () => {
       </div>
       <div className="dash-content">
         < TableBlog searchText={searchText} />
-        <CreateBlog />
       </div>
     </section>
   );
