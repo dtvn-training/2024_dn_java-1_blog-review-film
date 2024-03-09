@@ -11,6 +11,8 @@ import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface BlogRepository extends JpaRepository<BlogEntity, Long>{
@@ -35,5 +37,9 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long>{
     List<BlogEntity> findAllBySearchText(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     List<BlogEntity> findAllByPostTimeBetween(LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
+    // Đếm số bài viết của từng reviewer trong khoảng thời gian
+    @Query("SELECT b.insertBy.name AS reviewer, COUNT(b) AS numberOfPosts FROM BlogEntity b WHERE b.postTime BETWEEN :startTime AND :endTime GROUP BY b.insertBy.name ORDER BY numberOfPosts DESC")
+    List<Map<String, Object>> countPostsByReviewerInPeriod(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
 }
+
