@@ -3,7 +3,6 @@ package com.dac.BackEnd.service.impl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,15 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dac.BackEnd.constant.ErrorConstants;
-import com.dac.BackEnd.constant.TypeImageConstants;
-import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.convertor.FilmConvertor;
 import com.dac.BackEnd.entity.CategoryEntity;
 import com.dac.BackEnd.entity.FilmEntity;
-import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.entity.UserEntity.UserEntity;
 import com.dac.BackEnd.exception.MessageException;
-import com.dac.BackEnd.model.Blog;
 import com.dac.BackEnd.model.Film;
 import com.dac.BackEnd.model.request.DeleteRequest;
 import com.dac.BackEnd.model.request.FilmInput;
@@ -33,7 +28,7 @@ import com.dac.BackEnd.repository.CategoryRepository;
 import com.dac.BackEnd.repository.FilmRepository;
 import com.dac.BackEnd.repository.UserRepository;
 import com.dac.BackEnd.service.FilmService;
-import com.dac.BackEnd.service.ImageService;
+// import com.dac.BackEnd.service.ImageService;
 
 
 @Service
@@ -48,8 +43,8 @@ public class FilmServiceImpl implements FilmService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private ImageService imageService;
+    // @Autowired
+    // private ImageService imageService;
 
     private static final int PER_PAGE = 10;
 
@@ -115,7 +110,7 @@ public class FilmServiceImpl implements FilmService {
         FilmEntity entity = new FilmEntity();
         entity.setCategory(getCategoryEntityById(filmInput.getCategoryId()));
         entity.setNameFilm(filmInput.getNameFilm());
-        entity.setImage(imageService.upload(filmInput.getFilmImage(), TypeImageConstants.FILM_IMAGE));
+        // entity.setImage(imageService.upload(filmInput.getFilmImage(), TypeImageConstants.FILM_IMAGE));
         entity.setDirector(filmInput.getDirector());
         entity.setCountry(filmInput.getCountry());
         entity.setStartDate(filmInput.getStartDate());
@@ -143,7 +138,7 @@ public class FilmServiceImpl implements FilmService {
 
     private void updateFilmImage(FilmEntity entity, MultipartFile file, String user) {
         UserEntity userEntity = getUserEntity(user);
-        entity.setImage(imageService.upload(file, TypeImageConstants.FILM_IMAGE));
+        // entity.setImage(imageService.upload(file, TypeImageConstants.FILM_IMAGE));
         entity.setUpdateDateTime(LocalDateTime.now());
         entity.setUpdateBy(userEntity);
     }

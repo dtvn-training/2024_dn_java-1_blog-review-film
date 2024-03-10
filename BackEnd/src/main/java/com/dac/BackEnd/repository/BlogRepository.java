@@ -1,5 +1,10 @@
 package com.dac.BackEnd.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,14 +12,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.dac.BackEnd.entity.FilmEntity;
 import com.dac.BackEnd.entity.BlogEntity.BlogEntity;
 import com.dac.BackEnd.entity.BlogEntity.BlogStatus;
 import com.dac.BackEnd.entity.UserEntity.UserEntity;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import com.dac.BackEnd.entity.FilmEntity;
 
 @Repository
 public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
@@ -70,4 +71,13 @@ public interface BlogRepository extends JpaRepository<BlogEntity, Long> {
         Page<BlogEntity> findAllBlogsByFilmGuest(
                         @Param("filmEntity") FilmEntity filmEntity,
                         Pageable pageable);
+                        
+        List<BlogEntity> findAllByPostTimeBetween(LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
+        // Đếm số bài viết của từng reviewer trong khoảng thời gian
+        @Query("SELECT b.insertBy.name AS reviewer, COUNT(b) AS numberOfPosts FROM BlogEntity b WHERE b.postTime BETWEEN :startTime AND :endTime GROUP BY b.insertBy.name ORDER BY numberOfPosts DESC")
+        List<Map<String, Object>> countPostsByReviewerInPeriod(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+        // Đếm số bài viết của từng phim trong khoảng thời gian
+        @Query("SELECT f.nameFilm AS film, COUNT(b) AS numberOfPosts FROM BlogEntity b JOIN b.film f WHERE b.postTime BETWEEN :startTime AND :endTime GROUP BY f.nameFilm ORDER BY numberOfPosts DESC")
+        List<Map<String, Object>> countPostsByFilmInPeriod(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+ 
 }

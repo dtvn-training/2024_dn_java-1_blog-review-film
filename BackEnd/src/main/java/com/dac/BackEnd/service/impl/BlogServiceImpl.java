@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dac.BackEnd.constant.ErrorConstants;
-import com.dac.BackEnd.constant.TypeImageConstants;
 import com.dac.BackEnd.convertor.BlogConvertor;
 import com.dac.BackEnd.convertor.ContentConvertor;
 import com.dac.BackEnd.entity.ContentEntity;
@@ -38,7 +37,7 @@ import com.dac.BackEnd.repository.ContentRepository;
 import com.dac.BackEnd.repository.FilmRepository;
 import com.dac.BackEnd.repository.UserRepository;
 import com.dac.BackEnd.service.BlogService;
-import com.dac.BackEnd.service.ImageService;
+// import com.dac.BackEnd.service.ImageService;
 import com.dac.BackEnd.validation.BlogStatusValidation;
 
 @Service
@@ -56,8 +55,8 @@ public class BlogServiceImpl implements BlogService {
     @Autowired
     private ContentRepository contentRepository;
 
-    @Autowired
-    private ImageService imageService;
+    // @Autowired
+    // private ImageService imageService;
 
     private static final int PER_PAGE = 10;
     private static final int PER_PAGE_GUEST = 6;
@@ -141,8 +140,8 @@ public class BlogServiceImpl implements BlogService {
                         ContentEntity contentEntity = new ContentEntity();
                         contentEntity.setBlog(blogRepository.findById(blogId).orElseThrow(() -> notFoundException()));
                         contentEntity.setContent(contentInput.getContent());
-                        contentEntity.setImageUrl(
-                                imageService.upload(contentInput.getImageContent(), TypeImageConstants.CONTENT_IMAGE));
+                        // contentEntity.setImageUrl(
+                        //         imageService.upload(contentInput.getImageContent(), TypeImageConstants.CONTENT_IMAGE));
                         contentEntity.setInsertDateTime(now);
                         contentEntity.setInsertBy(userEntity);
                         contentEntity.setUpdateDateTime(now);
@@ -156,9 +155,9 @@ public class BlogServiceImpl implements BlogService {
                                     ErrorConstants.INVALID_DATA_CODE);
                         }
                         contentEntity.setContent(contentInput.getContent());
-                        if (contentInput.getImageContent() != null) {
-                            contentEntity.setImageUrl(imageService.upload(contentInput.getImageContent(), TypeImageConstants.CONTENT_IMAGE));
-                        }
+                        // if (contentInput.getImageContent() != null) {
+                        //     contentEntity.setImageUrl(imageService.upload(contentInput.getImageContent(), TypeImageConstants.CONTENT_IMAGE));
+                        // }
                         return contentRepository.save(contentEntity);
                     }
                 })
@@ -171,7 +170,7 @@ public class BlogServiceImpl implements BlogService {
         Authentication authentication = getAuthentication();
         BlogEntity entity = blogRepository.findById(blogId)
                 .orElseThrow(() -> notFoundException());
-        entity.setImage(imageService.upload(file, TypeImageConstants.BLOG_IMAGE));
+        // entity.setImage(imageService.upload(file, TypeImageConstants.BLOG_IMAGE));
         entity.setUpdateDateTime(LocalDateTime.now());
         entity.setUpdateBy(userRepository.findByEmailAndDeleteFlagFalse(authentication.getName())
                 .orElseThrow(
@@ -207,8 +206,8 @@ public class BlogServiceImpl implements BlogService {
         entity.setTitle(blogInput.getTitle());
         entity.setSummary(blogInput.getSummary());
         entity.setPoint(blogInput.getPoint());
-        entity.setImage(imageService.upload(blogInput.getBlogImage(), TypeImageConstants.BLOG_IMAGE));
-        entity.setImageIntroduce(imageService.upload(blogInput.getBlogImageIntroduce(), TypeImageConstants.BLOG_IMAGE));
+        // entity.setImage(imageService.upload(blogInput.getBlogImage(), TypeImageConstants.BLOG_IMAGE));
+        // entity.setImageIntroduce(imageService.upload(blogInput.getBlogImageIntroduce(), TypeImageConstants.BLOG_IMAGE));
         UserEntity userEntity = getUserEntity(authentication);
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         if (roles.contains(UserRole.ROLE_ADMIN.name())) {
@@ -230,9 +229,9 @@ public class BlogServiceImpl implements BlogService {
         ContentEntity entity = new ContentEntity();
         entity.setBlog(blog);
         entity.setContent(content.getContent());
-        if (content.getImageContent() != null) {
-            entity.setImageUrl(imageService.upload(content.getImageContent(), TypeImageConstants.CONTENT_IMAGE));
-        }
+        // if (content.getImageContent() != null) {
+        //     entity.setImageUrl(imageService.upload(content.getImageContent(), TypeImageConstants.CONTENT_IMAGE));
+        // }
         entity.setInsertDateTime(blog.getInsertDateTime());
         entity.setInsertBy(blog.getInsertBy());
         entity.setUpdateDateTime(blog.getUpdateDateTime());
@@ -320,7 +319,7 @@ public class BlogServiceImpl implements BlogService {
         Authentication authentication = getAuthentication();
         BlogEntity entity = blogRepository.findById(blogId)
                 .orElseThrow(() -> notFoundException());
-        entity.setImageIntroduce(imageService.upload(file, TypeImageConstants.BLOG_IMAGE));
+        // entity.setImageIntroduce(imageService.upload(file, TypeImageConstants.BLOG_IMAGE));
         entity.setUpdateDateTime(LocalDateTime.now());
         entity.setUpdateBy(userRepository.findByEmailAndDeleteFlagFalse(authentication.getName())
                 .orElseThrow(
