@@ -1,3 +1,4 @@
+
 # 2024_Intern_BKDN_DAC - Java-1 Team
 
 ## Requirement Document
@@ -347,6 +348,4 @@ ALTER TABLE `users`
   ADD CONSTRAINT `FKhv2qk1dd8k6y15f87ylm3sy8l` FOREIGN KEY (`insert_by_user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `FKm4r9e2kjfeab5rlypfm33j6t0` FOREIGN KEY (`update_by_user_id`) REFERENCES `users` (`id`);
 COMMIT;
-
-
 
